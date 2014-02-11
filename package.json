@@ -1,0 +1,15 @@
+{
+	"name": "taskstodo_sidebar",
+	"fullName": "TasksTodo Sidebar", 
+	"author": "Daniel Backhausen", 
+	"license": "", 
+	"description": "The most advanced task-based search support application.", 
+	"url": "http://www.taskstodo.org", 
+	"dependencies": ["api-utils", "addon-kit"],
+	"version": "1.0", 
+	"lib": "lib", 
+	"id": "jid0-LL6axP5fE2BdmVmVJ6eaKe8whXo",
+	"permissions": {
+		"cross-domain-content": ["http://localhost"]
+	}
+}
