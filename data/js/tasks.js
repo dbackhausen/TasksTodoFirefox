@@ -48,9 +48,13 @@ $(document).ready(function() {
     };
     
     self.addTask = function(data) {
-      addTask(data);
-//      $('#new-note-button').toggle();
-//      $('#new-note-form').toggle();
+      var json = { 
+        "title" : $("#input-new-task-title").val()
+      };
+      addTask(JSON.stringify(json));
+      $('#new-task-button').toggle();
+      $('#new-task-form').toggle();
+      $('#new-task-form input').val(null);
     };
     
     self.editTask = function(data) {
@@ -65,8 +69,8 @@ $(document).ready(function() {
       $('#details .inline-edit').toggle();
     };
     
-    self.saveTask = function() {
-      saveTask(self.selectedTask());
+    self.updateTask = function() {
+      updateTask(self.selectedTask());
     };
     
     self.deleteTask = function() {
@@ -95,11 +99,10 @@ $(document).ready(function() {
       addNote(JSON.stringify(json));
       $('#new-note-button').toggle();
       $('#new-note-form').toggle();
+      $('#new-note-form textarea').val(null);
     };
     
     self.editNote = function(data) {
-      $('#new-note-button').toggle();
-      $('#new-note-form').toggle();
       $('#'+data.idAsString+' .inline-view').toggle();
       $('#'+data.idAsString+' .inline-edit').toggle();
     };
@@ -107,13 +110,14 @@ $(document).ready(function() {
     self.cancelEditNote = function(data) {
       $('#'+data.idAsString+' .inline-view').toggle();
       $('#'+data.idAsString+' .inline-edit').toggle();
+      $('#input-update-note-body').val(null);
     };
     
     self.updateNote = function(data) {
-      var json = { 
-        "body" : data.body
-      };
-      updateNote(JSON.stringify(json));
+      updateNote(data);
+      $('#'+data.idAsString+' .inline-view').toggle();
+      $('#'+data.idAsString+' .inline-edit').toggle();
+      $('#input-update-note-body').val(null);
     };
     
     self.deleteNote = function(data) {
@@ -142,15 +146,12 @@ $(document).ready(function() {
         "title" : $('#input-new-link-title').val(), 
         "description" : $('#input-new-link-description').val()
       };
-      console.log(">> " + JSON.stringify(json));
       addLink(JSON.stringify(json));
       $('#new-link-button').toggle();
       $('#new-link-form').toggle();
     };
     
     self.editLink = function(data) {
-      $('#new-link-button').toggle();
-      $('#new-link-form').toggle();
       $('#'+data.idAsString+' .inline-view').toggle();
       $('#'+data.idAsString+' .inline-edit').toggle();
     };
@@ -158,15 +159,16 @@ $(document).ready(function() {
     self.cancelEditLink = function(data) {
       $('#'+data.idAsString+' .inline-view').toggle();
       $('#'+data.idAsString+' .inline-edit').toggle();
+      $('#new-link-form input').val(null);
+      $('#new-link-form textarea').val(null);
     };
     
     self.updateLink = function(data) {
-      var json = { 
-        "url" : data.url,
-        "title" : data.title, 
-        "description" : data.description
-      };
-      updateLink(JSON.stringify(json));
+      updateLink(data);
+      $('#'+data.idAsString+' .inline-view').toggle();
+      $('#'+data.idAsString+' .inline-edit').toggle();
+      $('#new-link-form input').val(null);
+      $('#new-link-form textarea').val(null);
     };
     
     self.deleteLink = function(data) {
@@ -229,9 +231,10 @@ $(document).ready(function() {
     addon.port.emit("LoadTasks", project);
   }
 
-  addon.port.on("TasksLoaded", function(data) {
-    ko.utils.arrayForEach(data, function(item) {
-      taskModel.tasks.push(item);
+  addon.port.on("TasksLoaded", function(tasks) {
+    taskModel.tasks.removeAll();
+    ko.utils.arrayForEach(tasks, function(task) {
+      taskModel.tasks.push(task);
     });
   });
   
@@ -243,18 +246,21 @@ $(document).ready(function() {
   }
 
   addon.port.on("TaskAdded", function(data) {
-    console.log("Task added");
+    // load all tasks of selected project
+    loadTasks("inbox");
   });
   
   /**
    * Saves changes to an existing task.
    */
-  function saveTask(task) {
-    addon.port.emit("SaveTask", task);
+  function updateTask(task) {
+    addon.port.emit("UpdateTask", task);
   }
 
-  addon.port.on("TaskSaved", function(data) {
-    console.log("Task saved");
+  addon.port.on("TaskUpdated", function(data) {
+    console.log("Task updated");
+    // load all tasks of selected project
+    loadTasks("inbox");
   });
   
   /**
@@ -266,6 +272,8 @@ $(document).ready(function() {
 
   addon.port.on("TaskDeleted", function(data) {
     console.log("Task deleted");
+    // load all tasks of selected project
+    loadTasks("inbox");
   });
 
   /**
@@ -296,34 +304,39 @@ $(document).ready(function() {
     addon.port.emit("LoadNotes", task);
   }
 
-  addon.port.on("NotesLoaded", function(data) {
+  addon.port.on("ReloadNotes", function() {
+    console.log("Reloading notes");
+  });
+
+  addon.port.on("NotesLoaded", function(notes) {
     taskModel.notes.removeAll();
     
-    ko.utils.arrayForEach(data, function(item){
-      taskModel.notes.push(item);
+    ko.utils.arrayForEach(notes, function(note){
+      taskModel.notes.push(note);
     });
   });
   
   /**
    * Adds a new note to the selected task.
    */
-  function addNote(json) {
-    addon.port.emit("AddNote", json);
+  function addNote(note) {
+    addon.port.emit("AddNote", note);
   }
 
-  addon.port.on("NoteAdded", function(data) {
-    taskModel.notes.unshift(data);
+  addon.port.on("NoteAdded", function(note) {
+    taskModel.notes.unshift(note);
   });
   
   /**
    * Saves changes to an existing note.
    */
-  function updateNote(json) {
-    addon.port.emit("UpdateNote", json);
+  function updateNote(note) {
+    addon.port.emit("UpdateNote", note);
   }
 
-  addon.port.on("NoteUpdated", function(data) {
-    loadNotes(taskModel.selectedTask);
+  addon.port.on("NoteUpdated", function(note) {
+    // reload all notes
+    loadNotes(taskModel.selectedTask());
   });
   
   /**
@@ -333,8 +346,10 @@ $(document).ready(function() {
     addon.port.emit("DeleteNote", note);
   }
 
-  addon.port.on("NoteDeleted", function(data) {
-    loadNotes(taskModel.selectedTask);
+  addon.port.on("NoteDeleted", function(note) {
+    console.log("Note deleted");
+    // reload all notes
+    loadNotes(taskModel.selectedTask());
   });
   
   /////////////////////////////////////////////////////////////////////////////
@@ -370,12 +385,13 @@ $(document).ready(function() {
   /**
    * Saves changes to an existing link.
    */
-  function updateLink(json) {
-    addon.port.emit("UpdateLink", json);
+  function updateLink(link) {
+    addon.port.emit("UpdateLink", link);
   }
 
   addon.port.on("LinkUpdated", function(data) {
-    loadLinks(taskModel.selectedTask);
+    // reload all links
+    loadLinks(taskModel.selectedTask());
   });
   
   /**
@@ -386,7 +402,8 @@ $(document).ready(function() {
   }
 
   addon.port.on("LinkDeleted", function(data) {
-    loadLinks(taskModel.selectedTask);
+    // reload all links
+    loadLinks(taskModel.selectedTask());
   });
   
   /////////////////////////////////////////////////////////////////////////////
@@ -394,6 +411,7 @@ $(document).ready(function() {
   /////////////////////////////////////////////////////////////////////////////
    
 
+   
   /////////////////////////////////////////////////////////////////////////////
   // FILTERS                                                                 //
   /////////////////////////////////////////////////////////////////////////////

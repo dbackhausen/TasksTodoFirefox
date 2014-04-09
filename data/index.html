@@ -43,7 +43,7 @@
   
     <div id="tasks" class="row">
       <div id="tasks-list" class="col-md-3">
-        <h1 class="goal-header">Inbox</h1>
+        <h1 class="goal-header">Porsche Restauration</h1>
         <div id="nestable-task-list" class="dd">
           <ol data-bind="foreach: tasks" class="task-list dd-list">
             <li class="dd-item dd3-item" data-bind="attr: { id: idAsString }">
@@ -115,7 +115,7 @@
               <input id="task-details-tags" type="text" value="" class="form-control" /></p>
 
               <hr/>
-              <button data-bind="click: saveTask" class="btn btn-primary btn-sm">Save</button>
+              <button data-bind="click: updateTask" class="btn btn-primary btn-sm">Save</button>
               <button data-bind="click: cancelEditTask" class="btn btn-default btn-sm">Cancel</button>
             </div>
           </div>
@@ -136,15 +136,23 @@
             <ul id="task-notes-list" data-bind="foreach: notes">
               <li data-bind="attr: { id: idAsString }">
                 <div class="well well-sm inline-view">
-                  <p><span data-bind="text: created | smartdate"></span></p>
                   <span data-bind="text: body"></span>
-                  <p>
-                  <button data-bind="click: $parent.editNote" class="btn btn-default btn-sm"><i class="fa fa-pencil"></i></button>
-                  <button data-bind="click: $parent.deleteNote" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i></button></p>
+                  <hr/>
+                  <div class="item-container">
+                    <div class="item-modified-date">
+                      <span data-bind="text: created | smartdate"></span>
+                    </div>
+                    <div class="item-edit-link">
+                      <a href="#" data-bind="click: $parent.editNote">edit</a>
+                    </div>
+                    <div class="item-delete-link">
+                      <a href="#" data-bind="click: $parent.deleteNote">delete</a>
+                    </div>
+                  </div>
                 </div>
                 <div class="inline-edit">
                   <div class="form-group">
-                    <textarea data-bind="value: body" class="form-control"></textarea>
+                    <textarea id="input-update-note-body" data-bind="value: body" class="form-control"></textarea>
                   </div>
                   <button data-bind="click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
                   <button data-bind="click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
@@ -186,10 +194,18 @@
                 <div class="inline-view">
                   <div class="media-body">
                     <h4 class="media-heading"><a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a></h4>
-                    <span data-bind="text: description" class="inline-view"></span>
-                    <p>Added on: <span data-bind="text: created | smartdate"></span></p>
-                    <button data-bind="click: $parent.editLink" class="btn btn-default btn-sm">Edit</button>
-                    <button data-bind="click: $parent.deleteLink" class="btn btn-default btn-sm">Delete</button>
+                    <p><span data-bind="text: description" class="inline-view"></span></p>
+                    <div class="item-container">
+                      <div class="item-modified-date">
+                        <span data-bind="text: created | smartdate"></span>
+                      </div>
+                      <div class="item-edit-link">
+                        <a href="#" data-bind="click: $parent.editLink">edit</a>
+                      </div>
+                      <div class="item-delete-link">
+                        <a href="#" data-bind="click: $parent.deleteLink">delete</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="inline-edit">
