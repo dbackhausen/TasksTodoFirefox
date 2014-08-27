@@ -1,0 +1,87 @@
+
+#goal-form {
+  display: none;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #e3e3e3;
+}
+
+/* */ 
+
+.goal-list ol {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.goal-list ol li {
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.goal-list ol li:hover div.goal-list-entry {
+  color: #535F6D;
+  background-color: #E2E7ED;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
+.goal-list ol li:hover div.goal-list-control a {
+  visibility: visible;
+}
+
+.goal-list ol li:last-child {
+  border: none;
+}
+
+.goal-list-entry {
+  width: 100%;
+  height: 100%;
+  display: table;
+  padding: 5px 0px 5px 0px;
+}
+
+.goal-list-entry.selected {
+  margin: 0px;
+  color: #535F6D;
+  background-color: #E2E7ED;
+}
+
+.goal-list-entry.indent {
+  margin-left: 20px;
+}
+
+.goal-list-entry div {
+  display: table-cell;
+  padding: 0px;
+}
+
+.goal-list-entry a {
+  color: #000000;
+  text-decoration: none;
+}
+
+.goal-list-check {
+  width: 25px;
+}
+
+.goal-list-check a {
+  padding-left: 5px;
+}
+
+.goal-list-content {
+  padding: 0px 5px 0px 5px;
+}
+
+.goal-list-control { 
+  width: 50px;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.goal-list-control a { 
+  visibility: hidden;
+  padding-right: 5px;
+}

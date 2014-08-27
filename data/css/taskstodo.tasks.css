@@ -1,0 +1,404 @@
+/*
+ * TASK
+ */
+
+#task-form {
+  display: none;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #e3e3e3;
+}
+
+#task-form div.row div {
+  padding: 0px;
+}
+
+
+.task-list ol {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.task-list ol li {
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.task-list ol li:hover div.task-list-entry {
+  color: #535F6D;
+  background-color: #E2E7ED;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
+.task-list ol li:hover div.task-list-control a {
+  visibility: visible;
+}
+
+.task-list ol li:last-child {
+  border: none;
+}
+
+/* */
+
+.task-list-entry {
+  width: 100%;
+  height: 100%;
+  display: table;
+  padding: 5px 0px 5px 0px;
+}
+
+.task-list-entry.selected {
+  margin: 0px;
+  color: #535F6D;
+  background-color: #E2E7ED;
+}
+
+.task-list-entry div {
+  display: table-cell;
+  padding: 0px;
+}
+
+.task-list-entry a {
+  color: #000000;
+  text-decoration: none;
+}
+
+/* */
+
+.task-list-check {
+  width: 25px;
+}
+
+.task-list-check a {
+  padding-left: 5px;
+}
+
+.task-list-content {
+  padding: 0px 5px 0px 5px;
+}
+
+.task-list-control { 
+  width: 50px;
+  text-align: right;
+  padding-right: 5px;
+  text-transform: none;
+}
+
+.task-list-control a { 
+  visibility: hidden;
+  padding-right: 5px;
+}
+
+.task-list-options {
+  width: 100%;
+  height: 100%;
+  display: none;
+  padding: 5px 0px 5px 25px;
+  cursor: pointer;
+  background-color: #DEDEDE;
+}
+
+.task-list-options a {
+  cursor: pointer;
+  color: #333333;
+  padding-right: 10px;
+  text-decoration: none;
+}
+
+.task-list-options a:hover {
+  color: #535F6D;
+}
+
+/*
+ * NOTE
+ */
+
+#new-note-form {
+  display: none;
+}
+
+.task-note-list ul {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.task-note-list ul li {
+}
+
+.task-note-list a {
+  color: #000000;
+  text-decoration: none;
+}
+
+.task-note-list ul li:hover .task-note-list-control a {
+  visibility: visible;
+}
+
+.task-note-list-empty {
+  width: 100%;
+  font-style: italic;
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 5px 15px 5px;
+  color: #666666;
+  background-color: #EFEFEF;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.task-note-list-entry-header {
+  width: 100%;
+  display: table;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  margin: 5px 0px 0px 0px;
+  padding: 5px 5px 5px 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+}
+
+.task-note-list-entry-header div {
+  display: table-cell;
+}
+
+.task-note-list-control { 
+  width: 50px;
+  text-align: right;
+  text-transform: none;
+}
+
+.task-note-list-control a { 
+  font-size: 13px;
+  font-weight: 100;
+}
+
+.task-note-list-entry {
+  width: 100%;
+  height: 100%;
+  max-height: 200px; 
+  display: table;
+  padding: 0px 5px 3px 5px;
+  background-color: #EFEFEF;
+  overflow: scroll;
+}
+
+.task-note-list-entry div {
+  display: table-cell;
+  padding: 0px;
+}
+
+.task-note-list-entry div.inline-edit {
+  display: none;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+.task-note-list-content {
+  padding: 0px 5px 0px 5px;
+}
+
+.task-note-list-content span {
+  display: block;
+}
+
+/*
+ * BOOKMARK
+ */
+
+#new-bookmark-form {
+  display: none;
+}
+
+.task-bookmarks-list ul {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.task-bookmarks-list ul li {
+}
+
+.task-bookmarks-list a {
+  color: #000000;
+  text-decoration: none;
+}
+
+.task-bookmarks-list ul li:hover .task-bookmarks-list-control a {
+  visibility: visible;
+}
+
+.task-bookmarks-list-empty {
+  width: 100%;
+  font-style: italic;
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 5px 15px 5px;
+  color: #666666;
+  background-color: #EFEFEF;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.task-bookmarks-list-entry-header {
+  width: 100%;
+  display: table;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  margin: 5px 0px 0px 0px;
+  padding: 5px 5px 5px 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+}
+
+.task-bookmarks-list-entry-header div {
+  display: table-cell;
+}
+
+.task-bookmarks-list-control { 
+  width: 50px;
+  text-align: right;
+  text-transform: none;
+}
+
+.task-bookmarks-list-control a { 
+  font-size: 13px;
+  font-weight: 100;
+}
+
+.task-bookmarks-list-entry {
+  width: 100%;
+  display: table;
+  padding: 5px;
+  background-color: #EFEFEF;
+  overflow: scroll;
+}
+
+.task-bookmarks-list-entry div {
+  display: table-cell;
+  padding: 0px;
+}
+
+.task-bookmarks-list-entry div.inline-edit {
+  display: none;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+.task-bookmarks-list-content {
+  padding: 0px 5px 0px 5px;
+}
+
+.task-bookmarks-list-content .thumbnail img {
+  border: 1px solid #DFDFDF;
+  width: 75px;
+  height: 50px;
+}
+
+.task-bookmarks-list-content .link {
+  height: 100%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
+
+
+/*
+ * HISTORY
+ */
+
+.task-history-list ul {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.task-history-list ul li {
+}
+
+.task-history-list a {
+  color: #000000;
+  text-decoration: none;
+}
+
+.task-history-list ul li:hover .task-history-list-control a {
+  visibility: visible;
+}
+
+.task-history-list-empty {
+  width: 100%;
+  font-style: italic;
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 5px 15px 5px;
+  color: #666666;
+  background-color: #EFEFEF;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.task-history-list-entry-header {
+  width: 100%;
+  display: table;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  margin: 5px 0px 0px 0px;
+  padding: 5px 5px 5px 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+}
+
+.task-history-list-entry-header div {
+  display: table-cell;
+}
+
+.task-history-list-control { 
+  width: 50px;
+  text-align: right;
+  text-transform: none;
+}
+
+.task-history-list-control a { 
+  font-size: 13px;
+  font-weight: 100;
+}
+
+.task-history-list-entry {
+  width: 100%;
+  display: table;
+  padding: 5px;
+  background-color: #EFEFEF;
+  overflow: scroll;
+}
+
+.task-history-list-entry div {
+  display: table-cell;
+  padding: 0px;
+}
+
+.task-history-list-content {
+  padding: 0px 5px 0px 5px;
+}
+
+.task-history-list-content .thumbnail img {
+  border: 1px solid #DFDFDF;
+  width: 75px;
+  height: 50px;
+}
+
+.task-history-list-content .link {
+  height: 100%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
