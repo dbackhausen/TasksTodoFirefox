@@ -38,29 +38,26 @@
     <script src="js/taskstodo.login.js"></script>
   </head>
   <body>
-    <div class="header">
-       <a href="#menu"></a>
-    </div>
-    <div id="content" class="content">
-      <h1>User Login</h1>
-      <div class="login-form">
-        <fieldset>
-          <form id="login-form" data-bind="submit: login">
-            <p>
-              <label for="login-username">Username</label>
-              <input type="text" id="login-username" class="round" value="daniel@eightbit.de" autofocus />
-            </p>
-            <p>
-              <label for="login-password">Password</label>
-              <input type="password" id="login-password" class="round" />
-            </p>
-            <p>I've <a href="http://www.taskstodo.org/password">forgotten my password</a>.</p>
-            <input type="submit" id="login" name="login" value="Login" class="btn btn-primary btn-sm" />
-          </form>  
-        </fieldset>
+    <div id="content">
+      <div class="inline-content">
+        <h1>User Login</h1>
+        <div class="login-form">
+          <fieldset>
+            <form id="login-form" data-bind="submit: login">
+              <p>
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" class="round" value="daniel@eightbit.de" autofocus />
+              </p>
+              <p>
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="round" />
+              </p>
+              <p>I've <a href="http://www.taskstodo.org/password">forgotten my password</a>.</p>
+              <input type="submit" id="login" name="login" value="Login" class="btn btn-primary btn-sm" />
+            </form>  
+          </fieldset>
+        </div>
       </div>
-    </div>
-    <div class="footer">
     </div>
   </body>
 </html>

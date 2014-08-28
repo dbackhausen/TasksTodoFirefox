@@ -8,12 +8,12 @@ $(document).ready(function() {
     todayHighlight: true
   });
 
-  $('#button').click(function() { 
-    $('#content').animate({ left: 250 }, 'slow', function() { });  
+  $('#open-top-menu-button').click(function() { 
+    $('#content').animate({ left: 350 }, 'slow', function() { });  
   });
 
-  $('#content').click(function() { 
-    //$('#content').animate({ left: 0 }, 'slow', function() { });      
+  $('#close-top-menu-button').click(function() { 
+    $('#content').animate({ left: 0 }, 'slow', function() { });  
   });
 
   /////////////////////////////////////////////////////////////////////////////

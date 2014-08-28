@@ -41,7 +41,7 @@ h4, h5, h6 {
 a {
   color: #428BCA;
 }
-
+/*
 div.header {
   background-color: #E2E7ED;
   position: absolute; 
@@ -75,49 +75,67 @@ div.footer {
   height: 20px;
   overflow: hidden;
   visibility: hidden;
-}
-
-
-
+}*/
 
 #menubar {
   width: 100%;
-  background-color:#444;
-  color: #fff;
+  background-color: #E2E7ED;
+  color: #535F6D;
   padding: 10px;
-  height: 35px;
+  height: 40px;
 }
 
-#top-menu-button {
+#open-top-menu-button,
+#close-top-menu-button {
   cursor: pointer;
+}
+
+#close-top-menu-button {
+  padding: 5px 0px 10px 0px;
+}
+
+#close-top-menu-button:hover {
+  color: #428BCA;
 }
 
 #top-menu, #content {
   display: inline; 
 }
 
-#top-menu li a {
-  padding: 10px;
-  display: block;
-  color: white;
-  text-decoration: none;
-}
-
 #top-menu {
   float: left;
   width: 350px;
   height: 100%;
+  padding: 10px;
+  background-color: #E8E8E8;
+}
+
+#top-menu ol {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
 }
 
 #top-menu li {
-  background-color: #444;
-  border-bottom: 1px solid #888;
+  border-bottom: 1px solid #E3E3E3;
+  background-color: #E8E8E8;
+}
+
+#top-menu li .top-menu-element-content {
+  color: #333333;
+  padding: 5px 0px 5px 0px;
+  cursor: pointer;
+}
+
+#top-menu li:hover .top-menu-element-content {
+  color: #428BCA;
 }
 
 #content {
   width: 100%;
   background-color: #fff;
-  z-index: 5;
   position: fixed;
   left: 0px;
   height: 100%;
@@ -127,9 +145,9 @@ div.footer {
           box-shadow:  -5px 0px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
-
-
-
+#content .inline-content {
+  padding: 10px;
+}
 
 
 label {
@@ -187,20 +205,4 @@ textarea.flexible:focus {
   max-height: 300px;
   padding: 2px;
   transition: height 0.2s ease 0s;
-}
-
-.tooltip {
-  white-space: nowrap;
-  padding: 5px;
-}
-
-/* */
-
-.header a {
-  color: #535F6D;
-  text-decoration: none;
-}
-
-.header a:hover {
-  color: #333333;
 }

@@ -23,16 +23,19 @@ $(document).ready(function() {
       addon.port.emit("GetActiveGoal");
     }
   });
-  
-  /****************************************************************************
-   * TASK MODEL
-   ****************************************************************************/
-  function TaskModel() {
+
+  function ViewModel() {
     var self = this;
     
     self.selectedGoal = ko.observable();
+    self.goals = ko.observableArray();
     self.selectedTask = ko.observable();
     self.tasks = ko.observableArray();
+
+    self.selectGoal = function(goal) {
+      self.selectedGoal(goal);
+      selectGoal(goal);
+    };
 
     self.selectTask = function(task) { 
       self.selectedTask = task;
@@ -70,7 +73,7 @@ $(document).ready(function() {
       $("#task-form").show("fast");
     };
 
-    self.cancelTaskForm = function() {
+    self.cancelNewTask = function() {
       self.selectedTask = ko.observable();
       $("#task-form").hide();
       $("#task-form-input-title").val(null);
@@ -319,9 +322,9 @@ $(document).ready(function() {
   };
   
   // Apply view model
-  var taskModel = new TaskModel();
-  ko.applyBindings(taskModel, document.getElementById("content"));
-  
+  var viewModel = new ViewModel();
+  ko.applyBindings(viewModel);
+    
   /////////////////////////////////////////////////////////////////////////////
   // GOAL                                                                    //
   /////////////////////////////////////////////////////////////////////////////
@@ -330,11 +333,11 @@ $(document).ready(function() {
    * Selects a goal.
    */
   function selectGoal(goal) {
-    if (activeGoal == null || (goal != null && goal.idAsString != activeGoal.idAsString)) {
-      // Trigger goal selection to addon script 
-      addon.port.emit("SetActiveGoal", goal);
-      addon.port.emit("GetActiveGoal");
-    }
+    // trigger goal selection to addon script      
+    addon.port.emit("SetActiveGoal", goal);
+
+    // Redirect to tasks page
+    addon.port.emit("Redirect", "tasks.html");
   }
 
   /**
@@ -344,10 +347,10 @@ $(document).ready(function() {
     console.log("Goals loaded");
 
     // Add all goals for selection option
-//    goalModel.goals.removeAll();
-//    ko.utils.arrayForEach(goals, function(goal) {
-//      goalModel.goals.push(goal);
-//    });
+    viewModel.goals.removeAll();
+    ko.utils.arrayForEach(goals, function(goal) {
+      viewModel.goals.push(goal);
+    });
   });
 
   /**
@@ -361,7 +364,7 @@ $(document).ready(function() {
       activeGoal = goal;
 
       // Set active goal for page binding
-      taskModel.selectedGoal(goal);
+      viewModel.selectedGoal(goal);
 
       // Load all goal tasks
       loadTasks(goal);
@@ -371,7 +374,7 @@ $(document).ready(function() {
   /////////////////////////////////////////////////////////////////////////////
   // TASKS                                                                   //
   /////////////////////////////////////////////////////////////////////////////
-  
+
   /**
    * Loads all tasks.
    */
@@ -382,9 +385,9 @@ $(document).ready(function() {
 
   addon.port.on("TasksLoaded", function(tasks) { 
     console.log(JSON.stringify(tasks));
-    taskModel.tasks.removeAll();
+    viewModel.tasks.removeAll();
     ko.utils.arrayForEach(tasks, function(task) {
-      taskModel.tasks.push(task);
+      viewModel.tasks.push(task);
     });
   });
 
@@ -432,22 +435,22 @@ $(document).ready(function() {
   function selectTask(task) {
     if (task != null) {
       // Get list entry
-      $ttListEntry = $("li#" + task.idAsString);
+      var ttListEntry = $("li#" + task.idAsString);
 
       // Disable all other task selections
       $(".task-list").find(".task-list-entry").removeClass('selected');
       // Select current list entry
-      $ttListEntry.find("div").addClass('selected');
+      $(ttListEntry).find("div").addClass('selected');
 
       // Hide all visible options, before showing another one   
-      $(".task-list").find(".task-list-options:visible").not($ttListEntry.find(".task-list-options")).hide();
+      $(".task-list").find(".task-list-options:visible").not($(ttListEntry).find(".task-list-options")).hide();
       // Show options for selected task
-      $ttListEntry.find(".task-list-options").fadeIn();
+      $(ttListEntry).find(".task-list-options").fadeIn();
 
       // Hide all visible options, before showing another one   
-      $(".task-list").find(".task-list-control a:visible").not($ttListEntry.find(".task-list-control a")).hide();
+      $(".task-list").find(".task-list-control a:visible").not($(ttListEntry).find(".task-list-control a")).hide();
       // Show options for selected task
-      $ttListEntry.find(".task-list-control a").show();        
+      $(ttListEntry).find(".task-list-control a").show();        
 
 
       // load all notes of selected task
@@ -482,10 +485,10 @@ $(document).ready(function() {
   }
 
   addon.port.on("NotesLoaded", function(notes) {
-    taskModel.notes.removeAll();
+    viewModel.notes.removeAll();
     
     ko.utils.arrayForEach(notes, function(note){
-      taskModel.notes.push(note);
+      viewModel.notes.push(note);
     });
   });
   
@@ -498,7 +501,7 @@ $(document).ready(function() {
 
   addon.port.on("NoteAdded", function(note) {
     // reload all notes
-    loadNotes(taskModel.selectedTask);
+    loadNotes(viewModel.selectedTask);
   });
   
   /**
@@ -510,7 +513,7 @@ $(document).ready(function() {
 
   addon.port.on("NoteUpdated", function(note) {
     // reload all notes
-    loadNotes(taskModel.selectedTask);
+    loadNotes(viewModel.selectedTask);
   });
   
   /**
@@ -522,7 +525,7 @@ $(document).ready(function() {
 
   addon.port.on("NoteDeleted", function(data) {
     // reload all notes
-    loadNotes(taskModel.selectedTask);
+    loadNotes(viewModel.selectedTask);
   });
   
   /////////////////////////////////////////////////////////////////////////////
@@ -537,10 +540,10 @@ $(document).ready(function() {
   }
 
   addon.port.on("BookmarksLoaded", function(bookmarks) {
-    taskModel.bookmarks.removeAll();
+    viewModel.bookmarks.removeAll();
     
     ko.utils.arrayForEach(bookmarks, function(bookmark){
-      taskModel.bookmarks.push(bookmark);
+      viewModel.bookmarks.push(bookmark);
     });
   });
   
@@ -553,7 +556,7 @@ $(document).ready(function() {
 
   addon.port.on("BookmarkAdded", function(bookmark) {
     // reload all bookmarks
-    loadBookmarks(taskModel.selectedTask);
+    loadBookmarks(viewModel.selectedTask);
   });
   
   /**
@@ -565,7 +568,7 @@ $(document).ready(function() {
 
   addon.port.on("BookmarkUpdated", function(bookmark) {
     // reload all bookmarks
-    loadBookmarks(taskModel.selectedTask);
+    loadBookmarks(viewModel.selectedTask);
   });
   
   /**
@@ -577,7 +580,7 @@ $(document).ready(function() {
 
   addon.port.on("BookmarkDeleted", function(data) {
     // reload all bookmarks
-    loadBookmarks(taskModel.selectedTask);
+    loadBookmarks(viewModel.selectedTask);
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -592,10 +595,10 @@ $(document).ready(function() {
   }
 
   addon.port.on("TabsLoaded", function(tabs) {
-    taskModel.tabs.removeAll();
+    viewModel.tabs.removeAll();
     
     ko.utils.arrayForEach(tabs, function(tab){
-      taskModel.tabs.push(tab);
+      viewModel.tabs.push(tab);
     });
   });
   
@@ -608,7 +611,7 @@ $(document).ready(function() {
 
   addon.port.on("TabAdded", function(tab) {
     // reload all tabs
-    loadTabs(taskModel.selectedTask);
+    loadTabs(viewModel.selectedTask);
   });
   
   /**
@@ -620,7 +623,7 @@ $(document).ready(function() {
 
   addon.port.on("TabUpdated", function(tab) {
     // reload all tabs
-    loadTabs(taskModel.selectedTask);
+    loadTabs(viewModel.selectedTask);
   });
   
   /**
@@ -632,7 +635,7 @@ $(document).ready(function() {
 
   addon.port.on("TabDeleted", function(data) {
     // reload all tabs
-    loadTabs(taskModel.selectedTask);
+    loadTabs(viewModel.selectedTask);
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -647,10 +650,10 @@ $(document).ready(function() {
   }
 
   addon.port.on("HistoriesLoaded", function(histories) {
-    taskModel.histories.removeAll();
+    viewModel.histories.removeAll();
     
     ko.utils.arrayForEach(histories, function(history){
-      taskModel.histories.push(history);
+      viewModel.histories.push(history);
     });
   });
   
@@ -663,7 +666,7 @@ $(document).ready(function() {
 
   addon.port.on("HistoryAdded", function(history) {
     // reload all histories
-    loadHistories(taskModel.selectedTask);
+    loadHistories(viewModel.selectedTask);
   });
   
   /**
@@ -675,7 +678,7 @@ $(document).ready(function() {
 
   addon.port.on("HistoryUpdated", function(history) {
     // reload all histories
-    loadHistories(taskModel.selectedTask);
+    loadHistories(viewModel.selectedTask);
   });
   
   /**
@@ -687,7 +690,7 @@ $(document).ready(function() {
 
   addon.port.on("HistoryDeleted", function(data) {
     // reload all histories
-    loadHistories(taskModel.selectedTask);
+    loadHistories(viewModel.selectedTask);
   });
 
   /////////////////////////////////////////////////////////////////////////////

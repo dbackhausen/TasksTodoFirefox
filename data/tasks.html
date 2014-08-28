@@ -39,253 +39,251 @@
   </head>
   <body>
     <div id="top-menu">
-      <ul>
-          <li><a href="#">Menu Item 1</a></li>
-          <li><a href="#">Menu Item 2</a></li>
-          <li><a href="#">Menu Item 3</a></li>
-          <li><a href="#">Menu Item 4</a></li>
-          <li><a href="#">Menu Item 5</a></li>
-          <li><a href="#">Menu Item 6</a></li>
-          <li><a href="#">Menu Item 7</a></li>
-          <li><a href="#">Menu Item 8</a></li>
-          <li><a href="#">Menu Item 9</a></li>
-          <li><a href="#">Menu Item 10</a></li>
-          <li><a href="#">Menu Item 11</a></li>
-          <li><a href="#">Menu Item 12</a></li>
-      </ul>
+      <div id="close-top-menu-button">
+         <i class="fa fa-times"></i> <span>Close menu</span>
+      </div>
+      <ol data-bind="sortable: { data: goals, connectClass: '' }">
+        <li data-bind="attr: { id: idAsString }">
+          <div class="top-menu-element-content" data-bind="click: $parent.selectGoal">
+            <span data-bind="text: title"></span>
+          </div>
+        </li>
+      </ol>
+      <a href="#"><i class="fa fa-plus-square"> </i>add goal</a>
     </div>
     <div id="content">
       <div id="menubar">
-        <div id="top-menu-button">
-           Menu
+        <div id="open-top-menu-button">
+           <i class="fa fa-list fa-2"></i>
         </div>
       </div>
-
-      <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'"></span></h1>
-
-      <div class="task-list">    
-        <ol data-bind="sortable: { data: tasks }">
-          <li data-bind="attr: { id: idAsString }, click: $parent.selectTask">
-            <div class="task-list-entry">
-              <div class="task-list-check">
-                <a href="#" data-bind="click: $parent.finishTask, tooltip: {title: 'Mark task as finished'}" class="fa fa-square-o"></a>
-              </div>
-              <div class="task-list-content">
-                <span data-bind="text: title"></span>
-              </div>
-              <div class="task-list-control">
-                <a href="#" data-bind="click: $parent.editTask, tooltip: {title: 'Edit task'}" class="fa fa-pencil"></a>
-                <a href="#" data-bind="click: $parent.deleteTask, tooltip: {title: 'Delete task'}" class="fa fa-trash-o"></a>
-              </div>
-            </div>
-              <div class="task-list-options">
-                <a href="#" class="fa fa-outdent" data-bind="click: $parent.outdentTask, tooltip: {title: 'Lease task from previous task'}"></a>
-                <a href="#" class="fa fa-indent" data-bind="click: $parent.indentTask, tooltip: {title: 'Add task to previous task'}"></a>
-                <a href="#" class="fa fa-clipboard" data-bind="tooltip: {title: 'Manage task specific notes'}" data-toggle="modal" data-target="#taskNotes"></a>
-                <a href="#" class="fa fa-link" data-bind="tooltip: {title: 'Manage task specific bookmarks'}" data-toggle="modal" data-target="#taskBookmarks"></a>
-                <a href="#" class="fa fa-history" data-bind="tooltip: {title: 'Manage task specific browsing history'}" data-toggle="modal" data-target="#taskHistory"></a>
-              </div>
-          </li>
-        </ol>
-        <button id="task-form-button-new" data-bind="click: newTask" class="btn btn-primary btn-sm">New task</button>
-        <form id="task-form" data-bind="submit: saveTask">
-          <div class="task-form-group">
-            <p>
-              <label for="task-form-input-title">Title</label>
-              <input type="text" id="task-form-input-title" autofocus />
-            </p>
-            <p>
-              <label for="task-form-input-description">Description</label>
-              <textarea id="task-form-input-description" wrap="hard" class="flexible"></textarea>
-            </p>
-          </div>
-          <button type="submit" class="btn btn-primary btn-sm">Save</button>
-          <button data-bind="click: cancelTaskForm" class="btn btn-default btn-sm">Cancel</button>
-        </form>
-      </div>
-
-      <!-- Modal panel: Task Notes -->
-      <div class="modal fade" id="taskNotes" tabindex="-1" role="dialog" aria-labelledby="taskNotesLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="taskNotesLabel">Task notes</h4>
-            </div>
-            <div class="modal-body">
-              <div class="task-note-list">
-                <!-- ko if: notes() == null || notes().length == 0 -->
-                <div class="task-note-list-empty">
-                  You have not created any notes yet.
+      <div class="inline-content">
+        <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'"></span></h1>
+        <div class="task-list">    
+          <ol data-bind="sortable: { data: tasks }">
+            <li data-bind="attr: { id: idAsString }, click: $parent.selectTask">
+              <div class="task-list-entry">
+                <div class="task-list-entry-check">
+                  <a href="#" data-bind="click: $parent.finishTask, tooltip: {title: 'Mark as finished'}" class="fa fa-square-o"></a>
                 </div>
-                <!-- /ko -->
-                <ul class="sortable" data-bind="foreach: notes">
-                  <li data-bind="attr: { id: idAsString }">
-                    <div class="task-note-list-entry-header">
-                      <span data-bind="text: created | smartdate"></span>
-                      <div class="task-note-list-control">
-                        <a href="#" data-bind="click: $parent.editNote, tooltip: {title: 'Edit note'}" class="fa fa-pencil"></a>
-                        <a href="#" data-bind="click: $parent.deleteNote, tooltip: {title: 'Delete note'}" class="fa fa-trash-o"></a>
-                      </div>
-                    </div>
-                    <div class="task-note-list-entry">
-                      <div class="task-note-list-content" data-bind="event: { dblclick: $parent.editNote }">
-                        <span data-bind="text: body"></span>
-                      </div>
-                      <div class="inline-edit">
-                        <p>
-                          <textarea id="edit-note-form-input-body" data-bind="value: body" class="flexible" autofocus></textarea>
-                        </p>
-                        <button data-bind="click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
-                        <button data-bind="click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-                <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
-                <form id="new-note-form" data-bind="submit: addNote">
-                  <p>
-                    <textarea id="new-note-form-input-body" wrap="soft" class="flexible"></textarea>
-                  </p>
-                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                  <button data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
-                </form>
+                <div class="task-list-entry-content">
+                  <span data-bind="text: title"></span>
+                </div>
+                <div class="task-list-entry-control">
+                  <a href="#" data-bind="click: $parent.editTask, tooltip: {title: 'Edit task', placement: 'left'}" class="fa fa-pencil"></a>
+                  <a href="#" data-bind="click: $parent.deleteTask, tooltip: {title: 'Delete task', placement: 'left'}" class="fa fa-trash-o"></a>
+                </div>
+                
+              <div class="task-list-entry-options">
+                <a href="#" class="fa fa-outdent" data-bind="click: $parent.outdentTask, tooltip: {title: 'Lease from previous task', placement: 'bottom'}"></a>
+                <a href="#" class="fa fa-indent" data-bind="click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
+                <a href="#" class="fa fa-clipboard" data-bind="tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#taskNotes"></a>
+                <a href="#" class="fa fa-link" data-bind="tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#taskBookmarks"></a>
+                <a href="#" class="fa fa-history" data-bind="tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#taskHistory"></a>
               </div>
+              </div>
+            </li>
+          </ol>
+          <button id="task-form-button-new" data-bind="click: newTask" class="btn btn-primary btn-sm">New task</button>
+          <form id="task-form" data-bind="submit: saveTask">
+            <div class="task-form-group">
+              <p>
+                <label for="task-form-input-title">Title</label>
+                <input type="text" id="task-form-input-title" autofocus />
+              </p>
+              <p>
+                <label for="task-form-input-description">Description</label>
+                <textarea id="task-form-input-description" wrap="hard" class="flexible"></textarea>
+              </p>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-            </div>
-          </div>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            <button data-bind="click: cancelNewTask" class="btn btn-default btn-sm">Cancel</button>
+          </form>
         </div>
-      </div>
 
-      <!-- Modal panel: Task Bookmarks -->
-      <div class="modal fade" id="taskBookmarks" tabindex="-1" role="dialog" aria-labelledby="taskBookmarksLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="taskBookmarksLabel">Task bookmarks</h4>
-            </div>
-            <div class="modal-body">
-              <div class="task-bookmarks-list">
-                <!-- ko if: bookmarks() == null || bookmarks().length == 0 -->
-                <div class="task-bookmarks-list-empty">
-                  You have not created any bookmarks yet.
-                </div>
-                <!-- /ko -->
-                <ul class="sortable" data-bind="foreach: bookmarks">
-                  <li data-bind="attr: { id: idAsString }">
-                    <div class="task-bookmarks-list-entry-header">
-                      <span data-bind="text: created | smartdate"></span>
-                      <div class="task-bookmarks-list-control">
-                        <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark'}" class="fa fa-pencil"></a>
-                        <a href="#" data-bind="click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark'}" class="fa fa-trash-o"></a>
-                      </div>
-                    </div>
-                    <div class="task-bookmarks-list-entry">
-                      <div class="task-bookmarks-list-content">
-                        <div class="thumbnail">
-                          <img data-bind="attr: { src: thumbnail }" width="100" height="75" />
-                        </div>
-                        <div class="link">
-                          <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
-                        </div>
-                      </div>
-                      <div class="inline-edit">
-                        <p>
-                          <label for="new-bookmark-form-input-title">Title</label>
-                          <input type="text" id="new-bookmark-form-input-title" data-bind="value: title" autofocus />
-                        </p>
-                        <p>
-                          <label for="new-bookmark-form-input-url">URL</label>
-                          <input type="text" id="new-bookmark-form-input-url" data-bind="value: url" />
-                        </p>
-                        <p>
-                          <label for="new-bookmark-form-input-description">Description</label>
-                          <textarea id="new-bookmark-form-input-description" data-bind="value: description" class="flexible"></textarea>
-                        </p>
-                        <button data-bind="click: $parent.updateBookmark" class="btn btn-primary btn-sm">Save</button>
-                        <button data-bind="click: $parent.cancelEditBookmark" class="btn btn-default btn-sm">Cancel</button>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-                <button id="new-bookmark-form-button-new" data-bind="click: newBookmark" class="btn btn-primary btn-sm">New bookmark</button>
-                <form id="new-bookmark-form" data-bind="submit: addBookmark">
-                  <p>
-                    <label for="new-bookmark-form-input-title">Title</label>
-                    <input type="text" id="new-bookmark-form-input-title" autofocus />
-                  </p>
-                  <p>
-                    <label for="new-bookmark-form-input-url">URL</label>
-                    <input type="text" id="new-bookmark-form-input-url" />
-                  </p>
-                  <p>
-                    <label for="new-bookmark-form-input-description">Description</label>
-                    <textarea id="new-bookmark-form-input-description" class="flexible"></textarea>
-                  </p>
-                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                  <button data-bind="click: cancelNewBookmark" class="btn btn-default btn-sm">Cancel</button>
-                </form>
+        <!-- Modal panel: Task Notes -->
+        <div class="modal fade" id="taskNotes" tabindex="-1" role="dialog" aria-labelledby="taskNotesLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="taskNotesLabel">Task notes</h4>
               </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              <div class="modal-body">
+                <div class="task-note-list">
+                  <!-- ko if: notes() == null || notes().length == 0 -->
+                  <div class="task-note-list-empty">
+                    You have not created any notes yet.
+                  </div>
+                  <!-- /ko -->
+                  <ul class="sortable" data-bind="foreach: notes">
+                    <li data-bind="attr: { id: idAsString }">
+                      <div class="task-note-list-entry-header">
+                        <span data-bind="text: created | smartdate"></span>
+                        <div class="task-note-list-control">
+                          <a href="#" data-bind="click: $parent.editNote, tooltip: {title: 'Edit note', placement: 'left'}" class="fa fa-pencil"></a>
+                          <a href="#" data-bind="click: $parent.deleteNote, tooltip: {title: 'Delete note', placement: 'left'}" class="fa fa-trash-o"></a>
+                        </div>
+                      </div>
+                      <div class="task-note-list-entry">
+                        <div class="task-note-list-content" data-bind="event: { dblclick: $parent.editNote }">
+                          <span data-bind="text: body"></span>
+                        </div>
+                        <div class="inline-edit">
+                          <p>
+                            <textarea id="edit-note-form-input-body" data-bind="value: body" class="flexible" autofocus></textarea>
+                          </p>
+                          <button data-bind="click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
+                          <button data-bind="click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                  <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
+                  <form id="new-note-form" data-bind="submit: addNote">
+                    <p>
+                      <textarea id="new-note-form-input-body" wrap="soft" class="flexible"></textarea>
+                    </p>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    <button data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
+                  </form>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Modal panel: Task History -->
-      <div class="modal fade" id="taskHistory" tabindex="-1" role="dialog" aria-labelledby="taskHistoryLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="taskHistoryLabel">Browsing history</h4>
-            </div>
-            <div class="modal-body">
-
-<!-- ko if: tabs() == null || tabs().length == 0 -->
-<ul data-bind="foreach: tabs">
-  <li data-bind="attr: { id: idAsString }">
-    <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
-  </li>
-</ul>
-
-<hr />
-<!-- /ko -->
-              <div class="task-history-list">
-                <!-- ko if: histories() == null || histories().length == 0 -->
-                <div class="task-history-list-empty">
-                  You have not any browsing history yet.
+        <!-- Modal panel: Task Bookmarks -->
+        <div class="modal fade" id="taskBookmarks" tabindex="-1" role="dialog" aria-labelledby="taskBookmarksLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="taskBookmarksLabel">Task bookmarks</h4>
+              </div>
+              <div class="modal-body">
+                <div class="task-bookmarks-list">
+                  <!-- ko if: bookmarks() == null || bookmarks().length == 0 -->
+                  <div class="task-bookmarks-list-empty">
+                    You have not created any bookmarks yet.
+                  </div>
+                  <!-- /ko -->
+                  <ul class="sortable" data-bind="foreach: bookmarks">
+                    <li data-bind="attr: { id: idAsString }">
+                      <div class="task-bookmarks-list-entry-header">
+                        <span data-bind="text: created | smartdate"></span>
+                        <div class="task-bookmarks-list-control">
+                          <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
+                          <a href="#" data-bind="click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark', placement: 'left'}" class="fa fa-trash-o"></a>
+                        </div>
+                      </div>
+                      <div class="task-bookmarks-list-entry">
+                        <div class="task-bookmarks-list-content">
+                          <div class="thumbnail">
+                            <img data-bind="attr: { src: thumbnail }" width="100" height="75" />
+                          </div>
+                          <div class="link">
+                            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
+                          </div>
+                        </div>
+                        <div class="inline-edit">
+                          <p>
+                            <label for="new-bookmark-form-input-title">Title</label>
+                            <input type="text" id="new-bookmark-form-input-title" data-bind="value: title" autofocus />
+                          </p>
+                          <p>
+                            <label for="new-bookmark-form-input-url">URL</label>
+                            <input type="text" id="new-bookmark-form-input-url" data-bind="value: url" />
+                          </p>
+                          <p>
+                            <label for="new-bookmark-form-input-description">Description</label>
+                            <textarea id="new-bookmark-form-input-description" data-bind="value: description" class="flexible"></textarea>
+                          </p>
+                          <button data-bind="click: $parent.updateBookmark" class="btn btn-primary btn-sm">Save</button>
+                          <button data-bind="click: $parent.cancelEditBookmark" class="btn btn-default btn-sm">Cancel</button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                  <button id="new-bookmark-form-button-new" data-bind="click: newBookmark" class="btn btn-primary btn-sm">New bookmark</button>
+                  <form id="new-bookmark-form" data-bind="submit: addBookmark">
+                    <p>
+                      <label for="new-bookmark-form-input-title">Title</label>
+                      <input type="text" id="new-bookmark-form-input-title" autofocus />
+                    </p>
+                    <p>
+                      <label for="new-bookmark-form-input-url">URL</label>
+                      <input type="text" id="new-bookmark-form-input-url" />
+                    </p>
+                    <p>
+                      <label for="new-bookmark-form-input-description">Description</label>
+                      <textarea id="new-bookmark-form-input-description" class="flexible"></textarea>
+                    </p>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    <button data-bind="click: cancelNewBookmark" class="btn btn-default btn-sm">Cancel</button>
+                  </form>
                 </div>
-                <!-- /ko -->
-                <ul data-bind="foreach: histories">
-                  <li data-bind="attr: { id: idAsString }">
-                    <div class="task-history-list-entry-header">
-                      <span data-bind="text: created | smartdate"></span>
-                      <div class="task-history-list-control">
-                        <a href="#" data-bind="click: $parent.deleteHistory, tooltip: {title: 'Delete entry'}" class="fa fa-trash-o"></a>
-                      </div>
-                    </div>
-                    <div class="task-history-list-entry">
-                      <div class="task-history-list-content">
-                        <div class="thumbnail">
-                          <img data-bind="attr: { src: thumbnail }" width="100" height="75" />
-                        </div>
-                        <div class="link">
-                          <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        <!-- Modal panel: Task History -->
+        <div class="modal fade" id="taskHistory" tabindex="-1" role="dialog" aria-labelledby="taskHistoryLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="taskHistoryLabel">Browsing history</h4>
+              </div>
+              <div class="modal-body">
+
+  <!-- ko if: tabs() == null || tabs().length == 0 -->
+  <ul data-bind="foreach: tabs">
+    <li data-bind="attr: { id: idAsString }">
+      <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
+    </li>
+  </ul>
+
+  <hr />
+  <!-- /ko -->
+                <div class="task-history-list">
+                  <!-- ko if: histories() == null || histories().length == 0 -->
+                  <div class="task-history-list-empty">
+                    You have not any browsing history yet.
+                  </div>
+                  <!-- /ko -->
+                  <ul data-bind="foreach: histories">
+                    <li data-bind="attr: { id: idAsString }">
+                      <div class="task-history-list-entry-header">
+                        <span data-bind="text: created | smartdate"></span>
+                        <div class="task-history-list-control">
+                          <a href="#" data-bind="click: $parent.deleteHistory, tooltip: {title: 'Delete entry'}" class="fa fa-trash-o"></a>
+                        </div>
+                      </div>
+                      <div class="task-history-list-entry">
+                        <div class="task-history-list-content">
+                          <div class="thumbnail">
+                            <img data-bind="attr: { src: thumbnail }" width="100" height="75" />
+                          </div>
+                          <div class="link">
+                            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
             </div>
           </div>
         </div>

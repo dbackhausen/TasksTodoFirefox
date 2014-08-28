@@ -49,13 +49,8 @@
   background-color: #E2E7ED;
 }
 
-.goal-list-entry.indent {
-  margin-left: 20px;
-}
-
 .goal-list-entry div {
   display: table-cell;
-  padding: 0px;
 }
 
 .goal-list-entry a {

@@ -38,46 +38,60 @@
     <script src="js/taskstodo.goals.js"></script>
   </head>
   <body>
-    <div class="header">
-      <a href="#menu"></a>
-    </div>
-    <div id="content" class="content">
-      <h1>Your Goals</h1>
-      <div class="goal-list">
-        <ol data-bind="sortable: { data: goals, connectClass: '' }">
-          <li data-bind="attr: { id: idAsString }">
-            <div class="goal-list-entry">
-              <div class="goal-list-check">
-                <a href="#" data-bind="click: $parent.finishGoal" class="fa fa-square-o" data-toggle="tooltip" data-placement="top" title="Finish Goal"></a>
-              </div>
-              <div class="goal-list-content" data-bind="click: $parent.selectGoal, css: { selected: ($root.selectedGoal() != null && $root.selectedGoal().idAsString == idAsString) }">
-                <span data-bind="text: title"></span>
-              </div>
-              <div class="goal-list-control">
-                <a href="#" data-bind="click: $parent.editGoal" class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit Goal"></a>
-                <a href="#" data-bind="click: $parent.deleteGoal" class="fa fa-trash-o" data-toggle="tooltip" data-placement="top" title="Delete Goal"></a>
-              </div>
-            </div>
-          </li>
-        </ol>
-        <button id="goal-form-button-new" data-bind="click: newGoal" class="btn btn-primary btn-sm">New goal</button>
-        <form id="goal-form" data-bind="submit: saveGoal">
-          <div class="goal-form-group">
-            <p>
-              <label for="goal-form-input-title">Title</label>
-              <input type="text" id="goal-form-input-title" autofocus />
-            </p>
-            <p>
-              <label for="goal-form-input-description">Description</label>
-              <textarea id="goal-form-input-description" class="flexible"></textarea>
-            </p>
-          </div>
-          <button type="submit" class="btn btn-primary btn-sm">Save</button>
-          <button data-bind="click: cancelGoalForm" class="btn btn-default btn-sm">Cancel</button>
-        </form>
+    <div id="top-menu">
+      <div id="close-top-menu-button">
+         <i class="fa fa-times"></i><span>Close menu</span>
       </div>
+      <ol data-bind="sortable: { data: goals, connectClass: '' }">
+        <li data-bind="attr: { id: idAsString }">
+          <div>
+            <span data-bind="text: title"></span>
+          </div>
+        </li>
+      </ol>
     </div>
-    <div class="footer">
+    <div id="content">
+      <div id="menubar">
+        <div id="open-top-menu-button">
+           <i class="fa fa-list fa-2"></i>
+        </div>
+      </div>
+      <div class="inline-content">
+        <h1>Your Goals</h1>
+        <div class="goal-list">
+          <ol data-bind="sortable: { data: goals, connectClass: '' }">
+            <li data-bind="attr: { id: idAsString }">
+              <div class="goal-list-entry">
+                <div class="goal-list-check">
+                  <a href="#" data-bind="click: $parent.finishGoal, tooltip: {title: 'Mark as finished'}" class="fa fa-square-o"></a>
+                </div>
+                <div class="goal-list-content" data-bind="click: $parent.selectGoal, css: { selected: ($root.selectedGoal() != null && $root.selectedGoal().idAsString == idAsString) }">
+                  <span data-bind="text: title"></span>
+                </div>
+                <div class="goal-list-control">
+                  <a href="#" data-bind="click: $parent.editGoal, tooltip: {title: 'Edit goal', placement: 'left'}" class="fa fa-pencil"></a>
+                  <a href="#" data-bind="click: $parent.deleteGoal, tooltip: {title: 'Delete goal', placement: 'left'}" class="fa fa-trash-o"></a>
+                </div>
+              </div>
+            </li>
+          </ol>
+          <button id="goal-form-button-new" data-bind="click: newGoal" class="btn btn-primary btn-sm">New goal</button>
+          <form id="goal-form" data-bind="submit: saveGoal">
+            <div class="goal-form-group">
+              <p>
+                <label for="goal-form-input-title">Title</label>
+                <input type="text" id="goal-form-input-title" autofocus />
+              </p>
+              <p>
+                <label for="goal-form-input-description">Description</label>
+                <textarea id="goal-form-input-description" class="flexible"></textarea>
+              </p>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            <button data-bind="click: cancelGoalForm" class="btn btn-default btn-sm">Cancel</button>
+          </form>
+        </div>
+      </div>
     </div>
   </body>
 </html>
