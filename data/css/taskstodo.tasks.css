@@ -2,15 +2,10 @@
  * TASK
  */
 
-#task-form {
+#new-task-form {
   display: none;
   margin-top: 15px;
   padding-top: 10px;
-  border-top: 1px solid #e3e3e3;
-}
-
-#task-form div.row div {
-  padding: 0px;
 }
 
 .task-list ol {
@@ -26,14 +21,13 @@
 }
 
 .task-list ol li:hover div.task-list-entry {
-  color: #535F6D;
   background-color: #E2E7ED;
   transition: 1s;
   -moz-transition: 1s;
   -webkit-transition: 1s;
 }
 
-.task-list ol li:hover div.task-list-control a {
+.task-list ol li:hover div.task-list-entry-control a {
   visibility: visible;
 }
 
@@ -43,21 +37,26 @@
 
 /* */
 
+.task-list-empty {
+  width: 100%;
+  font-style: italic;
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 5px 15px 5px;
+  color: #666666;
+  background-color: #EFEFEF;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
 .task-list-entry {
   width: 100%;
   height: 100%;
-  display: table;
-  padding: 5px 0px 5px 0px;
 }
 
 .task-list-entry.selected {
   margin: 0px;
-  color: #535F6D;
   background-color: #E2E7ED;
-}
-
-.task-list-entry div {
-  display: table-cell;
 }
 
 .task-list-entry a {
@@ -65,9 +64,41 @@
   text-decoration: none;
 }
 
-/* */
+.task-list-entry a:hover {
+  color: #535F6D;
+}
+
+.task-list .inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+  background-color: white;
+}
+
+.task-list-entry-content {
+  display: table;
+  width: 100%;
+  padding: 5px 0px 5px 0px;
+}
+
+.task-list-entry-content.indent-0 {
+  padding-left: 0px;
+}
+
+.task-list-entry-content.indent-1 {
+  padding-left: 10px;
+}
+
+.task-list-entry-content.indent-2 {
+  padding-left: 20px;
+}
+
+.task-list-entry-content.indent-3 {
+  padding-left: 30px;
+}
 
 .task-list-entry-check {
+  display: table-cell;
   width: 25px;
 }
 
@@ -75,11 +106,18 @@
   padding-left: 5px;
 }
 
-.task-list-entry-content {
+.task-list-entry-title {
+  display: table-cell;
+  cursor: pointer;
   padding: 0px 5px 0px 5px;
 }
 
+.task-list-entry-title:hover {
+  color: #535F6D;
+}
+
 .task-list-entry-control { 
+  display: table-cell;
   width: 50px;
   text-align: right;
   padding-right: 5px;
@@ -93,9 +131,9 @@
 
 .task-list-entry-options {
   width: 100%;
-  height: 100%;
+  height: 27px;
   display: none;
-  padding: 5px 0px 5px 25px;
+  padding: 5px 0px 5px 30px;
   cursor: pointer;
   background-color: #DEDEDE;
 }

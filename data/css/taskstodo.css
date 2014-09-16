@@ -77,6 +77,10 @@ div.footer {
   visibility: hidden;
 }*/
 
+.padding-right-5 {
+  padding-right: 5px;
+}
+
 #menubar {
   width: 100%;
   background-color: #E2E7ED;
@@ -196,13 +200,4 @@ textarea.flexible {
 
 textarea.flexible:focus {
   background-color: #FAF4F0;
-  border: 1px solid #E2E7ED;
-  border-radius: 2px;
-  display: block;
-  font-family: 'Lato', Calibri, Arial, sans-serif;
-  width: 100%;
-  height: 120px;
-  max-height: 300px;
-  padding: 2px;
-  transition: height 0.2s ease 0s;
 }

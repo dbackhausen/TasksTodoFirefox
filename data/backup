@@ -43,8 +43,8 @@
       <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'"></span></h1>
       <div class="tt-list container-fluid">
         <ol data-bind="foreach: tasks">
-          <li data-bind="attr: { id: idAsString }">
-            <div class="tt-list-entry row" data-bind="click: $parent.selectTask, css: { selected: ($root.selectedTask() != null && $root.selectedTask().idAsString == idAsString) }">
+          <li data-bind="attr: { id: id }">
+            <div class="tt-list-entry row" data-bind="click: $parent.selectTask, css: { selected: ($root.selectedTask() != null && $root.selectedTask().id == id) }">
               <div class="col-xs-1 tt-list-checkbox">
                 <a href="#" data-bind="click: $parent.finishTask" class="fa fa-square-o" data-toggle="tooltip" data-placement="top" title="Finish Task"></a>
               </div>
@@ -158,7 +158,7 @@
             </form>
             <hr />
             <ul id="task-notes-list" data-bind="foreach: notes">
-              <li data-bind="attr: { id: idAsString }">
+              <li data-bind="attr: { id: id }">
                 <div class="well well-sm inline-view">
                   <span data-bind="text: body"></span>
                   <hr/>
@@ -211,7 +211,7 @@
             </form>
             <hr />
             <ul data-bind="foreach: links" class="media-list">
-              <li data-bind="attr: { id: idAsString }" class="media">
+              <li data-bind="attr: { id: id }" class="media">
                 <a class="pull-left" href="#">
                   <img class="media-object" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFQElEQVR4Ae1aa1PbRhQ9smT5TbB5QwAXCDAtnQBDO+1k+v+/tZRHwIBxbNmyjV/gt6xX74owBFI3RNQfNN5lNJZW0tG9555zdz8g1Ot1G2M8fGOcu5M6J4ArYMwZ4BYYcwGAK4ArYMwZ4BYYcwHwJsgtwC0w5gxwC4y5APgqwC3ALTDmDHALjLkA+CrALfA6Cwjw+XywbRsWHexcEJ4iCjTxcDy9M+SKnvf5BMK0HFyG+Xzc4+Grbz1/7iXX0kse+vdnKDGYULNZKMUbmLaAxMwCflh9C1liCVCAFHy7XkYmp8Lnj2Bjcw2y+HVCD/gsMcvQkMlmULqpQxD9mF1YxsrbeYiw6Q8OOdWignyphmAkgY2N5Vf5eHg0D1EN+WWFKefSOD49R6unQe93cHl2jLO0wjK/L4/Rx9VFCkpBhVqqwrTup1miD2p5PGeEWshefMRZ6hp9w0Kv1cDp0SEyatUhkxGqd5tIpVIoqCrKlTqR8kxyQ+IdNu1SAVRhU0O+UIQtR7Cze4CY0EdWUSHJopOoXxSgfsrg5raHgEyfoeAFIkZr35EiCrBFGSvJNVjtChSqphSIYWVpEgUiSo5OYf9gD3ariny5CsnHLEYQAhF0fYmWZkP2iw7esMReOu+OAKqgqfXQG+iQpCBulDQUTcfE1CxWV5YoYKDfbuCS1JAgCYudG9T6lAH5IhAKoU+VzVeb6GsG7G4Vaq2Ndzv7sAddaCQTf1BwlDAwbCTmF7EyPwOR+sJdRUWmUMPSchKtchb6S7P8j+dcWYDyh04JW5YFg6RfqTbQajZwdX6C04tPTgPLpi+giWFsvVuDjzUEkqpASQj+ELZ+3MabsIxKSUHlrouZxSQ2kosY9HqOz/utW9Rum7itV3B+/DeulLLTG64u0/BPzGJtdQk2SYLZR2RefMVw9TbLh3VqKin84Ukc/PYBv+7vIOz3oV6ro1Epk5TrCAaDqJbyaA9MskwPOaWAgW4iOjlDcp+FRdVmjS65noRMkTCPU2YIx+fx+4c/sPvTOiTBRKXSQI1wKrcdhIMSimoeA+oner+JXL78qj7gigCWuBQIEPvkQ1GiRAOIkLQl1uGJHcs0IUoS+h1SxdU1ujpFa2lQsgWQqqmRtaiBNZyOaJk6VOolbJ7Zg1WVYQfpiITvrxmmaZhkNwnNagnXmRx0WnUMrQ1FKVLrdD/c9QAKSKTmNx2fQJo69MnxEfxmF+2+jvhCBBMz89iLTlDcpBLbwNnhn7gzwtjd20FItGi1OEeNpB+fniUybp3VREkksDobRzwawk1ZwdGJjUGzBp1Wg7k3UUwtLuCX+JxDkKF1cPTXIezoNN6/33KWSLcUuCPAEb+I5MYm2r0TknmBZgTEEnOO52VJhD8ac+Zg6QgFZfT0IKLRCO0LSihW7xCOTWJ752d0SmmkMiryuSzmZ3axub0F7eQcRSXnvD+1sIr1lUVSlIhYLHZPgF8ghcgwA2GEQ0HHNvSwqyG85n+EmFwtQ0en23U2QpFo1NnosF3hl4NZgq3XIlnEpsZp0sGWRImSerhmu0lmG7Y/MDQNXdYQBdEhja0A7P7jIEuwTcVnzMf57z97FQH3n6POTkQIAu3UqDN/Geb3h/P5DQePMCnp52S6xhzyomsLPOJR0hTokwI93nR35uD9T2R+IwKXq8A3UD10mxPgoWKNJFSugJHQ6iFQrgAPFWskoXIFjIRWD4FyBXioWCMJlStgJLR6CJQrwEPFGkmoXAEjodVDoFwBHirWSELlChgJrR4C5QrwULFGEipXwEho9RDoPwJqK/yQ8YYSAAAAAElFTkSuQmCC" alt="...">
                 </a>
@@ -265,12 +265,12 @@
             </form>
             <hr />
             <ul data-bind="foreach: files" class="media-list">
-              <li data-bind="attr: { id: idAsString }" class="media">
+              <li data-bind="attr: { id: id }" class="media">
                 <a class="pull-left" href="#">
                   <img class="media-object" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFQElEQVR4Ae1aa1PbRhQ9smT5TbB5QwAXCDAtnQBDO+1k+v+/tZRHwIBxbNmyjV/gt6xX74owBFI3RNQfNN5lNJZW0tG9555zdz8g1Ot1G2M8fGOcu5M6J4ArYMwZ4BYYcwGAK4ArYMwZ4BYYcwHwJsgtwC0w5gxwC4y5APgqwC3ALTDmDHALjLkA+CrALfA6Cwjw+XywbRsWHexcEJ4iCjTxcDy9M+SKnvf5BMK0HFyG+Xzc4+Grbz1/7iXX0kse+vdnKDGYULNZKMUbmLaAxMwCflh9C1liCVCAFHy7XkYmp8Lnj2Bjcw2y+HVCD/gsMcvQkMlmULqpQxD9mF1YxsrbeYiw6Q8OOdWignyphmAkgY2N5Vf5eHg0D1EN+WWFKefSOD49R6unQe93cHl2jLO0wjK/L4/Rx9VFCkpBhVqqwrTup1miD2p5PGeEWshefMRZ6hp9w0Kv1cDp0SEyatUhkxGqd5tIpVIoqCrKlTqR8kxyQ+IdNu1SAVRhU0O+UIQtR7Cze4CY0EdWUSHJopOoXxSgfsrg5raHgEyfoeAFIkZr35EiCrBFGSvJNVjtChSqphSIYWVpEgUiSo5OYf9gD3ariny5CsnHLEYQAhF0fYmWZkP2iw7esMReOu+OAKqgqfXQG+iQpCBulDQUTcfE1CxWV5YoYKDfbuCS1JAgCYudG9T6lAH5IhAKoU+VzVeb6GsG7G4Vaq2Ndzv7sAddaCQTf1BwlDAwbCTmF7EyPwOR+sJdRUWmUMPSchKtchb6S7P8j+dcWYDyh04JW5YFg6RfqTbQajZwdX6C04tPTgPLpi+giWFsvVuDjzUEkqpASQj+ELZ+3MabsIxKSUHlrouZxSQ2kosY9HqOz/utW9Rum7itV3B+/DeulLLTG64u0/BPzGJtdQk2SYLZR2RefMVw9TbLh3VqKin84Ukc/PYBv+7vIOz3oV6ro1Epk5TrCAaDqJbyaA9MskwPOaWAgW4iOjlDcp+FRdVmjS65noRMkTCPU2YIx+fx+4c/sPvTOiTBRKXSQI1wKrcdhIMSimoeA+oner+JXL78qj7gigCWuBQIEPvkQ1GiRAOIkLQl1uGJHcs0IUoS+h1SxdU1ujpFa2lQsgWQqqmRtaiBNZyOaJk6VOolbJ7Zg1WVYQfpiITvrxmmaZhkNwnNagnXmRx0WnUMrQ1FKVLrdD/c9QAKSKTmNx2fQJo69MnxEfxmF+2+jvhCBBMz89iLTlDcpBLbwNnhn7gzwtjd20FItGi1OEeNpB+fniUybp3VREkksDobRzwawk1ZwdGJjUGzBp1Wg7k3UUwtLuCX+JxDkKF1cPTXIezoNN6/33KWSLcUuCPAEb+I5MYm2r0TknmBZgTEEnOO52VJhD8ac+Zg6QgFZfT0IKLRCO0LSihW7xCOTWJ752d0SmmkMiryuSzmZ3axub0F7eQcRSXnvD+1sIr1lUVSlIhYLHZPgF8ghcgwA2GEQ0HHNvSwqyG85n+EmFwtQ0en23U2QpFo1NnosF3hl4NZgq3XIlnEpsZp0sGWRImSerhmu0lmG7Y/MDQNXdYQBdEhja0A7P7jIEuwTcVnzMf57z97FQH3n6POTkQIAu3UqDN/Geb3h/P5DQePMCnp52S6xhzyomsLPOJR0hTokwI93nR35uD9T2R+IwKXq8A3UD10mxPgoWKNJFSugJHQ6iFQrgAPFWskoXIFjIRWD4FyBXioWCMJlStgJLR6CJQrwEPFGkmoXAEjodVDoFwBHirWSELlChgJrR4C5QrwULFGEipXwEho9RDoPwJqK/yQ8YYSAAAAAElFTkSuQmCC" alt="...">
                 </a>
                 <div class="media-body">
-                  <h4 class="media-heading"><a data-bind="attr: { href: '<c:url value="/files/download/"/>'+idAsString }" target="_blank"><span data-bind="text: filename"></span></a></h4>
+                  <h4 class="media-heading"><a data-bind="attr: { href: '<c:url value="/files/download/"/>'+id }" target="_blank"><span data-bind="text: filename"></span></a></h4>
                   <span data-bind="text: 'Lorem ipsum ...'"></span>
                   <p><span data-bind="text: uploadDate | smartdate "></span></p>
                 </div>

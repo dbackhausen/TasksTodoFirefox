@@ -3,7 +3,6 @@ $(document).ready(function() {
   ko.punches.enableAll();
 
   var activeUser;
-  var activeGoal;
 
   // Get active user
   addon.port.emit("GetActiveUser");
@@ -15,6 +14,7 @@ $(document).ready(function() {
     if (user != null) {
       // Set active user
       activeUser = user;
+      viewModel.user(activeUser);
 
       // Load all user goals
       addon.port.emit("LoadGoals", activeUser);
@@ -27,138 +27,196 @@ $(document).ready(function() {
   function ViewModel() {
     var self = this;
     
+    self.user = ko.observable();
     self.selectedGoal = ko.observable();
     self.goals = ko.observableArray();
     self.selectedTask = ko.observable();
     self.tasks = ko.observableArray();
 
     self.selectGoal = function(goal) {
-      self.selectedGoal(goal);
       selectGoal(goal);
+      $('#content').animate({ left: 0 }, 'slow', function() { });
     };
 
-    self.selectTask = function(task) { 
-      self.selectedTask = task;
+    self.selectTask = function(task) {
+      // Set task in model
+      self.selectedTask(task);
 
-      $("#task-form-input-title").val(self.selectedTask.title);
-      $("#task-form-input-description").val(self.selectedTask.description);
+      // Select the current task and show options
+      selectTask(self.selectedTask());
 
-      // if (self.selectedTask.dueDate != null) {
-      //   $("#task-form-input-due_date").val(
-      //     moment(new Date(self.selectedTask.dueDate)).format("YYYY-MM-DD"));        
-      // } else {
-      //   $("#task-form-input-due_date").val(null);
-      // }
-  
-      // if (self.selectedTask.reminderDate != null) {
-      //   $("#task-form-input-reminder_date").val(
-      //     moment(new Date(self.selectedTask.reminderDate)).format("YYYY-MM-DD"));
-      // } else {
-      //   $("#task-form-input-reminder_date").val(null);
-      // }
+      // Trigger task selection to addon script      
+      addon.port.emit("SetActiveTask", ko.toJS(task));
 
-      selectTask(self.selectedTask);
+      // Load latest tabs for restoring
+      //loadTabs(self.selectedTask());
+      //console.log(JSON.stringify(self.tabs));
     };
     
     self.newTask = function() {
       self.selectedTask = ko.observable();
-      $("#task-form-input-title").val(null);
-      $("#task-form-input-description").val(null);
-      // $("#task-form-input-due_date").val(null);
-      // $("#task-form-input-reminder_date").val(null);
-      $("#task-form").show("fast");
-    };
-    
-    self.editTask = function(task) {
-      $("#task-form").show("fast");
+      $('#new-task-form-button-new').hide();
+      $('#new-task-form:visible').hide();
+      $("#new-task-form-input-title").val(null);
+      $("#new-task-form").show("fast");
     };
 
     self.cancelNewTask = function() {
       self.selectedTask = ko.observable();
-      $("#task-form").hide();
-      $("#task-form-input-title").val(null);
-      $("#task-form-input-description").val(null);
-      // $("#task-form-input-due_date").val(null);
-      // $("#task-form-input-reminder_date").val(null);
+      $("#new-task-form").hide();
+      $('#new-task-form-button-new').show();
+      $("#new-task-form-input-title").val(null);
+    };
+    
+    self.editTask = function(task) {
+      $('#new-task-form-button-new').hide();
+      $('#new-task-form:visible').hide();
+
+      $('.task-list-entry').find('.inline-edit:visible').hide();
+      $('#'+task.id).find('.task-list-entry').hide();
+
+      $('#'+task.id+' #edit-task-form-input-title').val(task.title());
+      $('#'+task.id+' .inline-edit').fadeIn('fast');
     };
 
-    self.saveTask = function() {
-      var title = $("#task-form-input-title").val();
-      var description = $("#task-form-input-description").val();
-      var dueDate = $("#task-form-input-due_date").val();
-      var reminderDate = $("#task-form-input-reminder_date").val();
+    self.cancelEditTask = function(task) {
+      $('#new-task-form-button-new').show();
+      $('#'+task.id).find('.task-list-entry').show();
+      $('#'+task.id+' .inline-edit').hide();
+    };
+
+    self.addTask = function() {
+      var title = $("#new-task-form-input-title").val();
  
       if (title != null && title.length > 0) {
-        if (self.selectedTask != null && self.selectedTask.id != null) {
-          // Update task
-          var json = { 
-            "id" : self.selectedTask.idAsString,
-            "goalId" : activeGoal.idAsString,
-            "title" : title,
-            "description" : description,
-            "dueDate" : dueDate,
-            "reminderDate" : reminderDate
-          };
-
-          updateTask(json);
-        } else {
-          // Add new task
-          var json = { 
-            "goalId" : activeGoal.idAsString,
-            "title" : title,
-            "description" : description,
-            "dueDate" : dueDate,
-            "reminderDate" : reminderDate
-          };
-
-          addTask(json);
-        }
-
-        self.cancelTaskForm();
+        addTask(new Task({
+          "goalId" : self.selectedGoal().id,
+          "title" : title,
+          "description" : "",
+          "position" : self.tasks().length > 0 ? (self.tasks().length + 1) : 1,
+          "level" : 0,
+          "dueDate" : null,
+          "reminderDate" : null,
+          "created" : new Date(),
+          "modified" : new Date()
+        }));
       }
+
+      self.cancelNewTask();
+    }
+
+    self.updateTask = function(task) {
+      var title = $("#edit-task-form-input-title").val();
+
+      if (task.title() != null && task.title().length > 0) {
+        task.title(title);
+        task.modified(new Date());
+        updateTask(task);
+      } else {
+        deleteTask(task);
+      }
+
+      self.cancelEditTask(task);
     }
 
     self.deleteTask = function(task) {
       deleteTask(task);
     };
 
-    self.finishTask = function(task) {
-      alert("Task finished!");
+    self.completeTask = function(task) {
+      
     };
 
     self.indentTask = function(task) {
-      if ($('#'+task.idAsString).prev('li').length > 0) {
-        var parentId = $('#'+task.idAsString).prev('li').attr('id');
-        console.log("Indent " + task.idAsString + " to " + parentId);
+      if (task != null && task.position() > 1) {
+        // for.... iterate top to get real parent!!!!!
+        parent = self.tasks()[task.position() - 2];
+        task.parentId(parent.id);
 
-          var json = { 
-            "id" : self.selectedTask.idAsString,
-            "goalId" : activeGoal.idAsString,
-            "parentId" : parentId,
-            "title" : self.selectedTask.title,
-            "description" : self.selectedTask.description,
-            "dueDate" : self.selectedTask.dueDate,
-            "reminderDate" : self.selectedTask.reminderDate
-          };
+        if ((task.level() + 1) - parent.level() == 1) {
+          task.level(task.level() + 1);
+        }
 
-          updateTask(json);
+        console.log("Indent " + task.title() + " to " + task.level());
+        updateTask(task);
       }
     };
 
     self.outdentTask = function(task) {
-      alert("Outdent task!");
+      if (task != null && task.level() > 0 && task.position() > 1) {       
+        task.level(task.level() - 1);
+
+        if (task.level() == 0) {
+          task.parentId(null);
+        }
+
+        console.log("Outdent " + task.title() + " to " + task.level());
+        updateTask(task);
+      }
     };
-    
+
+    self.moveTask = function(arg, event, ui) {
+      console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
+
+      if (arg.sourceIndex != arg.targetIndex) {
+        arg.item.position(arg.targetIndex + 1);
+
+        if (arg.item.level() > 0) {
+          // If task is a subtask
+          if (arg.targetIndex == 0) {
+            // If task is moved to the top, the
+            // task level has to be set to 0
+            arg.item.level(0);
+            // and the parent has to be set to 0
+            arg.item.parentId(null);
+          } else {
+            // Set the new parent
+            arg.item.parentId(self.tasks()[arg.targetIndex - 1].id);
+          }
+        }
+
+        updateTask(arg.item);
+
+
+        // If task position has been modified
+        ko.utils.arrayForEach(self.tasks(), function(task) {
+          // console.log(self.tasks.indexOf(task) + ": " + task.title);
+          if (task.id != arg.item.id) {
+            if (arg.sourceIndex < arg.targetIndex) {
+              // Task has been moved to a lower position
+              if (task.position() > (arg.sourceIndex + 1) && task.position() <= (arg.targetIndex + 1)) {
+                task.position(task.position() - 1);
+                updateTask(task);
+                // console.log("Setting " + task.title() + " to position " + task.position());
+              }
+            } else {
+              // Task has been moved to a higher position
+              if (task.position() < (arg.sourceIndex + 1) && task.position() >= (arg.targetIndex + 1)) {
+                task.position(task.position() + 1);
+                updateTask(task);
+                // console.log("Setting " + task.title() + " to position " + task.position());
+              }
+            }
+          }
+        });
+      }
+    }
+
     // -- NOTES
     
     self.notes = ko.observableArray();
-    
+
+    self.loadNotes = function() {
+      loadNotes(self.selectedTask());
+    }
+
     self.newNote = function() {
-      $('#edit-note-form-input-body').val(null);
       $('.task-note-list').find(".inline-edit:visible").hide();
       $('#new-note-form-button-new').toggle();
       $('.task-note-list-empty').toggle();
       $('#new-note-form').fadeToggle("fast");
+      $('#new-note-form-input-body').val(null);
+      $('#new-note-form-input-body').focus();
     };
     
     self.cancelNewNote = function() {
@@ -169,11 +227,17 @@ $(document).ready(function() {
     };
     
     self.addNote = function() {
-      var json = { 
-        "taskId" : self.selectedTask.idAsString,
-        "body" : $('#new-note-form-input-body').val()
-      };
-      addNote(json);
+      var body = $('#new-note-form-input-body').val();
+
+      if (body != null && body.length > 0) {
+        addNote(new Note({
+          "taskId" : self.selectedTask().id,
+          "body" : body,
+          "created" : new Date(),
+          "modified" : new Date()
+        }));        
+      }
+
       self.cancelNewNote();
     };
     
@@ -181,34 +245,40 @@ $(document).ready(function() {
       $('#new-note-form-button-new').show();
       $('#new-note-form:visible').hide();
       $('.task-note-list').find('.inline-edit:visible').hide();
-      $('#'+note.idAsString+' .task-note-list-content').hide();
-      $('#'+note.idAsString+' .inline-edit').fadeIn('fast');
-      $('#new-note-form-input-body').val(note.body);
+      $('#'+note.id+' .task-note-list-content').hide();
+      $('#'+note.id+' .inline-edit').fadeIn('fast');
+      $('#edit-note-form-input-body').val(note.body());
+      $('#edit-note-form-input-body').focus();
     };
 
     self.cancelEditNote = function(note) {
-      $('#'+note.idAsString+' .task-note-list-content').fadeIn('fast');
-      $('#'+note.idAsString+' .inline-edit').hide();
+      $('#'+note.id+' .task-note-list-content').fadeIn('fast');
+      $('#'+note.id+' .inline-edit').hide();
     };
     
     self.updateNote = function(note) {
-      var json = { 
-        "id" : note.idAsString,
-        "taskId" : self.selectedTask.idAsString,
-        "body" : note.body
-      };
-      updateNote(json);
-      self.cancelEditNote();
+      if (note.body() != null && note.body().length > 0) {
+        note.modified(new Date());
+        updateNote(note);
+      } else {
+        deleteNote(note);
+      }
+
+      self.cancelEditNote(note);
     };
     
     self.deleteNote = function(note) {
       deleteNote(note);
-    };
+    };   
     
     // -- BOOKMARKS
     
     self.bookmarks = ko.observableArray();
     
+    self.loadBookmarks = function() {
+      loadBookmarks(self.selectedTask());
+    }
+
     self.newBookmark = function() {
       $('#edit-bookmark-form-input-body').val(null);
       $('.task-bookmarks-list').find(".inline-edit:visible").hide();
@@ -221,42 +291,49 @@ $(document).ready(function() {
       $('#new-bookmark-form-button-new').toggle();
       $('.task-bookmarks-list-empty').toggle();
       $('#new-bookmark-form').toggle();
-      $('#new-bookmark-form-input-body').val(null);
+      $('#new-bookmark-form-input-url').val(null);
+      $('#new-bookmark-form-input-title').val(null);
+      $('#new-bookmark-form-input-description').val(null);
     };
     
     self.addBookmark = function() {
-      var json = { 
-        "taskId" : self.selectedTask.idAsString,
-        "url" : $('#new-bookmark-form-input-url').val(),
-        "title" : $('#new-bookmark-form-input-title').val(), 
-        "description" : $('#new-bookmark-form-input-description').val()
-      };
-      addBookmark(json);
+      if (bookmark.title().length > 0 && bookmark.title().url > 0) {
+        addBookmark(new Bookmark({ 
+          "taskId" : self.selectedTask().id,
+          "url" : $('#new-bookmark-form-input-url').val(),
+          "title" : $('#new-bookmark-form-input-title').val(), 
+          "description" : $('#new-bookmark-form-input-description').val(),
+          "created" : new Date(),
+          "modified" : new Date()
+        }));
+      } else {
+        // TODO throw error!
+      }
+
       self.cancelNewBookmark();
     };
     
     self.editBookmark = function(bookmark) {
-      $('#'+bookmark.idAsString+' .task-bookmarks-list-content').toggle();
-      $('#'+bookmark.idAsString+' .inline-edit').fadeToggle("fast");
+      $('#'+bookmark.id+' .task-bookmarks-list-content').toggle();
+      $('#'+bookmark.id+' .inline-edit').fadeToggle("fast");
     };
 
     self.cancelEditBookmark = function(bookmark) {
-      $('#'+bookmark.idAsString+' .task-bookmarks-list-content').fadeToggle("fast");
-      $('#'+bookmark.idAsString+' .inline-edit').toggle();
+      $('#'+bookmark.id+' .task-bookmarks-list-content').fadeToggle("fast");
+      $('#'+bookmark.id+' .inline-edit').toggle();
       $('#new-bookmark-form-input-url').val(null);
       $('#new-bookmark-form-input-title').val(null);
       $('#new-bookmark-form-input-description').val(null);    
     };
     
     self.updateBookmark = function(bookmark) {
-      var json = {
-        "id" : bookmark.idAsString,
-        "taskId" : self.selectedTask().idAsString,
-        "url" : bookmark.url,
-        "title" : bookmark.title, 
-        "description" : bookmark.description
-      };
-      updateBookmark(json);
+      if (bookmark.title().length > 0 && bookmark.title().url > 0) {
+        bookmark.modified(new Date());
+        updateBookmark(bookmark);
+      } else {
+        // TODO throw error!
+      }
+
       self.cancelEditBookmark(bookmark);
     };
     
@@ -268,16 +345,24 @@ $(document).ready(function() {
     
     self.tabs = ko.observableArray();
     
+    self.loadTabs = function() {
+      loadTabs(self.selectedTask());
+    }
+
     self.deleteTab = function(tab) {
       deleteTab(tab);
     };
 
     // -- HISTORY
     
-    self.histories = ko.observableArray();
+    self.history = ko.observableArray();
     
-    self.deleteHistory = function(history) {
-      deleteHistory(history);
+    self.loadHistory = function() {
+      loadHistory(self.selectedTask());
+    }
+
+    self.deleteHistoryEntry = function(entry) {
+      deleteHistoryEntry(entry);
     };
     
     // --
@@ -303,13 +388,13 @@ $(document).ready(function() {
 //    self.editFile = function(data) {
 //      $('#new-file-button').toggle();
 //      $('#new-file-form').toggle();
-//      $('#'+data.idAsString+' .inline-view').toggle();
-//      $('#'+data.idAsString+' .inline-edit').toggle();
+//      $('#'+data.id+' .inline-view').toggle();
+//      $('#'+data.id+' .inline-edit').toggle();
 //    };
 //
 //    self.cancelEditFile = function(data) {
-//      $('#'+data.idAsString+' .inline-view').toggle();
-//      $('#'+data.idAsString+' .inline-edit').toggle();
+//      $('#'+data.id+' .inline-view').toggle();
+//      $('#'+data.id+' .inline-edit').toggle();
 //    };
 //    
 //    self.saveFile = function(data) {
@@ -330,45 +415,45 @@ $(document).ready(function() {
   /////////////////////////////////////////////////////////////////////////////
   
   /**
-   * Selects a goal.
-   */
-  function selectGoal(goal) {
-    // trigger goal selection to addon script      
-    addon.port.emit("SetActiveGoal", goal);
-
-    // Redirect to tasks page
-    addon.port.emit("Redirect", "tasks.html");
-  }
-
-  /**
    * Callback method, when goals are loaded.
    */
   addon.port.on("GoalsLoaded", function(goals) {
-    console.log("Goals loaded");
-
     // Add all goals for selection option
     viewModel.goals.removeAll();
     ko.utils.arrayForEach(goals, function(goal) {
-      viewModel.goals.push(goal);
+      viewModel.goals.push(ko.observable(goal));
     });
   });
+
+  /**
+   * Selects a goal.
+   */
+  function selectGoal(goal) {
+    // Set goal selection to addon script      
+    addon.port.emit("SetActiveGoal", goal);
+
+    // Set active goal for page binding
+    viewModel.selectedGoal(goal);
+
+    // Load all goal tasks
+    loadTasks(viewModel.selectedGoal());
+
+    // Reset selected task
+    viewModel.selectedTask = ko.observable();
+  }
 
   /**
    * Callback method, when active goal is loaded.
    */
   addon.port.on("ActiveGoalLoaded", function(goal) {
-    if (goal != null) {
-      console.log("Active goal is " + goal.title);
+    // Set active goal for page binding
+    viewModel.selectedGoal(goal);
 
-      // Set active goal
-      activeGoal = goal;
+    // Load all goal tasks
+    loadTasks(viewModel.selectedGoal());
 
-      // Set active goal for page binding
-      viewModel.selectedGoal(goal);
-
-      // Load all goal tasks
-      loadTasks(goal);
-    }
+    // Reset selected task
+    viewModel.selectedTask = ko.observable();
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -379,15 +464,13 @@ $(document).ready(function() {
    * Loads all tasks.
    */
   function loadTasks(goal) {
-    console.log("Loading tasks for goal " + goal.title);
     addon.port.emit("LoadTasks", goal);
   }
 
   addon.port.on("TasksLoaded", function(tasks) { 
-    console.log(JSON.stringify(tasks));
     viewModel.tasks.removeAll();
     ko.utils.arrayForEach(tasks, function(task) {
-      viewModel.tasks.push(task);
+      viewModel.tasks.push(new Task(task));
     });
   });
 
@@ -395,25 +478,22 @@ $(document).ready(function() {
    * Adds a new task to the project.
    */
   function addTask(task) {
-    addon.port.emit("AddTask", task);
+    addon.port.emit("AddTask", ko.toJSON(task));
   }
 
-  addon.port.on("TaskAdded", function(task) {
-    // load all tasks of selected project
-    loadTasks(activeGoal);
+  addon.port.on("TaskAdded", function(data) {
+    viewModel.tasks.push(new Task(data));
   });
   
   /**
    * Saves changes to an existing task.
    */
   function updateTask(task) {
-    addon.port.emit("UpdateTask", task);
+    addon.port.emit("UpdateTask", ko.toJSON(task));
   }
 
   addon.port.on("TaskUpdated", function(task) {
-    console.log("Task updated");
-    // load all tasks of selected project
-    loadTasks(activeGoal);
+    console.log("Task " + task.title + " has been updated");
   });
   
   /**
@@ -421,12 +501,10 @@ $(document).ready(function() {
    */
   function deleteTask(task) {
     addon.port.emit("DeleteTask", task);
+    viewModel.tasks.remove(task);
   }
 
   addon.port.on("TaskDeleted", function(data) {
-    console.log("Task deleted");
-    // load all tasks of selected project
-    loadTasks(activeGoal);
   });
 
   /**
@@ -434,42 +512,30 @@ $(document).ready(function() {
    */
   function selectTask(task) {
     if (task != null) {
+      // Make sure the input field value is set
+      $("#edit-task-form-input-title").val(task.title());
+
       // Get list entry
-      var ttListEntry = $("li#" + task.idAsString);
+      var ttListEntry = $("li#" + task.id);
+
+      // Disable all inline editors
+      $('.task-list').find('.inline-edit').hide();
+      $('.task-list').find('.task-list-entry').show();
 
       // Disable all other task selections
-      $(".task-list").find(".task-list-entry").removeClass('selected');
+      $('.task-list').find('.selected').removeClass('selected');
       // Select current list entry
-      $(ttListEntry).find("div").addClass('selected');
+      $(ttListEntry).find('div').addClass('selected');
+
+      // Hide all visible options, before showing another one  
+      $('.task-list').find('.task-list-entry-options:visible').not($(ttListEntry).find('.task-list-entry-options')).hide();
+      // Show options for selected task
+      $(ttListEntry).find('.task-list-entry-options').fadeIn();
 
       // Hide all visible options, before showing another one   
-      $(".task-list").find(".task-list-options:visible").not($(ttListEntry).find(".task-list-options")).hide();
+      $('.task-list').find('.task-list-entry-control a:visible').not($(ttListEntry).find('.task-list-entry-control a')).hide();
       // Show options for selected task
-      $(ttListEntry).find(".task-list-options").fadeIn();
-
-      // Hide all visible options, before showing another one   
-      $(".task-list").find(".task-list-control a:visible").not($(ttListEntry).find(".task-list-control a")).hide();
-      // Show options for selected task
-      $(ttListEntry).find(".task-list-control a").show();        
-
-
-      // load all notes of selected task
-      loadNotes(task);
-      
-      // load all bookmarks of selected task
-      loadBookmarks(task);
-                     
-      // load tabs of selected task
-      loadTabs(task);
-   
-      // load history of selected task
-      loadHistories(task);
-
-      // load all file of selected task
-      //loadFiles(task);
-
-      // trigger task selection to addon script      
-      addon.port.emit("SetActiveTask", task);      
+      $(ttListEntry).find('.task-list-entry-control a').show();  
     }
   }
   
@@ -488,7 +554,7 @@ $(document).ready(function() {
     viewModel.notes.removeAll();
     
     ko.utils.arrayForEach(notes, function(note){
-      viewModel.notes.push(note);
+      viewModel.notes.push(new Note(note));
     });
   });
   
@@ -496,24 +562,21 @@ $(document).ready(function() {
    * Adds a new note to the selected task.
    */
   function addNote(note) {
-    addon.port.emit("AddNote", note);
+    addon.port.emit("AddNote", ko.toJSON(note));
   }
 
   addon.port.on("NoteAdded", function(note) {
-    // reload all notes
-    loadNotes(viewModel.selectedTask);
+    viewModel.notes.push(new Note(note));
   });
   
   /**
    * Saves changes to an existing note.
    */
   function updateNote(note) {
-    addon.port.emit("UpdateNote", note);
+    addon.port.emit("UpdateNote", ko.toJSON(note));
   }
 
   addon.port.on("NoteUpdated", function(note) {
-    // reload all notes
-    loadNotes(viewModel.selectedTask);
   });
   
   /**
@@ -521,11 +584,10 @@ $(document).ready(function() {
    */
   function deleteNote(note) {
     addon.port.emit("DeleteNote", note);
+    viewModel.notes.remove(note);
   }
 
   addon.port.on("NoteDeleted", function(data) {
-    // reload all notes
-    loadNotes(viewModel.selectedTask);
   });
   
   /////////////////////////////////////////////////////////////////////////////
@@ -543,7 +605,7 @@ $(document).ready(function() {
     viewModel.bookmarks.removeAll();
     
     ko.utils.arrayForEach(bookmarks, function(bookmark){
-      viewModel.bookmarks.push(bookmark);
+      viewModel.bookmarks.push(new Bookmark(bookmark));
     });
   });
   
@@ -551,24 +613,21 @@ $(document).ready(function() {
    * Adds a new bookmark to the selected task.
    */
   function addBookmark(bookmark) {
-    addon.port.emit("AddBookmark", bookmark);
+    addon.port.emit("AddBookmark", ko.toJSON(bookmark));
   }
 
   addon.port.on("BookmarkAdded", function(bookmark) {
-    // reload all bookmarks
-    loadBookmarks(viewModel.selectedTask);
+    viewModel.bookmarks.push(new Bookmark(bookmark));
   });
   
   /**
    * Saves changes to an existing bookmark.
    */
   function updateBookmark(bookmark) {
-    addon.port.emit("UpdateBookmark", bookmark);
+    addon.port.emit("UpdateBookmark", ko.toJSON(bookmark));
   }
 
   addon.port.on("BookmarkUpdated", function(bookmark) {
-    // reload all bookmarks
-    loadBookmarks(viewModel.selectedTask);
   });
   
   /**
@@ -576,11 +635,10 @@ $(document).ready(function() {
    */
   function deleteBookmark(bookmark) {
     addon.port.emit("DeleteBookmark", bookmark);
+    viewModel.bookmarks.remove(bookmark);
   }
 
   addon.port.on("BookmarkDeleted", function(data) {
-    // reload all bookmarks
-    loadBookmarks(viewModel.selectedTask);
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -598,7 +656,7 @@ $(document).ready(function() {
     viewModel.tabs.removeAll();
     
     ko.utils.arrayForEach(tabs, function(tab){
-      viewModel.tabs.push(tab);
+      viewModel.tabs.push(new Tab(tab));
     });
   });
   
@@ -606,24 +664,21 @@ $(document).ready(function() {
    * Adds a new tab to the selected task.
    */
   function addTab(tab) {
-    addon.port.emit("AddTab", tab);
+    addon.port.emit("AddTab", ko.toJSON(tab));
   }
 
   addon.port.on("TabAdded", function(tab) {
-    // reload all tabs
-    loadTabs(viewModel.selectedTask);
+    viewModel.tabs.push(new Tab(tab));
   });
   
   /**
    * Saves changes to an existing tab.
    */
   function updateTab(tab) {
-    addon.port.emit("UpdateTab", tab);
+    addon.port.emit("UpdateTab", ko.toJSON(tab));
   }
 
   addon.port.on("TabUpdated", function(tab) {
-    // reload all tabs
-    loadTabs(viewModel.selectedTask);
   });
   
   /**
@@ -631,11 +686,10 @@ $(document).ready(function() {
    */
   function deleteTab(tab) {
     addon.port.emit("DeleteTab", tab);
+    viewModel.tabs.remove(tab);
   }
 
   addon.port.on("TabDeleted", function(data) {
-    // reload all tabs
-    loadTabs(viewModel.selectedTask);
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -645,52 +699,48 @@ $(document).ready(function() {
   /**
    * Loads all history regarding to the selected task.
    */
-  function loadHistories(task) {
-    addon.port.emit("LoadHistories", task);
+  function loadHistory(task) {
+    addon.port.emit("LoadHistory", task);
   }
 
-  addon.port.on("HistoriesLoaded", function(histories) {
-    viewModel.histories.removeAll();
+  addon.port.on("HistoryLoaded", function(history) {
+    viewModel.history.removeAll();
     
-    ko.utils.arrayForEach(histories, function(history){
-      viewModel.histories.push(history);
+    ko.utils.arrayForEach(history, function(entry){
+      viewModel.history.push(new HistoryEntry(entry));
     });
   });
   
   /**
-   * Adds a new history to the selected task.
+   * Adds a new history entry to the selected task.
    */
-  function addHistory(history) {
-    addon.port.emit("AddHistory", history);
+  function addHistory(entry) {
+    addon.port.emit("AddHistoryEntry", ko.toJSON(entry));
   }
 
-  addon.port.on("HistoryAdded", function(history) {
-    // reload all histories
-    loadHistories(viewModel.selectedTask);
+  addon.port.on("HistoryEntryAdded", function(entry) {
+    viewModel.history.unshift(new HistoryEntry(entry));
   });
   
   /**
-   * Saves changes to an existing history.
+   * Saves changes to an existing history entry.
    */
-  function updateHistory(history) {
-    addon.port.emit("UpdateHistory", history);
+  function updateHistory(entry) {
+    addon.port.emit("UpdateHistoryEntry", ko.toJSON(entry));
   }
 
-  addon.port.on("HistoryUpdated", function(history) {
-    // reload all histories
-    loadHistories(viewModel.selectedTask);
+  addon.port.on("HistoryEntryUpdated", function(entry) {
   });
   
   /**
-   * Deletes an existing history.
+   * Deletes an existing history entry.
    */
-  function deleteHistory(history) {
-    addon.port.emit("DeleteHistory", history);
+  function deleteHistoryEntry(entry) {
+    addon.port.emit("DeleteHistoryEntry", entry);
+    viewModel.history.remove(entry);
   }
 
-  addon.port.on("HistoryDeleted", function(data) {
-    // reload all histories
-    loadHistories(viewModel.selectedTask);
+  addon.port.on("HistoryEntryDeleted", function(data) {
   });
 
   /////////////////////////////////////////////////////////////////////////////

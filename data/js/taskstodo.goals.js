@@ -7,24 +7,23 @@ $(document).ready(function() {
   /**
    * Get active user
    */
-  addon.port.emit("GetActiveUser");
+   addon.port.emit("GetActiveUser");
 
-  addon.port.on("ActiveUserLoaded", function(user) {
+   addon.port.on("ActiveUserLoaded", function(user) {
     if (user != null) {
       // Set active user
       activeUser = user;
+      viewModel.user(activeUser);
 
       // Load all user goals
       loadGoals(activeUser);
     }
   });
 
-  /****************************************************************************
-   * GOAL MODEL
-   ****************************************************************************/
-  function GoalModel() {
+  function ViewModel() {
     var self = this;
     
+    self.user = ko.observable();
     self.selectedGoal = ko.observable();
     self.goals = ko.observableArray();
     
@@ -35,80 +34,135 @@ $(document).ready(function() {
     
     self.newGoal = function() {
       self.selectedGoal = ko.observable();
-      $("#goal-form-input-title").val(null);
-      $("#goal-form-input-description").val(null);
-      $('#goal-form').show("fast");
+      $("#new-goal-form-input-title").val(null);
+      $("#new-goal-form").show("fast");
+    };
+    
+    self.cancelNewGoal = function() {
+      self.selectedGoal = ko.observable();
+      $("#new-goal-form").hide();
+      $("#new-goal-form-input-title").val(null);
     };
     
     self.editGoal = function(goal) {
-      self.selectedGoal = goal;
-      $("#goal-form-input-title").val(self.selectedGoal.title);
-      $("#goal-form-input-description").val(self.selectedGoal.description);
-      $('#goal-form').show("fast");
+      $('#new-goal-form-button-new').hide();
+      $('#new-goal-form:visible').hide();
+
+      $('.goal-list-entry').find('.inline-edit:visible').hide();
+      $('#'+goal.id).find('.goal-list-entry').hide();
+console.log($('#'+goal.id).html());
+      $('#'+goal.id+' #edit-goal-form-input-title').val(goal.title());
+      $('#'+goal.id+' .inline-edit').fadeIn('fast');
     };
     
-    self.cancelGoalForm = function() {
-      self.selectedGoal = ko.observable();
-      $('#goal-form').hide();
-      $("#goal-form-input-title").val(null);
-      $("#goal-form-input-description").val(null);
+    self.cancelEditGoal = function(goal) {
+      $('#new-goal-form-button-new').show();
+      $('#'+goal.id).find('.goal-list-entry').show();
+      $('#'+goal.id+' .inline-edit').hide();
     };
 
-    self.saveGoal = function() {
-      var title = $("#goal-form-input-title").val();
-      var description = $('#goal-form-input-description').val();
- 
+    self.addGoal = function() {
+      var title = $("#new-goal-form-input-title").val();
+      
       if (title != null && title.length > 0) {
-        if (self.selectedGoal != null && self.selectedGoal.id != null) {
-          // Update goal
-          var json = { 
-            "id" : self.selectedGoal.idAsString,
-            "userId" : activeUser.idAsString,
-            "title" : title,
-            "description" : description
-          };
-
-          updateGoal(json);
-        } else {
-          // Add new goal
-          var json = { 
-            "userId" : activeUser.idAsString,
-            "title" : title,
-            "description" : description
-          };
-
-          addGoal(json);
-        }
-
-        self.cancelGoalForm();
+        addGoal({ 
+          "userId" : activeUser.id,
+          "title" : title,
+          "description" : "",
+          "position" : self.goals().length > 0 ? (self.goals().length + 1) : 1,
+          "level" : 0,
+          "urgency" : 0,
+          "priority" : 0,
+          "created" : new Date(),
+          "modified" : new Date()
+        });
       }
+
+      self.cancelNewGoal();
+    }
+
+    self.updateGoal = function(goal) {
+      var title = $('#'+goal.id+' #edit-goal-form-input-title').val();
+
+      if (title != null && title.length > 0) {
+        goal.title(title);
+        goal.modified(new Date());
+        updateGoal(goal);
+      }
+
+      self.cancelEditGoal(goal);
     }
 
     self.deleteGoal = function(goal) {
       deleteGoal(goal);
     };
 
-    self.finishGoal = function(goal) {
-      alert("FINISHED!");
+    self.completeGoal = function(goal) {
+      // TODO
     };
-  };
-  
+
+    self.moveGoal = function(arg, event, ui) {
+      console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
+
+      if (arg.sourceIndex != arg.targetIndex) {
+        arg.item.position(arg.targetIndex + 1);
+
+        if (arg.item.level() > 0) {
+          // If goal is a subtask
+          if (arg.targetIndex == 0) {
+            // If goal is moved to the top, the
+            // goal level has to be set to 0
+            arg.item.level(0);
+            // and the parent has to be set to 0
+            arg.item.parentId(null);
+          } else {
+            // Set the new parent
+            arg.item.parentId(self.goals()[arg.targetIndex - 1].id);
+          }
+        }
+
+        updateGoal(arg.item);
+
+        // If goal position has been modified
+        ko.utils.arrayForEach(self.goals(), function(goal) {
+          // console.log(self.tasks.indexOf(goal) + ": " + goal.title);
+          if (goal.id != arg.item.id) {
+            if (arg.sourceIndex < arg.targetIndex) {
+              // Task has been moved to a lower position
+              if (goal.position() > (arg.sourceIndex + 1) && goal.position() <= (arg.targetIndex + 1)) {
+                goal.position(goal.position() - 1);
+                updateGoal(goal);
+                // console.log("Setting " + goal.title() + " to position " + goal.position());
+              }
+            } else {
+              // Task has been moved to a higher position
+              if (goal.position() < (arg.sourceIndex + 1) && goal.position() >= (arg.targetIndex + 1)) {
+                goal.position(goal.position() + 1);
+                updateGoal(goal);
+                // console.log("Setting " + goal.title() + " to position " + goal.position());
+              }
+            }
+          }
+        });
+      }
+    }
+  }
+
   // Apply view model
-  var goalModel = new GoalModel();
-  ko.applyBindings(goalModel, document.getElementById("content"));
+  var viewModel = new ViewModel();
+  ko.applyBindings(viewModel);
 
   /**
    * Loads all gaols.
    */
   function loadGoals(user) {
-    console.log("Loading tasks for user " + user.username);
     addon.port.emit("LoadGoals", user);
   }
 
   addon.port.on("GoalsLoaded", function(goals) {
-    goalModel.goals.removeAll();
+    viewModel.goals.removeAll();
     ko.utils.arrayForEach(goals, function(goal) {
-      goalModel.goals.push(goal);
+      viewModel.goals.push(new Goal(goal));
     });
   });
   
@@ -116,26 +170,21 @@ $(document).ready(function() {
    * Adds a new goal.
    */
   function addGoal(goal) {
-    addon.port.emit("AddGoal", goal);
+    addon.port.emit("AddGoal", ko.toJSON(goal));
   }
 
-  addon.port.on("GoalAdded", function(data) {
-    // load all gaols
-    loadGoals(activeUser);
+  addon.port.on("GoalAdded", function(goal) {
+    viewModel.goals.push(new Goal(goal));
   });
 
  /**
    * Saves changes to an existing goal.
    */
   function updateGoal(goal) {
-    addon.port.emit("UpdateGoal", goal);
+    addon.port.emit("UpdateGoal", ko.toJSON(goal));
   }
 
   addon.port.on("GoalUpdated", function(data) {
-    console.log("Goal updated");
-
-    // load all gaols
-    loadGoals(activeUser);
   });
   
   /**
@@ -146,10 +195,6 @@ $(document).ready(function() {
   }
 
   addon.port.on("GoalDeleted", function(data) {
-    console.log("Goal deleted");
-
-    // load all gaols
-    loadGoals(activeUser);
   });
 
   /**

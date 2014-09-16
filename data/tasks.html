@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/jquery.fileupload.css"/>
+    <link rel="stylesheet" href="css/jquery.treetable.css"/>
     <link rel="stylesheet" href="css/bootstrap-tagsinput.css"/>
     <link rel="stylesheet" href="css/datepicker3.css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
@@ -22,6 +23,7 @@
     <script src="js/jquery.fileupload.js"></script>
     <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
     <script src="js/jquery.autosize.min.js"></script>
+    <script src="js/jquery.treetable.js"></script>
     <script src="js/respond.min.js"></script>
     <script src="js/modernizr-2.6.2.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -42,14 +44,13 @@
       <div id="close-top-menu-button">
          <i class="fa fa-times"></i> <span>Close menu</span>
       </div>
-      <ol data-bind="sortable: { data: goals, connectClass: '' }">
-        <li data-bind="attr: { id: idAsString }">
+      <ol data-bind="sortable: { data: goals }">
+        <li data-bind="attr: { 'id': 'top-nav-'+id }">
           <div class="top-menu-element-content" data-bind="click: $parent.selectGoal">
             <span data-bind="text: title"></span>
           </div>
         </li>
       </ol>
-      <a href="#"><i class="fa fa-plus-square"> </i>add goal</a>
     </div>
     <div id="content">
       <div id="menubar">
@@ -59,46 +60,52 @@
       </div>
       <div class="inline-content">
         <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'"></span></h1>
-        <div class="task-list">    
-          <ol data-bind="sortable: { data: tasks }">
-            <li data-bind="attr: { id: idAsString }, click: $parent.selectTask">
+        <div class="task-list">
+          <!-- ko if: tasks() == null || tasks().length == 0 -->
+          <div class="task-list-empty">
+            You have not defined any tasks yet.
+          </div>
+          <!-- /ko -->
+          <ol data-bind="sortable: { data: tasks, connectClass: 'move', afterMove: moveTask }">
+            <li data-bind="attr: { 'id': id }">
               <div class="task-list-entry">
-                <div class="task-list-entry-check">
-                  <a href="#" data-bind="click: $parent.finishTask, tooltip: {title: 'Mark as finished'}" class="fa fa-square-o"></a>
+                <div class="task-list-entry-content" data-bind="css: 'indent-'+$data.level()">
+                  <div class="task-list-entry-check">
+                    <a href="#" data-bind="click: $parent.completeTask, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
+                  </div>
+                  <div class="task-list-entry-title" data-bind="event : { click: $parent.selectTask, dblclick: $parent.editTask }">
+                    <span data-bind="text: title"></span>
+                  </div>
+                  <div class="task-list-entry-control">
+                    <a href="#" data-bind="click: $parent.editTask, tooltip: {title: 'Edit task', placement: 'left'}" class="fa fa-pencil"></a>
+                    <a href="#" data-bind="click: $parent.deleteTask, tooltip: {title: 'Delete task', placement: 'left'}" class="fa fa-trash-o"></a>
+                  </div>
                 </div>
-                <div class="task-list-entry-content">
-                  <span data-bind="text: title"></span>
+                <div class="task-list-entry-options">
+                  <a href="#" class="fa fa-outdent" data-bind="click: $parent.outdentTask, tooltip: {title: 'Lease from previous task', placement: 'bottom'}"></a>
+                  <a href="#" class="fa fa-indent" data-bind="click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
+                  <a href="#" class="fa fa-clipboard" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#taskNotes"></a>
+                  <a href="#" class="fa fa-link" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#taskBookmarks"></a>
+                  <a href="#" class="fa fa-history" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#taskHistory"></a>
                 </div>
-                <div class="task-list-entry-control">
-                  <a href="#" data-bind="click: $parent.editTask, tooltip: {title: 'Edit task', placement: 'left'}" class="fa fa-pencil"></a>
-                  <a href="#" data-bind="click: $parent.deleteTask, tooltip: {title: 'Delete task', placement: 'left'}" class="fa fa-trash-o"></a>
-                </div>
-                
-              <div class="task-list-entry-options">
-                <a href="#" class="fa fa-outdent" data-bind="click: $parent.outdentTask, tooltip: {title: 'Lease from previous task', placement: 'bottom'}"></a>
-                <a href="#" class="fa fa-indent" data-bind="click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
-                <a href="#" class="fa fa-clipboard" data-bind="tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#taskNotes"></a>
-                <a href="#" class="fa fa-link" data-bind="tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#taskBookmarks"></a>
-                <a href="#" class="fa fa-history" data-bind="tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#taskHistory"></a>
               </div>
+              <div class="inline-edit">
+                <p>
+                  <textarea id="edit-task-form-input-title" wrap="hard" class="flexible" autofocus></textarea>
+                </p>
+                <button data-bind="click: $parent.updateTask" class="btn btn-primary btn-sm">Save</button>
+                <button data-bind="click: $parent.cancelEditTask" class="btn btn-default btn-sm">Cancel</button>
               </div>
             </li>
           </ol>
-          <button id="task-form-button-new" data-bind="click: newTask" class="btn btn-primary btn-sm">New task</button>
-          <form id="task-form" data-bind="submit: saveTask">
-            <div class="task-form-group">
-              <p>
-                <label for="task-form-input-title">Title</label>
-                <input type="text" id="task-form-input-title" autofocus />
-              </p>
-              <p>
-                <label for="task-form-input-description">Description</label>
-                <textarea id="task-form-input-description" wrap="hard" class="flexible"></textarea>
-              </p>
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          <button id="new-task-form-button-new" data-bind="click: newTask" class="btn btn-primary btn-sm">New task</button>
+          <div id="new-task-form">
+            <p>
+              <textarea id="new-task-form-input-title" wrap="hard" class="flexible" autofocus></textarea>
+            </p>
+            <button data-bind="click: addTask" class="btn btn-primary btn-sm">Save</button>
             <button data-bind="click: cancelNewTask" class="btn btn-default btn-sm">Cancel</button>
-          </form>
+          </div>
         </div>
 
         <!-- Modal panel: Task Notes -->
@@ -113,13 +120,13 @@
                 <div class="task-note-list">
                   <!-- ko if: notes() == null || notes().length == 0 -->
                   <div class="task-note-list-empty">
-                    You have not created any notes yet.
+                    Your task has no notes yet.
                   </div>
                   <!-- /ko -->
                   <ul class="sortable" data-bind="foreach: notes">
-                    <li data-bind="attr: { id: idAsString }">
+                    <li data-bind="attr: { 'id': id }">
                       <div class="task-note-list-entry-header">
-                        <span data-bind="text: created | smartdate"></span>
+                        <span data-bind="text: modified() | smartdate"></span>
                         <div class="task-note-list-control">
                           <a href="#" data-bind="click: $parent.editNote, tooltip: {title: 'Edit note', placement: 'left'}" class="fa fa-pencil"></a>
                           <a href="#" data-bind="click: $parent.deleteNote, tooltip: {title: 'Delete note', placement: 'left'}" class="fa fa-trash-o"></a>
@@ -127,7 +134,7 @@
                       </div>
                       <div class="task-note-list-entry">
                         <div class="task-note-list-content" data-bind="event: { dblclick: $parent.editNote }">
-                          <span data-bind="text: body"></span>
+                          <span data-bind="text: body()"></span>
                         </div>
                         <div class="inline-edit">
                           <p>
@@ -142,7 +149,7 @@
                   <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
                   <form id="new-note-form" data-bind="submit: addNote">
                     <p>
-                      <textarea id="new-note-form-input-body" wrap="soft" class="flexible"></textarea>
+                      <textarea id="new-note-form-input-body" class="flexible" autofocus></textarea>
                     </p>
                     <button type="submit" class="btn btn-primary btn-sm">Save</button>
                     <button data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
@@ -168,13 +175,13 @@
                 <div class="task-bookmarks-list">
                   <!-- ko if: bookmarks() == null || bookmarks().length == 0 -->
                   <div class="task-bookmarks-list-empty">
-                    You have not created any bookmarks yet.
+                    Your task has no bookmarks yet.
                   </div>
                   <!-- /ko -->
                   <ul class="sortable" data-bind="foreach: bookmarks">
-                    <li data-bind="attr: { id: idAsString }">
+                    <li data-bind="attr: { 'id': id }">
                       <div class="task-bookmarks-list-entry-header">
-                        <span data-bind="text: created | smartdate"></span>
+                        <span data-bind="text: modified() | smartdate"></span>
                         <div class="task-bookmarks-list-control">
                           <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
                           <a href="#" data-bind="click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark', placement: 'left'}" class="fa fa-trash-o"></a>
@@ -183,10 +190,10 @@
                       <div class="task-bookmarks-list-entry">
                         <div class="task-bookmarks-list-content">
                           <div class="thumbnail">
-                            <img data-bind="attr: { src: thumbnail }" width="100" height="75" />
+                            <img data-bind="attr: { src: thumbnail() }" width="100" height="75" />
                           </div>
                           <div class="link">
-                            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
+                            <a data-bind="attr: { href: url() }" target="_blank"><span data-bind="text: title()"></span></a>
                           </div>
                         </div>
                         <div class="inline-edit">
@@ -243,26 +250,16 @@
                 <h4 class="modal-title" id="taskHistoryLabel">Browsing history</h4>
               </div>
               <div class="modal-body">
-
-  <!-- ko if: tabs() == null || tabs().length == 0 -->
-  <ul data-bind="foreach: tabs">
-    <li data-bind="attr: { id: idAsString }">
-      <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
-    </li>
-  </ul>
-
-  <hr />
-  <!-- /ko -->
                 <div class="task-history-list">
-                  <!-- ko if: histories() == null || histories().length == 0 -->
+                  <!-- ko if: history() == null || history().length == 0 -->
                   <div class="task-history-list-empty">
-                    You have not any browsing history yet.
+                    Your task has no browsing historiy yet.
                   </div>
                   <!-- /ko -->
-                  <ul data-bind="foreach: histories">
-                    <li data-bind="attr: { id: idAsString }">
+                  <ul data-bind="foreach: history">
+                    <li data-bind="attr: { 'id': id }">
                       <div class="task-history-list-entry-header">
-                        <span data-bind="text: created | smartdate"></span>
+                        <span data-bind="text: created() | smartdate"></span>
                         <div class="task-history-list-control">
                           <a href="#" data-bind="click: $parent.deleteHistory, tooltip: {title: 'Delete entry'}" class="fa fa-trash-o"></a>
                         </div>
@@ -270,10 +267,10 @@
                       <div class="task-history-list-entry">
                         <div class="task-history-list-content">
                           <div class="thumbnail">
-                            <img data-bind="attr: { src: thumbnail }" width="100" height="75" />
+                            <img data-bind="attr: { src: thumbnail() }" width="100" height="75" />
                           </div>
                           <div class="link">
-                            <a data-bind="attr: { href: url }" target="_blank"><span data-bind="text: title"></span></a>
+                            <a data-bind="attr: { href: url() }" target="_blank"><span data-bind="text: title()"></span></a>
                           </div>
                         </div>
                       </div>
