@@ -116,6 +116,11 @@
   color: #535F6D;
 }
 
+.task-list-entry.selected .task-list-entry-title,
+.task-list-entry.selected .task-list-entry-title:hover {
+  font-weight: bold;
+}
+
 .task-list-entry-control { 
   display: table-cell;
   width: 50px;

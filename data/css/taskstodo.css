@@ -20,8 +20,8 @@ body * {
 h1, h2, h3, h4, h5, h6 {
   color: #535F6D;
   line-height: 1;
-  font-weight: bold;
   margin: 10px 0 20px 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 h1, h2, h3 {
@@ -41,6 +41,11 @@ h4, h5, h6 {
 a {
   color: #428BCA;
 }
+
+.line-through {
+  text-decoration: line-through;
+}
+
 /*
 div.header {
   background-color: #E2E7ED;
@@ -124,12 +129,12 @@ div.footer {
 
 #top-menu li {
   border-bottom: 1px solid #E3E3E3;
-  background-color: #E8E8E8;
+  background-color: #E2E7ED;
 }
 
 #top-menu li .top-menu-element-content {
   color: #333333;
-  padding: 5px 0px 5px 0px;
+  padding: 5px 2px 5px 2px;
   cursor: pointer;
 }
 

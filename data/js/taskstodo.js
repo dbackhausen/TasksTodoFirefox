@@ -48,12 +48,17 @@ function Goal(data) {
   this.title = ko.observable(data.title);
   this.description = ko.observable(data.description);
   this.userId = ko.observable(data.userId);
+  this.dueDate = ko.observable(data.dueDate);
+  this.completedDate = ko.observable(data.completedDate);
+  this.reminderDate = ko.observable(data.reminderDate);
   this.urgency = ko.observable(data.urgency);
   this.priority = ko.observable(data.priority);
   this.level = ko.observable(data.level);
   this.position = ko.observable(data.position);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
+  this.completed = ko.observable(data.completed);
+  this.deleted = ko.observable(data.deleted);
 }
 
 function Task(data) {
@@ -71,6 +76,8 @@ function Task(data) {
   this.position = ko.observable(data.position);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
+  this.completed = ko.observable(data.completed);
+  this.deleted = ko.observable(data.deleted);
 }
 
 function Note(data) {

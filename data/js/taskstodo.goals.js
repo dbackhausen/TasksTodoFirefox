@@ -28,7 +28,7 @@ $(document).ready(function() {
     self.goals = ko.observableArray();
     
     self.selectGoal = function(goal) {
-      self.selectedGoal(goal);
+      self.selectedGoal = goal;
       selectGoal(goal);
     };
     
@@ -50,7 +50,7 @@ $(document).ready(function() {
 
       $('.goal-list-entry').find('.inline-edit:visible').hide();
       $('#'+goal.id).find('.goal-list-entry').hide();
-console.log($('#'+goal.id).html());
+
       $('#'+goal.id+' #edit-goal-form-input-title').val(goal.title());
       $('#'+goal.id+' .inline-edit').fadeIn('fast');
     };
@@ -58,7 +58,9 @@ console.log($('#'+goal.id).html());
     self.cancelEditGoal = function(goal) {
       $('#new-goal-form-button-new').show();
       $('#'+goal.id).find('.goal-list-entry').show();
+
       $('#'+goal.id+' .inline-edit').hide();
+      $('#'+goal.id+' #edit-goal-form-input-title').val(null);
     };
 
     self.addGoal = function() {
@@ -86,7 +88,6 @@ console.log($('#'+goal.id).html());
 
       if (title != null && title.length > 0) {
         goal.title(title);
-        goal.modified(new Date());
         updateGoal(goal);
       }
 
@@ -98,7 +99,10 @@ console.log($('#'+goal.id).html());
     };
 
     self.completeGoal = function(goal) {
-      // TODO
+      goal.completed(true);
+      goal.completedDate(new Date());
+      updateGoal(goal);
+      self.goals.remove(goal);
     };
 
     self.moveGoal = function(arg, event, ui) {
@@ -181,6 +185,7 @@ console.log($('#'+goal.id).html());
    * Saves changes to an existing goal.
    */
   function updateGoal(goal) {
+    goal.modified(new Date());
     addon.port.emit("UpdateGoal", ko.toJSON(goal));
   }
 
@@ -191,7 +196,13 @@ console.log($('#'+goal.id).html());
    * Deletes an existing goal.
    */
   function deleteGoal(goal) {
-    addon.port.emit("DeleteGoal", goal);
+    // addon.port.emit("DeleteGoal", goal);
+    goal.deleted(true);
+    goal.position(-1);
+    goal.parentId(null);
+    goal.level(0);
+    updateGoal(goal);
+    viewModel.goals.remove(goal);
   }
 
   addon.port.on("GoalDeleted", function(data) {
@@ -202,7 +213,7 @@ console.log($('#'+goal.id).html());
    */
   function selectGoal(goal) {
     // trigger goal selection to addon script      
-    addon.port.emit("SetActiveGoal", goal);
+    addon.port.emit("SetActiveGoal", ko.toJS(goal));
 
     // Redirect to tasks page
     addon.port.emit("Redirect", "tasks.html");

@@ -2,8 +2,6 @@ $(document).ready(function() {
   
   ko.punches.enableAll();
 
-  var activeUser;
-
   // Get active user
   addon.port.emit("GetActiveUser");
 
@@ -13,11 +11,10 @@ $(document).ready(function() {
   addon.port.on("ActiveUserLoaded", function(user) {
     if (user != null) {
       // Set active user
-      activeUser = user;
-      viewModel.user(activeUser);
+      viewModel.user(new User(user));
 
       // Load all user goals
-      addon.port.emit("LoadGoals", activeUser);
+      addon.port.emit("LoadGoals", user);
 
       // Get the active goal
       addon.port.emit("GetActiveGoal");
@@ -38,19 +35,21 @@ $(document).ready(function() {
       $('#content').animate({ left: 0 }, 'slow', function() { });
     };
 
-    self.selectTask = function(task) {
-      // Set task in model
-      self.selectedTask(task);
+    self.selectTask = function(task) {     
+      if (self.selectedTask.id != task.id) {
+        // Set task in model
+        self.selectedTask = task;
 
-      // Select the current task and show options
-      selectTask(self.selectedTask());
+        // Select the current task and show options
+        selectTask(self.selectedTask);
 
-      // Trigger task selection to addon script      
-      addon.port.emit("SetActiveTask", ko.toJS(task));
+        // Trigger task selection to addon script      
+        addon.port.emit("SetActiveTask", ko.toJS(task));
 
-      // Load latest tabs for restoring
-      //loadTabs(self.selectedTask());
-      //console.log(JSON.stringify(self.tabs));
+        // Load latest tabs for restoring
+        //loadTabs(self.selectedTask);
+        //console.log(JSON.stringify(self.tabs));
+      }
     };
     
     self.newTask = function() {
@@ -82,7 +81,9 @@ $(document).ready(function() {
     self.cancelEditTask = function(task) {
       $('#new-task-form-button-new').show();
       $('#'+task.id).find('.task-list-entry').show();
+
       $('#'+task.id+' .inline-edit').hide();
+      $('#'+task.id+' #edit-task-form-input-title').val(null);
     };
 
     self.addTask = function() {
@@ -106,11 +107,10 @@ $(document).ready(function() {
     }
 
     self.updateTask = function(task) {
-      var title = $("#edit-task-form-input-title").val();
+      var title = $('#'+task.id+' #edit-task-form-input-title').val();
 
       if (task.title() != null && task.title().length > 0) {
         task.title(title);
-        task.modified(new Date());
         updateTask(task);
       } else {
         deleteTask(task);
@@ -124,21 +124,23 @@ $(document).ready(function() {
     };
 
     self.completeTask = function(task) {
-      
+      task.completed(true);
+      task.completedDate(new Date());
+      updateTask(task);
+      self.tasks.remove(task);
     };
 
     self.indentTask = function(task) {
       if (task != null && task.position() > 1) {
-        // for.... iterate top to get real parent!!!!!
-        parent = self.tasks()[task.position() - 2];
-        task.parentId(parent.id);
-
-        if ((task.level() + 1) - parent.level() == 1) {
-          task.level(task.level() + 1);
-        }
-
-        console.log("Indent " + task.title() + " to " + task.level());
-        updateTask(task);
+        for (var i = task.position() - 2; i >= 0; i--) {                      
+          if ((task.level() + 1) - self.tasks()[i].level() == 1) {
+            task.parentId(self.tasks()[i].id);
+            task.level(task.level() + 1);
+            console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
+            updateTask(task);
+            break;
+          }
+        };
       }
     };
 
@@ -177,15 +179,18 @@ $(document).ready(function() {
 
         updateTask(arg.item);
 
-
         // If task position has been modified
         ko.utils.arrayForEach(self.tasks(), function(task) {
-          // console.log(self.tasks.indexOf(task) + ": " + task.title);
           if (task.id != arg.item.id) {
             if (arg.sourceIndex < arg.targetIndex) {
               // Task has been moved to a lower position
               if (task.position() > (arg.sourceIndex + 1) && task.position() <= (arg.targetIndex + 1)) {
                 task.position(task.position() - 1);
+
+                if (task.position == 0 && task.level() > 0) {
+                  task.level(0);
+                }
+
                 updateTask(task);
                 // console.log("Setting " + task.title() + " to position " + task.position());
               }
@@ -193,9 +198,26 @@ $(document).ready(function() {
               // Task has been moved to a higher position
               if (task.position() < (arg.sourceIndex + 1) && task.position() >= (arg.targetIndex + 1)) {
                 task.position(task.position() + 1);
+
+                if (task.position == 0 && task.level() > 0) {
+                  task.level(0);
+                }
+
                 updateTask(task);
                 // console.log("Setting " + task.title() + " to position " + task.position());
               }
+            }
+
+            if (task.position() > 1 && task.level() > 0) {
+              for (var i = task.position() - 2; i >= 0; i--) {
+                console.log("Checking" + self.tasks()[i].title());
+                if ((task.level() - self.tasks()[i].level() == 1) && task.parentId() != self.tasks()[i].id) {
+                  task.parentId(self.tasks()[i].id);
+                  updateTask(task);
+                  // console.log("Setting parent of " + task.title() + " to " + self.tasks()[i].title());
+                  break;
+                }
+              };
             }
           }
         });
@@ -207,7 +229,7 @@ $(document).ready(function() {
     self.notes = ko.observableArray();
 
     self.loadNotes = function() {
-      loadNotes(self.selectedTask());
+      loadNotes(self.selectedTask);
     }
 
     self.newNote = function() {
@@ -231,7 +253,7 @@ $(document).ready(function() {
 
       if (body != null && body.length > 0) {
         addNote(new Note({
-          "taskId" : self.selectedTask().id,
+          "taskId" : self.selectedTask.id,
           "body" : body,
           "created" : new Date(),
           "modified" : new Date()
@@ -276,7 +298,7 @@ $(document).ready(function() {
     self.bookmarks = ko.observableArray();
     
     self.loadBookmarks = function() {
-      loadBookmarks(self.selectedTask());
+      loadBookmarks(self.selectedTask);
     }
 
     self.newBookmark = function() {
@@ -299,7 +321,7 @@ $(document).ready(function() {
     self.addBookmark = function() {
       if (bookmark.title().length > 0 && bookmark.title().url > 0) {
         addBookmark(new Bookmark({ 
-          "taskId" : self.selectedTask().id,
+          "taskId" : self.selectedTask.id,
           "url" : $('#new-bookmark-form-input-url').val(),
           "title" : $('#new-bookmark-form-input-title').val(), 
           "description" : $('#new-bookmark-form-input-description').val(),
@@ -346,7 +368,7 @@ $(document).ready(function() {
     self.tabs = ko.observableArray();
     
     self.loadTabs = function() {
-      loadTabs(self.selectedTask());
+      loadTabs(self.selectedTask);
     }
 
     self.deleteTab = function(tab) {
@@ -358,7 +380,7 @@ $(document).ready(function() {
     self.history = ko.observableArray();
     
     self.loadHistory = function() {
-      loadHistory(self.selectedTask());
+      loadHistory(self.selectedTask);
     }
 
     self.deleteHistoryEntry = function(entry) {
@@ -421,7 +443,7 @@ $(document).ready(function() {
     // Add all goals for selection option
     viewModel.goals.removeAll();
     ko.utils.arrayForEach(goals, function(goal) {
-      viewModel.goals.push(ko.observable(goal));
+      viewModel.goals.push(new Goal(goal));
     });
   });
 
@@ -430,16 +452,10 @@ $(document).ready(function() {
    */
   function selectGoal(goal) {
     // Set goal selection to addon script      
-    addon.port.emit("SetActiveGoal", goal);
+    addon.port.emit("SetActiveGoal", ko.toJS(goal));
 
-    // Set active goal for page binding
-    viewModel.selectedGoal(goal);
-
-    // Load all goal tasks
-    loadTasks(viewModel.selectedGoal());
-
-    // Reset selected task
-    viewModel.selectedTask = ko.observable();
+    // Load active goal
+    addon.port.emit("GetActiveGoal");
   }
 
   /**
@@ -447,7 +463,7 @@ $(document).ready(function() {
    */
   addon.port.on("ActiveGoalLoaded", function(goal) {
     // Set active goal for page binding
-    viewModel.selectedGoal(goal);
+    viewModel.selectedGoal(new Goal(goal));
 
     // Load all goal tasks
     loadTasks(viewModel.selectedGoal());
@@ -489,6 +505,7 @@ $(document).ready(function() {
    * Saves changes to an existing task.
    */
   function updateTask(task) {
+    task.modified(new Date());
     addon.port.emit("UpdateTask", ko.toJSON(task));
   }
 
@@ -500,7 +517,11 @@ $(document).ready(function() {
    * Deletes an existing task.
    */
   function deleteTask(task) {
-    addon.port.emit("DeleteTask", task);
+    task.deleted(true);
+    task.position(-1);
+    task.parentId(null);
+    task.level(0);
+    updateTask(task);
     viewModel.tasks.remove(task);
   }
 
@@ -535,7 +556,7 @@ $(document).ready(function() {
       // Hide all visible options, before showing another one   
       $('.task-list').find('.task-list-entry-control a:visible').not($(ttListEntry).find('.task-list-entry-control a')).hide();
       // Show options for selected task
-      $(ttListEntry).find('.task-list-entry-control a').show();  
+      $(ttListEntry).find('.task-list-entry-control a').fadeIn();  
     }
   }
   
