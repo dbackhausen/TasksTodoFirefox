@@ -1,11 +1,20 @@
 $(document).ready(function() {
+  /////////////////////////////////////////////////////////////////////////////
+  // ERROR HANDLING                                                          //
+  /////////////////////////////////////////////////////////////////////////////
   
-  /**
-   * USER MODEL
-   */
-  function UserModel() {
+  addon.port.on("Error", function(error) {
+    if (error != null && error.length > 0) {
+      $('<div class="alert alert-danger" role="alert">'+error+'</div>').insertAfter('.inline-content h1').delay(3000).fadeOut(1000);
+    }
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+  // VIEW MODEL                                                              //
+  /////////////////////////////////////////////////////////////////////////////
+  function ViewModel() {
     var self = this;
-    
+  
     self.user = ko.observable();
 
     self.login = function(data) {
@@ -19,8 +28,8 @@ $(document).ready(function() {
   };
 
   // Apply view model
-  var userModel = new UserModel();
-  ko.applyBindings(userModel, document.getElementById("content"));
+  var viewModel = new ViewModel();
+  ko.applyBindings(viewModel);
 
   /**
    * Log in user.
@@ -31,8 +40,6 @@ $(document).ready(function() {
 
   addon.port.on("UserLoggedIn", function(user) {
     if (user != null) {
-      console.log(user.username + " successfully logged in");
-
       // Set the current user
       addon.port.emit("SetActiveUser", user);
 

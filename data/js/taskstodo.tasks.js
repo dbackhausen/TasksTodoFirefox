@@ -1,5 +1,13 @@
 $(document).ready(function() {
   
+  $('#top-menu-goals-button').click(function() {
+    $('#content').animate({ left: 0 }, 'normal', function() {
+      // Redirect to tasks page
+      addon.port.emit("Redirect", "goals.html");
+    });
+  });
+
+
   ko.punches.enableAll();
 
   // Get active user
@@ -31,8 +39,9 @@ $(document).ready(function() {
     self.tasks = ko.observableArray();
 
     self.selectGoal = function(goal) {
-      selectGoal(goal);
-      $('#content').animate({ left: 0 }, 'slow', function() { });
+      $('#content').animate({ left: 0 }, 'normal', function() {
+        selectGoal(goal);
+      });
     };
 
     self.selectTask = function(task) {     
@@ -237,7 +246,6 @@ $(document).ready(function() {
       $('#new-note-form-button-new').toggle();
       $('.task-note-list-empty').toggle();
       $('#new-note-form').fadeToggle("fast");
-      $('#new-note-form-input-body').val(null);
       $('#new-note-form-input-body').focus();
     };
     
@@ -264,16 +272,19 @@ $(document).ready(function() {
     };
     
     self.editNote = function(note) {
-      $('#new-note-form-button-new').show();
+      $('#new-note-form-button-new').hide();
       $('#new-note-form:visible').hide();
-      $('.task-note-list').find('.inline-edit:visible').hide();
+      
       $('#'+note.id+' .task-note-list-content').hide();
+      $('.task-note-list').find('.inline-edit:visible').hide();
       $('#'+note.id+' .inline-edit').fadeIn('fast');
+
       $('#edit-note-form-input-body').val(note.body());
       $('#edit-note-form-input-body').focus();
     };
 
     self.cancelEditNote = function(note) {
+      $('#new-note-form-button-new').show();
       $('#'+note.id+' .task-note-list-content').fadeIn('fast');
       $('#'+note.id+' .inline-edit').hide();
     };
@@ -283,7 +294,7 @@ $(document).ready(function() {
         note.modified(new Date());
         updateNote(note);
       } else {
-        deleteNote(note);
+        // deleteNote(note);
       }
 
       self.cancelEditNote(note);
@@ -302,50 +313,58 @@ $(document).ready(function() {
     }
 
     self.newBookmark = function() {
-      $('#edit-bookmark-form-input-body').val(null);
       $('.task-bookmarks-list').find(".inline-edit:visible").hide();
       $('#new-bookmark-form-button-new').toggle();
       $('.task-bookmarks-list-empty').toggle();
       $('#new-bookmark-form').fadeToggle("fast");
+      $('#new-bookmark-form-input-title').focus();
     };
     
     self.cancelNewBookmark = function() {
       $('#new-bookmark-form-button-new').toggle();
       $('.task-bookmarks-list-empty').toggle();
       $('#new-bookmark-form').toggle();
-      $('#new-bookmark-form-input-url').val(null);
-      $('#new-bookmark-form-input-title').val(null);
-      $('#new-bookmark-form-input-description').val(null);
     };
     
     self.addBookmark = function() {
-      if (bookmark.title().length > 0 && bookmark.title().url > 0) {
+      var title = $('#new-bookmark-form-input-title').val();
+      var url = $('#new-bookmark-form-input-url').val();
+      var description = $('#new-bookmark-form-input-description').val();
+
+      if (title.length > 0 && url.length > 0) {
         addBookmark(new Bookmark({ 
           "taskId" : self.selectedTask.id,
-          "url" : $('#new-bookmark-form-input-url').val(),
-          "title" : $('#new-bookmark-form-input-title').val(), 
-          "description" : $('#new-bookmark-form-input-description').val(),
+          "title" : title, 
+          "url" : url,
+          "description" : description,
           "created" : new Date(),
           "modified" : new Date()
         }));
       } else {
-        // TODO throw error!
+        // TODO show error!
       }
 
-      self.cancelNewBookmark();
+      self.cancelNewBookmark();      
     };
     
     self.editBookmark = function(bookmark) {
+      $('#new-bookmark-form-button-new').hide();
+      $('#new-bookmark-form:visible').hide();
       $('#'+bookmark.id+' .task-bookmarks-list-content').toggle();
       $('#'+bookmark.id+' .inline-edit').fadeToggle("fast");
+      $('#edit-bookmark-form-input-title').val(bookmark.title);
+      $('#edit-bookmark-form-input-url').val(bookmark.url);
+      $('#edit-bookmark-form-input-description').val(bookmark.description);  
+      $('#edit-bookmark-form-input-title').focus();
     };
 
     self.cancelEditBookmark = function(bookmark) {
+      $('#new-bookmark-form-button-new').show();
       $('#'+bookmark.id+' .task-bookmarks-list-content').fadeToggle("fast");
       $('#'+bookmark.id+' .inline-edit').toggle();
-      $('#new-bookmark-form-input-url').val(null);
-      $('#new-bookmark-form-input-title').val(null);
-      $('#new-bookmark-form-input-description').val(null);    
+      $('#edit-bookmark-form-input-title').val(null);
+      $('#edit-bookmark-form-input-url').val(null);
+      $('#edit-bookmark-form-input-description').val(null);    
     };
     
     self.updateBookmark = function(bookmark) {
@@ -353,7 +372,7 @@ $(document).ready(function() {
         bookmark.modified(new Date());
         updateBookmark(bookmark);
       } else {
-        // TODO throw error!
+        // TODO show error!
       }
 
       self.cancelEditBookmark(bookmark);
@@ -604,7 +623,9 @@ $(document).ready(function() {
    * Deletes an existing note.
    */
   function deleteNote(note) {
-    addon.port.emit("DeleteNote", note);
+    // addon.port.emit("DeleteNote", note);
+    note.deleted(true);
+    updateNote(note);
     viewModel.notes.remove(note);
   }
 
@@ -655,7 +676,8 @@ $(document).ready(function() {
    * Deletes an existing bookmark.
    */
   function deleteBookmark(bookmark) {
-    addon.port.emit("DeleteBookmark", bookmark);
+    bookmark.deleted(true);
+    updateBookmark(bookmark);
     viewModel.bookmarks.remove(bookmark);
   }
 
@@ -706,7 +728,8 @@ $(document).ready(function() {
    * Deletes an existing tab.
    */
   function deleteTab(tab) {
-    addon.port.emit("DeleteTab", tab);
+    tab.deleted(true);
+    updateTab(tab);
     viewModel.tabs.remove(tab);
   }
 
@@ -735,7 +758,7 @@ $(document).ready(function() {
   /**
    * Adds a new history entry to the selected task.
    */
-  function addHistory(entry) {
+  function addHistoryEntry(entry) {
     addon.port.emit("AddHistoryEntry", ko.toJSON(entry));
   }
 
@@ -746,7 +769,7 @@ $(document).ready(function() {
   /**
    * Saves changes to an existing history entry.
    */
-  function updateHistory(entry) {
+  function updateHistoryEntry(entry) {
     addon.port.emit("UpdateHistoryEntry", ko.toJSON(entry));
   }
 
@@ -757,7 +780,8 @@ $(document).ready(function() {
    * Deletes an existing history entry.
    */
   function deleteHistoryEntry(entry) {
-    addon.port.emit("DeleteHistoryEntry", entry);
+    entry.deleted(true);
+    updateHistoryEntry(entry);
     viewModel.history.remove(entry);
   }
 

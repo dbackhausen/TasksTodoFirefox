@@ -46,45 +46,17 @@ a {
   text-decoration: line-through;
 }
 
-/*
-div.header {
-  background-color: #E2E7ED;
-  position: absolute; 
-  left: 0px; 
-  right: 0px;
-  top: 0px;
-  height: 40px;
-  padding: 5px 0px 0px 10px;
-  overflow: hidden;
-}
-
-div.content {
-  position: absolute;
-  left: 0px; 
-  right: 0px;
-  top: 40px;
-  bottom: 0px;
-  padding: 10px;
-  display: block;
-  height: 100%;
-  max-height: 100%;
-  overflow: auto;
-}
-
-div.footer { 
-  background-color: #E2E7ED;
-  position: absolute; 
-  left: 0px; 
-  right: 0px;
-  bottom: 0px;
-  height: 20px;
-  overflow: hidden;
-  visibility: hidden;
-}*/
-
 .padding-right-5 {
   padding-right: 5px;
 }
+
+.padding-right-10 {
+  padding-right: 10px;
+}
+
+/*
+ * TOP MENU
+ */
 
 #menubar {
   width: 100%;
@@ -94,20 +66,15 @@ div.footer {
   height: 40px;
 }
 
-#open-top-menu-button,
-#close-top-menu-button {
+#top-menu-open-button {
   cursor: pointer;
 }
 
-#close-top-menu-button {
-  padding: 5px 0px 10px 0px;
-}
-
-#close-top-menu-button:hover {
-  color: #428BCA;
-}
-
 #top-menu, #content {
+  display: inline; 
+}
+
+#top-menu {
   display: inline; 
 }
 
@@ -119,26 +86,43 @@ div.footer {
   background-color: #E8E8E8;
 }
 
+#top-menu .button {
+  padding: 5px 0px 10px 0px;
+  cursor: pointer;
+}
+
+#top-menu .button:hover {
+  color: #428BCA;
+}
+
+#top-menu-close-button.button {
+  border-bottom: 1px solid #E3E3E3;
+  padding: 5px 0px 5px 0px;
+}
+
+#top-menu-config-button.button {
+  padding: 10px 0px 10px 0px;
+}
+
 #top-menu ol {
   list-style: none;
   margin-left: 0px;
   padding-left: 0px;
   border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
+  background-color: #EEEEEE;
 }
 
 #top-menu li {
   border-bottom: 1px solid #E3E3E3;
-  background-color: #E2E7ED;
 }
 
-#top-menu li .top-menu-element-content {
+#top-menu li .goal-entry {
   color: #333333;
-  padding: 5px 2px 5px 2px;
+  padding: 5px 2px 5px 20px;
   cursor: pointer;
 }
 
-#top-menu li:hover .top-menu-element-content {
+#top-menu li:hover .goal-entry {
   color: #428BCA;
 }
 
@@ -168,7 +152,8 @@ label {
   text-transform: uppercase;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   background-color: #F0F6FA;
   border: 1px solid #E2E7ED;
   border-radius: 2px;
@@ -179,7 +164,8 @@ input[type="text"] {
   transition: all 0.3s ease-out 0s;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   background-color: #FAF4F0;
   border: 1px solid #E2E7ED;
   border-radius: 2px;

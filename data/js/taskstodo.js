@@ -1,20 +1,23 @@
 $(document).ready(function() { 
-  // Enable flexible textareas
-  $('.flexible').autosize();
 
-  // Datepicker options (see: http://eternicode.github.io/bootstrap-datepicker)
-  $('.datepicker').datepicker({
-    autoclose: true,
-    todayHighlight: true
-  });
+  /////////////////////////////////////////////////////////////////////////////
+  // TOP MENU                                                                //
+  /////////////////////////////////////////////////////////////////////////////
 
-  $('#open-top-menu-button').click(function() { 
+  $('#top-menu-open-button').click(function() { 
     $('#content').animate({ left: 350 }, 'slow', function() { });  
   });
 
-  $('#close-top-menu-button').click(function() { 
+  $('#top-menu-close-button').click(function() { 
     $('#content').animate({ left: 0 }, 'slow', function() { });  
   });
+
+  /////////////////////////////////////////////////////////////////////////////
+  // TEMPLATING                                                              //
+  /////////////////////////////////////////////////////////////////////////////
+
+  infuser.defaults.templateSuffix = ".tmpl.html";
+  infuser.defaults.templateUrl = "templates";
 
   /////////////////////////////////////////////////////////////////////////////
   // FUNCTIONS                                                               //
@@ -25,6 +28,15 @@ $(document).ready(function() {
     addon.port.emit("Redirect", page);
   }
 
+  // Enable flexible textareas
+  $('.flexible').autosize();
+
+  // Datepicker options (see: http://eternicode.github.io/bootstrap-datepicker)
+  $('.datepicker').datepicker({
+    autoclose: true,
+    todayHighlight: true
+  });
+
   /////////////////////////////////////////////////////////////////////////////
   // FILTERS                                                                 //
   /////////////////////////////////////////////////////////////////////////////
@@ -32,8 +44,15 @@ $(document).ready(function() {
   ko.filters.smartdate = function(date) {
     return moment(date).format("YYYY-MM-DD HH:mm");
   };
-});
 
+  /////////////////////////////////////////////////////////////////////////////
+  // ERROR HANDLING                                                          //
+  /////////////////////////////////////////////////////////////////////////////
+  
+  addon.port.on("Error", function(error) {
+    console.error("[ERROR] " + error);
+  });
+});
 
 function User(data) {
   this.id = data.id;
@@ -86,6 +105,7 @@ function Note(data) {
   this.body = ko.observable(data.body);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
+  this.deleted = ko.observable(data.deleted);
 }
 
 function Bookmark(data) {
@@ -98,6 +118,7 @@ function Bookmark(data) {
   this.relevance = ko.observable(data.relevance);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
+  this.deleted = ko.observable(data.deleted);
 }
 
 function HistoryEntry(data) {
@@ -111,6 +132,7 @@ function HistoryEntry(data) {
   this.relevance = ko.observable(data.relevance);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
+  this.deleted = ko.observable(data.deleted);
 }
 
 function Tab(data) {
@@ -122,4 +144,5 @@ function Tab(data) {
   this.thumbnail = ko.observable(data.thumbnail);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
+  this.deleted = ko.observable(data.deleted);
 }

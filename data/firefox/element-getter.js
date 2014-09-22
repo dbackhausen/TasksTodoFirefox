@@ -4,3 +4,14 @@ self.port.on("getElements", function(tag) {
     self.port.emit("gotElement", elements[i].innerHTML);
   }
 });
+
+// $(document).ready(function () {
+// //    $(document).ajaxComplete(function() {
+//       console.log($(location).attr('href'));
+//       console.log(window.location.href);
+// //    });
+// });
+
+// $(document).ajaxComplete(function(event, request, settings) {
+// 	console.log($(location).attr('href'));
+// });
