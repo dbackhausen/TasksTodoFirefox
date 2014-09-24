@@ -49,9 +49,6 @@
       <div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
         <i class="fa fa-cog padding-right-5"></i><span>Configuration</span>
       </div>
-      <!--<div id="top-menu-inbox-button" class="button">
-        <i class="fa fa-inbox padding-right-5"></i><span>Your inbox</span>
-      </div>-->   
       <div id="top-menu-goals-button" class="button">
         <i class="fa fa-bullseye padding-right-5"></i><span>Your goals</span>
       </div>
@@ -67,6 +64,9 @@
       <div id="menubar">
         <div id="top-menu-open-button">
            <i class="fa fa-list fa-2"></i>
+        </div>
+        <div id="top-menu-search">
+          <!-- TODO -->
         </div>
       </div>
       <div class="inline-content">
@@ -205,13 +205,21 @@
                       </div>
                       <div class="task-bookmarks-list-entry">
                         <div class="task-bookmarks-list-content">
-                          <div class="thumbnail">
-                            <img data-bind="attr: { src: thumbnail() }" width="100" height="75" />
-                          </div>
-                          <div class="link">
-                            <a data-bind="attr: { href: url() }" target="_blank"><span data-bind="text: title()"></span></a>
-                          </div>
+                          <a data-bind="attr: { href: url() }" target="_blank">
+                            <div class="thumbnail">
+                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'bookmarkZoomView', trigger: 'hover', placement: 'bottom'}"  />
+                            </div>
+                            <div class="description">
+                              <p class="title"><span data-bind="text: title()"></span></p>
+                              <p class="url"><span data-bind="text: url()"></span></p>
+                            </div>
+                          </a>
                         </div>
+
+                        <script type="text/html" id="bookmarkZoomView">
+                          <img data-bind="attr: { src: thumbnail() }" width="225" height="150"/>
+                        </script>
+
                         <div class="inline-edit">
                           <p>
                             <label for="edit-bookmark-form-input-title">Title</label>
@@ -282,13 +290,20 @@
                       </div>
                       <div class="task-history-list-entry">
                         <div class="task-history-list-content">
-                          <div class="thumbnail">
-                            <img data-bind="attr: { src: thumbnail() }" width="100" height="75" />
-                          </div>
-                          <div class="link">
-                            <p><a data-bind="attr: { href: url() }" target="_blank"><span data-bind="text: title()"></span></a></p>
-                            <p><a data-bind="attr: { href: url() }" target="_blank"><span data-bind="text: url()"></span></a></p>
-                          </div>
+                          <a data-bind="attr: { href: url() }" target="_blank">
+                            <div class="thumbnail">
+                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'historyZoomView', trigger: 'hover', placement: 'bottom'}" />
+                            </div>
+                            <div class="description">
+                              <p class="title"><span data-bind="text: title()"></span></p>
+                              <p class="url"><span data-bind="text: url()"></span></p>
+                            </div>
+                          </a>
+
+                          <script type="text/html" id="historyZoomView">
+                            <img data-bind="attr: { src: thumbnail() }" width="225" height="150"/>
+                          </script>
+
                         </div>
                       </div>
                     </li>
@@ -307,5 +322,7 @@
       <!-- /ko -->
 
     </div>
+
+
   </body>
 </html>

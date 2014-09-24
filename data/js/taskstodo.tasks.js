@@ -58,6 +58,15 @@ $(document).ready(function() {
         // Load latest tabs for restoring
         //loadTabs(self.selectedTask);
         //console.log(JSON.stringify(self.tabs));
+      } else {
+        // Reset selected task
+        self.selectedTask = ko.observable();
+
+        // Select the current task and show options
+        selectTask(null);
+
+        // Trigger task selection to addon script      
+        addon.port.emit("SetActiveTask", null);
       }
     };
     
@@ -133,6 +142,12 @@ $(document).ready(function() {
     };
 
     self.completeTask = function(task) {
+      // for (var i = task.position() - 2; i <= self.tasks().length; i++) {
+      //   if (self.tasks()[i].parentId != null && task.id == self.tasks()[i].parentId) {
+      //     return;
+      //   }
+      // }
+
       task.completed(true);
       task.completedDate(new Date());
       updateTask(task);
@@ -141,13 +156,15 @@ $(document).ready(function() {
 
     self.indentTask = function(task) {
       if (task != null && task.position() > 1) {
-        for (var i = task.position() - 2; i >= 0; i--) {                      
+        for (var i = task.position() - 2; i >= 0; i--) {  
           if ((task.level() + 1) - self.tasks()[i].level() == 1) {
             task.parentId(self.tasks()[i].id);
             task.level(task.level() + 1);
             console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
             updateTask(task);
             break;
+          } else {
+            return;
           }
         };
       }
@@ -183,6 +200,7 @@ $(document).ready(function() {
           } else {
             // Set the new parent
             arg.item.parentId(self.tasks()[arg.targetIndex - 1].id);
+            arg.item.level(self.tasks()[arg.targetIndex - 1].level() + 1);
           }
         }
 
@@ -219,17 +237,22 @@ $(document).ready(function() {
 
             if (task.position() > 1 && task.level() > 0) {
               for (var i = task.position() - 2; i >= 0; i--) {
-                console.log("Checking" + self.tasks()[i].title());
                 if ((task.level() - self.tasks()[i].level() == 1) && task.parentId() != self.tasks()[i].id) {
+                  // if task level is higher than the previous task, 
+                  // than set new parent
                   task.parentId(self.tasks()[i].id);
                   updateTask(task);
                   // console.log("Setting parent of " + task.title() + " to " + self.tasks()[i].title());
                   break;
                 }
-              };
+              }
             }
           }
         });
+
+        if (self.selectedTask != null && self.selectedTask.id == arg.item.id) {
+          selectTask(arg.item);
+        }
       }
     }
 
@@ -529,7 +552,7 @@ $(document).ready(function() {
   }
 
   addon.port.on("TaskUpdated", function(task) {
-    console.log("Task " + task.title + " has been updated");
+    console.log("Task '" + task.title + "' has been updated");
   });
   
   /**
@@ -545,12 +568,24 @@ $(document).ready(function() {
   }
 
   addon.port.on("TaskDeleted", function(data) {
+    console.log("Task '" + task.title + "' has been marked as deleted");
   });
 
   /**
    * Selects a task.
    */
   function selectTask(task) {
+    // Disable all inline editors
+    $('.task-list').find('.inline-edit').hide();
+    $('.task-list').find('.task-list-entry').show();
+
+    // Disable all other task selections
+    $('.task-list').find('.selected').removeClass('selected');
+    // Hide all visible options, before showing another one  
+    $('.task-list').find('.task-list-entry-options:visible').not($(ttListEntry).find('.task-list-entry-options')).hide();
+    // Hide all visible options, before showing another one   
+    $('.task-list').find('.task-list-entry-control a:visible').not($(ttListEntry).find('.task-list-entry-control a')).hide();
+
     if (task != null) {
       // Make sure the input field value is set
       $("#edit-task-form-input-title").val(task.title());
@@ -558,22 +593,12 @@ $(document).ready(function() {
       // Get list entry
       var ttListEntry = $("li#" + task.id);
 
-      // Disable all inline editors
-      $('.task-list').find('.inline-edit').hide();
-      $('.task-list').find('.task-list-entry').show();
-
-      // Disable all other task selections
-      $('.task-list').find('.selected').removeClass('selected');
       // Select current list entry
       $(ttListEntry).find('div').addClass('selected');
 
-      // Hide all visible options, before showing another one  
-      $('.task-list').find('.task-list-entry-options:visible').not($(ttListEntry).find('.task-list-entry-options')).hide();
       // Show options for selected task
       $(ttListEntry).find('.task-list-entry-options').fadeIn();
 
-      // Hide all visible options, before showing another one   
-      $('.task-list').find('.task-list-entry-control a:visible').not($(ttListEntry).find('.task-list-entry-control a')).hide();
       // Show options for selected task
       $(ttListEntry).find('.task-list-entry-control a').fadeIn();  
     }
