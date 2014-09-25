@@ -118,7 +118,7 @@
 
 .task-list-entry.selected .task-list-entry-title,
 .task-list-entry.selected .task-list-entry-title:hover {
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .task-list-entry-control { 

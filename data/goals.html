@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/taskstodo.css"/>
     <link rel="stylesheet" href="css/taskstodo.goals.css"/>
-    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300,500' rel='stylesheet' type='text/css'>
     <script src="js/jquery-1.10.2.min.js"></script>
     <script src="js/jquery.ui.widget.js"></script>
     <script src="js/jquery.iframe-transport.js"></script>
@@ -46,12 +46,9 @@
       <div id="top-menu-close-button" class="button">
         <i class="fa fa-times padding-right-5"></i><span>Close menu</span>
       </div>
-      <div id="top-menu-config-button" class="button">
+      <div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
         <i class="fa fa-cog padding-right-5"></i><span>Configuration</span>
       </div>
-      <!--<div id="top-menu-inbox-button" class="button">
-        <i class="fa fa-inbox padding-right-5"></i><span>Your inbox</span>
-      </div>-->
       <div id="top-menu-goals-button" class="button">
         <i class="fa fa-bullseye padding-right-5"></i><span>Your goals</span>
       </div>
@@ -114,6 +111,10 @@
           <button data-bind="click: cancelNewGoal" class="btn btn-default btn-sm">Cancel</button>
         </div>
       </div>
+
+      <!-- ko template: {name: 'configuration', data: user}-->
+      <!-- /ko -->
+
     </div>
   </body>
 </html>

@@ -55,6 +55,9 @@ $(document).ready(function() {
         // Trigger task selection to addon script      
         addon.port.emit("SetActiveTask", ko.toJS(task));
 
+        // Load task bookmarks      
+        loadBookmarks(self.selectedTask);
+
         // Load latest tabs for restoring
         //loadTabs(self.selectedTask);
         //console.log(JSON.stringify(self.tabs));
@@ -674,6 +677,9 @@ $(document).ready(function() {
     ko.utils.arrayForEach(bookmarks, function(bookmark){
       viewModel.bookmarks.push(new Bookmark(bookmark));
     });
+
+    // Call main.js to set bookmarks of active task
+    addon.port.emit("SetActiveTaskBookmarks", bookmarks);
   });
   
   /**

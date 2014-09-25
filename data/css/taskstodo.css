@@ -9,8 +9,8 @@ html, body {
 }
 
 body {
-  font-family: 'Lato', Calibri, Arial, sans-serif;
-  -webkit-text-size-adjust: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
 }
 
 body * {
@@ -18,10 +18,11 @@ body * {
 }
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
   color: #535F6D;
   line-height: 1;
   margin: 10px 0 20px 0;
-  font-family: 'Roboto', sans-serif;
 }
 
 h1, h2, h3 {
