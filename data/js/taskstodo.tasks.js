@@ -690,7 +690,7 @@ $(document).ready(function() {
   }
 
   addon.port.on("BookmarkAdded", function(bookmark) {
-    viewModel.bookmarks.push(new Bookmark(bookmark));
+    viewModel.bookmarks.unshift(new Bookmark(bookmark));
   });
   
   /**
@@ -784,6 +784,9 @@ $(document).ready(function() {
     ko.utils.arrayForEach(history, function(entry){
       viewModel.history.push(new HistoryEntry(entry));
     });
+
+    // Call main.js to set history of active task
+    addon.port.emit("SetActiveTaskHistory", history);
   });
   
   /**
