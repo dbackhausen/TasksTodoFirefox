@@ -43,10 +43,6 @@ a {
   color: #428BCA;
 }
 
-.line-through {
-  text-decoration: line-through;
-}
-
 .padding-right-5 {
   padding-right: 5px;
 }
@@ -119,8 +115,11 @@ a {
   background-color: #EEEEEE;
 }
 
-#top-menu li {
+#top-menu ol li {
   border-bottom: 1px solid #E3E3E3;
+
+padding-left: 10px;
+    text-indent: -0.4em;
 }
 
 #top-menu li .goal-entry {
@@ -132,6 +131,10 @@ a {
 #top-menu li:hover .goal-entry {
   color: #428BCA;
 }
+
+/*
+ * CONTENT
+ */
 
 #content {
   width: 100%;
@@ -149,6 +152,26 @@ a {
   padding: 10px;
 }
 
+.empty-list {
+  width: 100%;
+  font-style: italic;
+  text-align: center;
+  vertical-align: middle;
+  padding: 15px 5px 15px 5px;
+  margin-bottom: 10px;
+  color: #666666;
+  background-color: #EFEFEF;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+.popover {
+  white-space: nowrap;
+}
+
+/*
+ * FORM ELEMENTS
+ */
 
 label {
   cursor: pointer;
@@ -189,9 +212,15 @@ textarea.flexible {
   border-radius: 2px;
   display: block;
   font-family: 'Lato', Calibri, Arial, sans-serif;
-  width: 100%;
   padding: 2px;
   transition: height 0.2s ease 0s;
+
+  width: 100%;
+  height: 30px;
+  min-height: 30px; /* for default height */
+  overflow: hidden;
+  resize: none;
+  padding: 4px;
 }
 
 textarea.flexible:focus {

@@ -4,8 +4,7 @@
 
 #new-task-form {
   display: none;
-  margin-top: 15px;
-  padding-top: 10px;
+  margin: 10px 0px 10px 0px;
 }
 
 .task-list ol {
@@ -158,8 +157,14 @@
  * NOTE
  */
 
+#new-note-form-button-new {
+  margin: 0px 0px 10px 0px;
+}
+
 #new-note-form {
   display: none;
+  margin: 0px 0px 10px 0px;
+  padding: 5px;
 }
 
 .task-note-list ul {
@@ -168,28 +173,23 @@
   padding-left: 0px;
 }
 
-.task-note-list ul li {
-}
-
 .task-note-list a {
   color: #000000;
   text-decoration: none;
 }
 
-.task-note-list ul li:hover .task-note-list-control a {
-  visibility: visible;
+.task-note-list-entry {
+  width: 100%;
+  height: 100%;
+  max-height: 200px; 
+  display: table;
+  padding: 0px 5px 3px 5px;
+  background-color: #EFEFEF;
+  overflow: scroll;
 }
 
-.task-note-list-empty {
-  width: 100%;
-  font-style: italic;
-  text-align: center;
-  vertical-align: middle;
-  padding: 15px 5px 15px 5px;
-  color: #666666;
-  background-color: #EFEFEF;
-  border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
+.task-note-list-entry div {
+  display: table-cell;
 }
 
 .task-note-list-entry-header {
@@ -203,6 +203,7 @@
   padding: 5px 5px 5px 5px;
   color: #666666;
   background-color: #DFDFDF;
+  float: left;
 }
 
 .task-note-list-entry-header div {
@@ -220,41 +221,35 @@
   font-weight: 100;
 }
 
-.task-note-list-entry {
-  width: 100%;
-  height: 100%;
-  max-height: 200px; 
-  display: table;
-  padding: 0px 5px 3px 5px;
-  background-color: #EFEFEF;
-  overflow: scroll;
-}
-
-.task-note-list-entry div {
-  display: table-cell;
-}
-
-.task-note-list-entry div.inline-edit {
-  display: none;
-  width: 100%;
-  margin: 2px;
-  padding: 2px;
-}
-
 .task-note-list-content {
-  padding: 0px 5px 0px 5px;
+  padding: 5px;
+  float: left;
 }
 
 .task-note-list-content span {
   display: block;
 }
 
+.inline-edit {
+  display: none;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+
 /*
  * BOOKMARK
  */
 
+#new-bookmark-form-button-new {
+  margin: 0px 0px 10px 0px;
+}
+
 #new-bookmark-form {
   display: none;
+  margin: 0px 0px 10px 0px;
+  padding: 5px;
 }
 
 .task-bookmarks-list {
@@ -280,18 +275,6 @@
   visibility: visible;
 }
 
-.task-bookmarks-list-empty {
-  width: 100%;
-  font-style: italic;
-  text-align: center;
-  vertical-align: middle;
-  padding: 15px 5px 15px 5px;
-  color: #666666;
-  background-color: #EFEFEF;
-  border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
-}
-
 .task-bookmarks-list-entry-header {
   width: 100%;
   display: table;
@@ -299,6 +282,7 @@
   font-weight: 400;
   text-transform: uppercase;
   font-family: 'Lato', Calibri, Arial, sans-serif;
+
   margin: 5px 0px 0px 0px;
   padding: 5px 5px 5px 5px;
   color: #666666;
@@ -350,11 +334,13 @@
   width: 100%;
   padding: 0px 5px 0px 5px;
   vertical-align: top;
+
 }
 
 .task-bookmarks-list-content .description .title {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
   font-size: 13px;
-  font-weight: bold;
 }
 
 .task-bookmarks-list-content .description .url {
@@ -362,6 +348,8 @@
   font-weight: normal;
   font-style: italic;
   color: #666666;
+  overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -385,18 +373,6 @@
 
 .task-history-list ul li:hover .task-history-list-control a {
   visibility: visible;
-}
-
-.task-history-list-empty {
-  width: 100%;
-  font-style: italic;
-  text-align: center;
-  vertical-align: middle;
-  padding: 15px 5px 15px 5px;
-  color: #666666;
-  background-color: #EFEFEF;
-  border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
 }
 
 .task-history-list-entry-header {
@@ -427,7 +403,6 @@
   display: table;
   padding: 5px;
   background-color: #EFEFEF;
-  overflow: scroll;
 }
 
 .task-history-list-entry div {
@@ -448,14 +423,24 @@
 }
 
 .task-history-list-content .description {
-  width: 100%;
   padding: 0px 5px 0px 5px;
   vertical-align: top;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
 }
 
 .task-history-list-content .description .title {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
   font-size: 13px;
-  font-weight: bold;
 }
 
 .task-history-list-content .description .url {
@@ -463,4 +448,54 @@
   font-weight: normal;
   font-style: italic;
   color: #666666;
+}
+
+/* COMPLETED TASKS */
+
+.completed-tasks {
+  margin-top: 20px;
+}
+
+.completed-tasks section {
+  width: 100%;
+  height: 25px;
+}
+
+.completed-tasks .header {
+  width: 275px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  font-style: italic;
+  color: #535F6D;
+  float: left;
+}
+
+.completed-tasks .option {
+  margin-left: 275px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.completed-tasks ol li {
+  width: 100%;  
+  margin: 0px;
+  padding: 5px 0px 5px 0px;
+  color: #666666;
+}
+
+.completed-tasks ol li a {
+  color: #666666;
+  text-decoration: none;
+}
+
+.completed-tasks .check {
+  width: 20px;
+  float: left;
+}
+
+.completed-tasks .title {
+  margin-left: 20px;
+  font-style: italic;
+  text-decoration: line-through;
 }

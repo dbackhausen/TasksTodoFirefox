@@ -17,6 +17,9 @@ $(document).ready(function() {
 
       // Load all user goals
       loadGoals(activeUser);
+
+      // Load all completed goals
+      loadCompletedGoals(activeUser);
     }
   });
 
@@ -26,7 +29,8 @@ $(document).ready(function() {
     self.user = ko.observable();
     self.selectedGoal = ko.observable();
     self.goals = ko.observableArray();
-    
+    self.completedGoals = ko.observableArray();
+
     self.selectGoal = function(goal) {
       self.selectedGoal = goal;
       selectGoal(goal);
@@ -34,25 +38,36 @@ $(document).ready(function() {
     
     self.newGoal = function() {
       self.selectedGoal = ko.observable();
-      $("#new-goal-form-input-title").val(null);
-      $("#new-goal-form").show("fast");
+      
+      $('#new-goal-form-button-new').hide();
+      $('#new-goal-form:visible').hide();
+
+      $('#new-goal-form-input-title').val(null);
+      $('#new-goal-form').show('fast');
+      $('#new-task-form-input-title').focus();
+      
+      // Reset width and height
+      $('#new-goal-form-input-title').css({"width":"", "height":"", "top": "", "left" : ""});
     };
     
     self.cancelNewGoal = function() {
       self.selectedGoal = ko.observable();
+
       $("#new-goal-form").hide();
       $("#new-goal-form-input-title").val(null);
+
+      $('#new-goal-form-button-new').show();
     };
     
     self.editGoal = function(goal) {
-      $('#new-goal-form-button-new').hide();
-      $('#new-goal-form:visible').hide();
+      $('#new-goal-form-button-new').hide(); // hide new button
+      $('#new-goal-form:visible').hide(); // hide new goal form
+      $('.goal-list').find('.inline-edit:visible').hide(); // hide all open inline forms
+      $('.goal-list').find('.goal-list-entry:hidden').show(); // show hidden entries
 
-      $('.goal-list-entry').find('.inline-edit:visible').hide();
-      $('#'+goal.id).find('.goal-list-entry').hide();
-
-      $('#'+goal.id+' #edit-goal-form-input-title').val(goal.title());
-      $('#'+goal.id+' .inline-edit').fadeIn('fast');
+      $('#'+goal.id+' #edit-goal-form-input-title').val(goal.title()); // set title as value
+      $('#'+goal.id).find('.goal-list-entry').hide(); // hide list item to show form
+      $('#'+goal.id+' .inline-edit').fadeIn('fast'); // show inline form
     };
     
     self.cancelEditGoal = function(goal) {
@@ -99,10 +114,19 @@ $(document).ready(function() {
     };
 
     self.completeGoal = function(goal) {
-      goal.completed(true);
-      goal.completedDate(new Date());
-      updateGoal(goal);
-      self.goals.remove(goal);
+      if (goal.completed()) {
+        goal.completed(false);
+        goal.completedDate(null);
+        updateGoal(goal);
+        self.goals.push(goal);
+        self.completedGoals.remove(goal);
+      } else {
+        goal.completed(true);
+        goal.completedDate(new Date());
+        updateGoal(goal);
+        self.goals.remove(goal);
+        self.completedGoals.push(goal);
+      }
     };
 
     self.moveGoal = function(arg, event, ui) {
@@ -169,7 +193,21 @@ $(document).ready(function() {
       viewModel.goals.push(new Goal(goal));
     });
   });
-  
+
+  /**
+   * Loads all completed gaols.
+   */
+  function loadCompletedGoals(user) {
+    addon.port.emit("LoadCompletedGoals", user);
+  }
+
+  addon.port.on("CompletedGoalsLoaded", function(goals) {
+    viewModel.completedGoals.removeAll();
+    ko.utils.arrayForEach(goals, function(goal) {
+      viewModel.completedGoals.push(new Goal(goal));
+    });
+  });
+    
   /**
    * Adds a new goal.
    */
@@ -186,6 +224,7 @@ $(document).ready(function() {
    */
   function updateGoal(goal) {
     goal.modified(new Date());
+    console.log("Updating goal " + JSON.stringify(goal));
     addon.port.emit("UpdateGoal", ko.toJSON(goal));
   }
 

@@ -31,6 +31,14 @@ $(document).ready(function() {
   // Enable flexible textareas
   $('.flexible').autosize();
 
+  // KO handler for autosize
+  ko.bindingHandlers.koAutoresize = {
+    update: function(element, valueAccessor) {
+      var options = ko.utils.unwrapObservable(valueAccessor()) || {};
+      $(element).autosize();
+    }
+  };
+
   // Datepicker options (see: http://eternicode.github.io/bootstrap-datepicker)
   $('.datepicker').datepicker({
     autoclose: true,
@@ -67,6 +75,7 @@ function Goal(data) {
   this.title = ko.observable(data.title);
   this.description = ko.observable(data.description);
   this.userId = ko.observable(data.userId);
+  this.parentId = ko.observable(data.parentId);
   this.dueDate = ko.observable(data.dueDate);
   this.completedDate = ko.observable(data.completedDate);
   this.reminderDate = ko.observable(data.reminderDate);
@@ -85,7 +94,7 @@ function Task(data) {
   this.title = ko.observable(data.title);
   this.description = ko.observable(data.description);
   this.goalId = ko.observable(data.goalId);
-  this.parentId = ko.observable(data.parentId);
+  //this.parentId = ko.observable(data.parentId);
   this.dueDate = ko.observable(data.dueDate);
   this.completedDate = ko.observable(data.completedDate);
   this.reminderDate = ko.observable(data.reminderDate);

@@ -4,7 +4,7 @@
 
 #new-goal-form {
   display: none;
-  margin-top: 15px;
+  margin-top: 10px;
   padding-top: 10px;
 }
 
@@ -37,21 +37,8 @@
 
 /* */
 
-.goal-list-empty {
-  width: 100%;
-  font-style: italic;
-  text-align: center;
-  vertical-align: middle;
-  padding: 15px 5px 15px 5px;
-  color: #666666;
-  background-color: #EFEFEF;
-  border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
-}
-
 .goal-list-entry {
   width: 100%;
-  height: 100%;
 }
 
 .goal-list-entry.selected {
@@ -128,3 +115,54 @@
   visibility: hidden;
   padding-right: 5px;
 }
+
+/* COMPLETED GOALS */
+
+.completed-goals {
+  margin-top: 20px;
+}
+
+.completed-goals section {
+  width: 100%;
+  height: 25px;
+}
+
+.completed-goals .header {
+  width: 275px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  font-style: italic;
+  color: #535F6D;
+  float: left;
+}
+
+.completed-goals .option {
+  margin-left: 275px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.completed-goals ol li {
+  width: 100%;  
+  margin: 0px;
+  padding: 5px 0px 5px 0px;
+  color: #666666;
+}
+
+.completed-goals ol li a {
+  color: #666666;
+  text-decoration: none;
+}
+
+.completed-goals .check {
+  width: 20px;
+  float: left;
+}
+
+.completed-goals .title {
+  margin-left: 20px;
+  font-style: italic;
+  text-decoration: line-through;
+}
+

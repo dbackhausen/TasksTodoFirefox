@@ -37,6 +37,7 @@ $(document).ready(function() {
     self.goals = ko.observableArray();
     self.selectedTask = ko.observable();
     self.tasks = ko.observableArray();
+    self.completedTasks = ko.observableArray();
 
     self.selectGoal = function(goal) {
       $('#content').animate({ left: 0 }, 'normal', function() {
@@ -58,6 +59,9 @@ $(document).ready(function() {
         // Load task bookmarks      
         loadBookmarks(self.selectedTask);
 
+        // Load task history      
+        loadHistory(self.selectedTask);
+
         // Load latest tabs for restoring
         //loadTabs(self.selectedTask);
         //console.log(JSON.stringify(self.tabs));
@@ -75,17 +79,25 @@ $(document).ready(function() {
     
     self.newTask = function() {
       self.selectedTask = ko.observable();
+
       $('#new-task-form-button-new').hide();
       $('#new-task-form:visible').hide();
-      $("#new-task-form-input-title").val(null);
-      $("#new-task-form").show("fast");
+
+      $('#new-task-form-input-title').val(null);
+      $('#new-task-form').show('fast');
+      $('#new-task-form-input-title').focus();
+
+      // Reset width and height
+      $('#new-task-form-input-title').css({"width":"", "height":"", "top": "", "left" : ""});
     };
 
     self.cancelNewTask = function() {
       self.selectedTask = ko.observable();
-      $("#new-task-form").hide();
+
+      $('#new-task-form').hide();
+      $('#new-task-form-input-title').val(null);
+
       $('#new-task-form-button-new').show();
-      $("#new-task-form-input-title").val(null);
     };
     
     self.editTask = function(task) {
@@ -97,6 +109,8 @@ $(document).ready(function() {
 
       $('#'+task.id+' #edit-task-form-input-title').val(task.title());
       $('#'+task.id+' .inline-edit').fadeIn('fast');
+      
+      $('#edit-task-form-input-title').height($('#edit-task-form-input-title').prop('scrollHeight'));
     };
 
     self.cancelEditTask = function(task) {
@@ -145,16 +159,19 @@ $(document).ready(function() {
     };
 
     self.completeTask = function(task) {
-      // for (var i = task.position() - 2; i <= self.tasks().length; i++) {
-      //   if (self.tasks()[i].parentId != null && task.id == self.tasks()[i].parentId) {
-      //     return;
-      //   }
-      // }
-
-      task.completed(true);
-      task.completedDate(new Date());
-      updateTask(task);
-      self.tasks.remove(task);
+      if (task.completed()) {
+        task.completed(false);
+        task.completedDate(null);
+        updateTask(task);
+        self.tasks.push(task);
+        self.completedTasks.remove(task);
+      } else {
+        task.completed(true);
+        task.completedDate(new Date());
+        updateTask(task);
+        self.tasks.remove(task);
+        self.completedTasks.push(task);
+      }
     };
 
     self.indentTask = function(task) {
@@ -273,6 +290,8 @@ $(document).ready(function() {
       $('.task-note-list-empty').toggle();
       $('#new-note-form').fadeToggle("fast");
       $('#new-note-form-input-body').focus();
+      // Reset width and height
+      $('#new-note-form-input-body').css({"width":"", "height":"", "top": "", "left" : ""});
     };
     
     self.cancelNewNote = function() {
@@ -350,6 +369,9 @@ $(document).ready(function() {
       $('#new-bookmark-form-button-new').toggle();
       $('.task-bookmarks-list-empty').toggle();
       $('#new-bookmark-form').toggle();
+      $('#new-bookmark-form-input-title').val(null);
+      $('#new-bookmark-form-input-url').val(null);
+      $('#new-bookmark-form-input-description').val(null);    
     };
     
     self.addBookmark = function() {
@@ -357,7 +379,7 @@ $(document).ready(function() {
       var url = $('#new-bookmark-form-input-url').val();
       var description = $('#new-bookmark-form-input-description').val();
 
-      if (title.length > 0 && url.length > 0) {
+      if (false || title.length > 0 && url.length > 0) {
         addBookmark(new Bookmark({ 
           "taskId" : self.selectedTask.id,
           "title" : title, 
@@ -378,9 +400,9 @@ $(document).ready(function() {
       $('#new-bookmark-form:visible').hide();
       $('#'+bookmark.id+' .task-bookmarks-list-content').toggle();
       $('#'+bookmark.id+' .inline-edit').fadeToggle("fast");
-      $('#edit-bookmark-form-input-title').val(bookmark.title);
-      $('#edit-bookmark-form-input-url').val(bookmark.url);
-      $('#edit-bookmark-form-input-description').val(bookmark.description);  
+      $('#edit-bookmark-form-input-title').val(bookmark.title());
+      $('#edit-bookmark-form-input-url').val(bookmark.url());
+      $('#edit-bookmark-form-input-description').val(bookmark.description());  
       $('#edit-bookmark-form-input-title').focus();
     };
 
@@ -394,8 +416,10 @@ $(document).ready(function() {
     };
     
     self.updateBookmark = function(bookmark) {
+      JSON.stringify("Updating bookmark: " + bookmark);
       if (bookmark.title().length > 0 && bookmark.title().url > 0) {
         bookmark.modified(new Date());
+
         updateBookmark(bookmark);
       } else {
         // TODO show error!
@@ -513,6 +537,9 @@ $(document).ready(function() {
     // Load all goal tasks
     loadTasks(viewModel.selectedGoal());
 
+    // Load all completed tasks
+    loadCompletedTasks(viewModel.selectedGoal());
+
     // Reset selected task
     viewModel.selectedTask = ko.observable();
   });
@@ -532,6 +559,20 @@ $(document).ready(function() {
     viewModel.tasks.removeAll();
     ko.utils.arrayForEach(tasks, function(task) {
       viewModel.tasks.push(new Task(task));
+    });
+  });
+
+  /**
+   * Loads all completed tasks.
+   */
+  function loadCompletedTasks(goal) {
+    addon.port.emit("LoadCompletedTasks", goal);
+  }
+
+  addon.port.on("CompletedTasksLoaded", function(tasks) { 
+    viewModel.completedTasks.removeAll();
+    ko.utils.arrayForEach(tasks, function(task) {
+      viewModel.completedTasks.push(new Task(task));
     });
   });
 
@@ -634,7 +675,7 @@ $(document).ready(function() {
   }
 
   addon.port.on("NoteAdded", function(note) {
-    viewModel.notes.push(new Note(note));
+    viewModel.notes.unshift(new Note(note));
   });
   
   /**

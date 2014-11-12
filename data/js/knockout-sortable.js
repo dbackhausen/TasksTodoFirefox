@@ -14,7 +14,10 @@
         DRAGKEY = "ko_dragItem",
         unwrap = ko.utils.unwrapObservable,
         dataGet = ko.utils.domData.get,
-        dataSet = ko.utils.domData.set;
+        dataSet = ko.utils.domData.set,
+        version = $.ui && $.ui.version,
+        //1.8.24 included a fix for how events were triggered in nested sortables. indexOf checks will fail if version starts with that value (0 vs. -1)
+        hasNestedSortableFix = version && version.indexOf("1.6.") && version.indexOf("1.7.") && (version.indexOf("1.8.") || version === "1.8.24");
 
     //internal afterRender that adds meta-data to children
     var addMetaDataAfterRender = function(elements, data) {
@@ -77,6 +80,29 @@
         return index;
     };
 
+    //remove problematic leading/trailing whitespace from templates
+    var stripTemplateWhitespace = function(element, name) {
+        var templateSource,
+            templateElement;
+
+        //process named templates
+        if (name) {
+            templateElement = document.getElementById(name);
+            if (templateElement) {
+                templateSource = new ko.templateSources.domElement(templateElement);
+                templateSource.text($.trim(templateSource.text()));
+            }
+        }
+        else {
+            //remove leading/trailing non-elements from anonymous templates
+            $(element).contents().each(function() {
+                if (this && this.nodeType !== 1) {
+                    element.removeChild(this);
+                }
+            });
+        }
+    };
+
     //connect items with observableArrays
     ko.bindingHandlers.sortable = {
         init: function(element, valueAccessor, allBindingsAccessor, data, context) {
@@ -86,12 +112,7 @@
                 sortable = {},
                 startActual, updateActual;
 
-            //remove leading/trailing non-elements from anonymous templates
-            $element.contents().each(function() {
-                if (this && this.nodeType !== 1) {
-                    element.removeChild(this);
-                }
-            });
+            stripTemplateWhitespace(element, templateOptions.name);
 
             //build a new object that has the global options with overrides from the binding
             $.extend(true, sortable, ko.bindingHandlers.sortable);
@@ -160,7 +181,7 @@
                         dragItem = null;
 
                         //make sure that moves only run once, as update fires on multiple containers
-                        if (item && (this === parentEl || $.contains(this, parentEl))) {
+                        if (item && (this === parentEl) || (!hasNestedSortableFix && $.contains(this, parentEl))) {
                             //identify parents
                             sourceParent = dataGet(el, PARENTKEY);
                             sourceIndex = dataGet(el, INDEXKEY);
@@ -193,7 +214,7 @@
 
                             //call cancel on the correct list, so KO can take care of DOM manipulation
                             if (sourceParent) {
-                                $(sourceParent === targetParent ? this : ui.sender).sortable("cancel");
+                                $(sourceParent === targetParent ? this : ui.sender || this).sortable("cancel");
                             }
                             //for a draggable item just remove the element
                             else {
@@ -290,7 +311,7 @@
                 connectClass = value.connectClass || ko.bindingHandlers.draggable.connectClass,
                 isEnabled = value.isEnabled !== undefined ? value.isEnabled : ko.bindingHandlers.draggable.isEnabled;
 
-            value = value.data || value;
+            value = "data" in value ? value.data : value;
 
             //set meta-data
             dataSet(element, DRAGKEY, value);

@@ -32,7 +32,7 @@
     <script src="js/bootstrap-tagsinput.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
     <script src="js/typeahead.min.js"></script>
-    <script src="js/knockout-3.0.0.js"></script>
+    <script src="js/knockout-3.2.0.js"></script>
     <script src="js/knockout.punches.min.js"></script>
     <script src="js/knockout-sortable.js"></script>
     <script src="js/knockout-bootstrap.min.js"></script>
@@ -73,7 +73,7 @@
       <h1>Your Goals</h1>
       <div class="goal-list">
         <!-- ko if: goals() == null || goals().length == 0 -->
-        <div class="goal-list-empty">
+        <div class="empty-list">
           You have not defined any goals yet.
         </div>
         <!-- /ko -->
@@ -95,7 +95,7 @@
             </div>
             <div class="inline-edit">
               <p>
-                <textarea id="edit-goal-form-input-title" class="flexible" autofocus></textarea>
+                <textarea id="edit-goal-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title()" autofocus></textarea>
               </p>
               <button data-bind="click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
               <button data-bind="click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
@@ -105,11 +105,36 @@
         <button id="new-goal-form-button-new" data-bind="click: newGoal" class="btn btn-primary btn-sm">New goal</button>
         <div id="new-goal-form">
           <p>
-            <textarea id="new-goal-form-input-title" wrap="hard" class="flexible" autofocus></textarea>
+            <textarea id="new-goal-form-input-title" class="flexible" autofocus></textarea>
           </p>
           <button data-bind="click: addGoal" class="btn btn-primary btn-sm">Save</button>
           <button data-bind="click: cancelNewGoal" class="btn btn-default btn-sm">Cancel</button>
         </div>
+
+        <!-- ko if: completedGoals() != null && completedGoals().length > 0 -->
+        <div class="completed-goals">
+          <section>
+            <div class="header">
+              Your latest completed goals
+            </div>
+            <div class="option">
+              <a href="#">hide</a>
+            </div>
+          </section>
+         
+          <ol id="completed-goals-list" data-bind="foreach: completedGoals">
+            <li data-bind="attr: { 'id': id }">
+              <div class="check">
+                <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
+              </div>
+              <div class="title">
+                <span data-bind="text: title()"></span>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <!-- /ko -->
+
       </div>
 
       <!-- ko template: {name: 'configuration', data: user}-->
