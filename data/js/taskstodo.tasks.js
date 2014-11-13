@@ -285,20 +285,21 @@ $(document).ready(function() {
     }
 
     self.newNote = function() {
-      $('.task-note-list').find(".inline-edit:visible").hide();
-      $('#new-note-form-button-new').toggle();
-      $('.task-note-list-empty').toggle();
+      $('#new-note-form-button-new').hide(); // Hide "New" button
+      $('#modal-panel-notes').find('.tt-empty-list').hide(); // Hide empty-list div
+      $('#tt-note-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
+      
       $('#new-note-form').fadeToggle("fast");
       $('#new-note-form-input-body').focus();
-      // Reset width and height
-      $('#new-note-form-input-body').css({"width":"", "height":"", "top": "", "left" : ""});
+      $('#new-note-form-input-body').css({"width":"", "height":"", "top": "", "left" : ""}); // Reset width and height
     };
     
     self.cancelNewNote = function() {
-      $('#new-note-form-button-new').toggle();
-      $('.task-note-list-empty').toggle();
-      $('#new-note-form').toggle();
-      $('#new-note-form-input-body').val(null);
+      $('#new-note-form').hide(); // Hide new entity form
+      $('#new-note-form-input-body').val(null); // Reset value
+
+      $('#new-note-form-button-new').fadeToggle("fast"); // Show "New" button
+      $('#modal-panel-notes').find('.tt-empty-list').fadeToggle("fast"); // Show empty-list div
     };
     
     self.addNote = function() {
@@ -317,21 +318,24 @@ $(document).ready(function() {
     };
     
     self.editNote = function(note) {
-      $('#new-note-form-button-new').hide();
-      $('#new-note-form:visible').hide();
-      
-      $('#'+note.id+' .task-note-list-content').hide();
-      $('.task-note-list').find('.inline-edit:visible').hide();
-      $('#'+note.id+' .inline-edit').fadeIn('fast');
+      $('#new-note-form-button-new').toggle(); // Hide "New" button
+      $('#new-note-form:visible').toggle(); // Hide new entity form
+      $('#tt-note-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
+
+      $('#'+note.id+' .tt-entry').hide(); // Hide list entry
+
+      $('#'+note.id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
 
       $('#edit-note-form-input-body').val(note.body());
       $('#edit-note-form-input-body').focus();
     };
 
     self.cancelEditNote = function(note) {
-      $('#new-note-form-button-new').show();
-      $('#'+note.id+' .task-note-list-content').fadeIn('fast');
-      $('#'+note.id+' .inline-edit').hide();
+      $('#new-note-form-button-new').toggle(); // Show "New" button
+
+      $('#'+note.id+' .tt-entry').fadeIn('fast'); // Show entry header
+
+      $('#'+note.id+' .tt-inline-edit').hide(); // Hide inline form
     };
     
     self.updateNote = function(note) {

@@ -153,12 +153,13 @@
                 <h4 class="modal-title" id="modal-title-notes">Task notes</h4>
               </div>
               <div class="modal-body">
-                <div class="task-note-list">
-                  <!-- ko if: notes() == null || notes().length == 0 -->
-                  <div class="empty-list">
-                    Your task has no notes yet.
-                  </div>
-                  <!-- /ko -->
+                <!-- ko if: notes() == null || notes().length == 0 -->
+                <div class="tt-empty-list">
+                  Your task has no notes yet.
+                </div>
+                <!-- /ko -->
+
+                <div id="tt-note-list">
 
                   <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
                   <form id="new-note-form" data-bind="submit: addNote">
@@ -171,22 +172,26 @@
 
                   <ul class="sortable" data-bind="foreach: notes">
                     <li data-bind="attr: { 'id': id }">
-                      <div class="task-note-list-entry">
-                        <div class="task-note-list-entry-header">
-                          <span data-bind="text: modified() | smartdate"></span>
-                          <div class="task-note-list-control">
+                      <div class="tt-entry">
+                        <div class="tt-header">
+                          <div class="tt-header-text">
+                            <span data-bind="text: modified() | smartdate"></span>
+                          </div>
+                          <div class="tt-header-control">
                             <a href="#" data-bind="click: $parent.editNote, tooltip: {title: 'Edit note', placement: 'left'}" class="fa fa-pencil"></a>
                             <a href="#" data-bind="click: $parent.deleteNote, tooltip: {title: 'Delete note', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
-                        <div class="task-note-list-content" data-bind="event: { dblclick: $parent.editNote }">
+                        <div class="tt-content" data-bind="event: { dblclick: $parent.editNote }">
                           <span data-bind="text: body()"></span>
                         </div>
-                        <div class="inline-edit">
+                      </div>
+                      <div class="tt-inline-edit">
+                        <p>
                           <textarea id="edit-note-form-input-body" class="flexible" data-bind="koAutoresize: {}, value: body" autofocus></textarea>
-                          <button data-bind="click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
-                          <button data-bind="click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
-                        </div>
+                        </p>
+                        <button data-bind="click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
+                        <button data-bind="click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
                       </div>
                     </li>
                   </ul>
@@ -208,12 +213,13 @@
                 <h4 class="modal-title" id="modal-title-bookmarks">Task bookmarks</h4>
               </div>
               <div class="modal-body">
-                <div class="task-bookmarks-list">
-                  <!-- ko if: bookmarks() == null || bookmarks().length == 0 -->
-                  <div class="empty-list">
-                    Your task has no bookmarks yet.
-                  </div>
-                  <!-- /ko -->
+                <!-- ko if: bookmarks() == null || bookmarks().length == 0 -->
+                <div class="tt-empty-list">
+                  Your task has no bookmarks yet.
+                </div>
+                <!-- /ko -->
+
+                <div id="tt-bookmarks-list">
 
                   <button id="new-bookmark-form-button-new" data-bind="click: newBookmark" class="btn btn-primary btn-sm">New bookmark</button>
                   <form id="new-bookmark-form" data-bind="submit: addBookmark">
@@ -235,22 +241,24 @@
 
                   <ul class="sortable" data-bind="foreach: bookmarks">
                     <li data-bind="attr: { 'id': id }">
-                      <div class="task-bookmarks-list-entry-header">
-                        <span data-bind="text: modified() | smartdate"></span>
-                        <div class="task-bookmarks-list-control">
-                          <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
-                          <a href="#" data-bind="click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark', placement: 'left'}" class="fa fa-trash-o"></a>
+                      <div class="tt-entry">
+                        <div class="tt-header">
+                          <div class="tt-header-text">
+                            <span data-bind="text: modified() | smartdate"></span>
+                          </div>
+                          <div class="tt-header-control">
+                            <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
+                            <a href="#" data-bind="click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark', placement: 'left'}" class="fa fa-trash-o"></a>
+                          </div>
                         </div>
-                      </div>
-                      <div class="task-bookmarks-list-entry">
-                        <div class="task-bookmarks-list-content">
+                        <div class="tt-content">
                           <a data-bind="attr: { href: url() }" target="_blank">
-                            <div class="thumbnail">
+                            <div class="tt-thumbnail">
                               <img data-bind="attr: { src: thumbnail() }, popover: {template: 'bookmarkZoomView', trigger: 'hover', placement: 'bottom'}"  />
                             </div>
-                            <div class="description" data-bind="tooltip: {title: description(), placement: 'bottom'}">
-                              <p class="title"><span data-bind="text: title()"></span></p>
-                              <p class="url"><span data-bind="text: url()"></span></p>
+                            <div class="tt-description" data-bind="tooltip: {title: description(), placement: 'bottom'}">
+                              <p class="tt-title"><span data-bind="text: title()"></span></p>
+                              <p class="tt-url"><span data-bind="text: url()"></span></p>
                             </div>
                           </a>
                         </div>
@@ -258,23 +266,22 @@
                         <script type="text/html" id="bookmarkZoomView">
                           <img data-bind="attr: { src: thumbnail() }" width="225" height="150"/>
                         </script>
-
-                        <div class="inline-edit">
-                          <p>
-                            <label for="edit-bookmark-form-input-title">Title</label>
-                            <input type="text" id="edit-bookmark-form-input-title" data-bind="value: title" autofocus />
-                          </p>
-                          <p>
-                            <label for="edit-bookmark-form-input-url">URL</label>
-                            <input type="text" id="edit-bookmark-form-input-url" data-bind="value: url" />
-                          </p>
-                          <p>
-                            <label for="edit-bookmark-form-input-description">Description</label>
-                            <textarea id="edit-bookmark-form-input-description" class="flexible" data-bind="koAutoresize: {}, value: description"></textarea>
-                          </p>
-                          <button data-bind="click: $parent.updateBookmark" class="btn btn-primary btn-sm">Save</button>
-                          <button data-bind="click: $parent.cancelEditBookmark" class="btn btn-default btn-sm">Cancel</button>
-                        </div>
+                      </div>
+                      <div class="tt-inline-edit">
+                        <p>
+                          <label for="edit-bookmark-form-input-title">Title</label>
+                          <input type="text" id="edit-bookmark-form-input-title" data-bind="value: title" autofocus />
+                        </p>
+                        <p>
+                          <label for="edit-bookmark-form-input-url">URL</label>
+                          <input type="text" id="edit-bookmark-form-input-url" data-bind="value: url" />
+                        </p>
+                        <p>
+                          <label for="edit-bookmark-form-input-description">Description</label>
+                          <textarea id="edit-bookmark-form-input-description" class="flexible" data-bind="koAutoresize: {}, value: description"></textarea>
+                        </p>
+                        <button data-bind="click: $parent.updateBookmark" class="btn btn-primary btn-sm">Save</button>
+                        <button data-bind="click: $parent.cancelEditBookmark" class="btn btn-default btn-sm">Cancel</button>
                       </div>
                     </li>
                   </ul>

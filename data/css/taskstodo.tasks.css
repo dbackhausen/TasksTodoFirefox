@@ -157,86 +157,78 @@
  * NOTE
  */
 
-#new-note-form-button-new {
-  margin: 0px 0px 10px 0px;
-}
-
 #new-note-form {
   display: none;
-  margin: 0px 0px 10px 0px;
-  padding: 5px;
 }
 
-.task-note-list ul {
+#tt-note-list {
+}
+
+#tt-note-list ul {
   list-style: none;
-  margin-left: 0px;
-  padding-left: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
-.task-note-list a {
-  color: #000000;
+#tt-note-list ul li {
+}
+
+#tt-note-list a {
+  color: #636363;
   text-decoration: none;
 }
 
-.task-note-list-entry {
+#tt-note-list .tt-entry {
   width: 100%;
-  height: 100%;
-  max-height: 200px; 
-  display: table;
-  padding: 0px 5px 3px 5px;
-  background-color: #EFEFEF;
-  overflow: scroll;
 }
 
-.task-note-list-entry div {
-  display: table-cell;
-}
-
-.task-note-list-entry-header {
+#tt-note-list ul li .tt-header {
   width: 100%;
-  display: table;
-  font-size: 11px;
-  font-weight: 400;
-  text-transform: uppercase;
-  font-family: 'Lato', Calibri, Arial, sans-serif;
-  margin: 5px 0px 0px 0px;
-  padding: 5px 5px 5px 5px;
+  margin-top: 5px;
   color: #666666;
   background-color: #DFDFDF;
-  float: left;
-}
-
-.task-note-list-entry-header div {
-  display: table-cell;
-}
-
-.task-note-list-control { 
-  width: 50px;
-  text-align: right;
-  text-transform: none;
-}
-
-.task-note-list-control a { 
-  font-size: 13px;
-  font-weight: 100;
-}
-
-.task-note-list-content {
-  padding: 5px;
-  float: left;
-}
-
-.task-note-list-content span {
-  display: block;
-}
-
-.inline-edit {
-  display: none;
-  width: 100%;
-  margin: 2px;
+  display: table;
+  vertical-align: middle;
   padding: 2px;
 }
 
+#tt-note-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-note-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 40px;
+}
+
+#tt-note-list ul li .tt-header-control a {
+  padding-right: 5px;
+}
+
+#tt-note-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-note-list ul li .tt-content {
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+  display: table;
+}
+
+#tt-note-list ul li .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+}
 
 /*
  * BOOKMARK
@@ -252,106 +244,111 @@
   padding: 5px;
 }
 
-.task-bookmarks-list {
-  width: 100%;
-  overflow: hidden;
+#tt-bookmarks-list {
 }
 
-.task-bookmarks-list ul {
+#tt-bookmarks-list ul {
   list-style: none;
-  margin-left: 0px;
-  padding-left: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
-.task-bookmarks-list ul li {
+#tt-bookmarks-list ul li {
 }
 
-.task-bookmarks-list a {
-  color: #000000;
+#tt-bookmarks-list a {
+  color: #363636;
   text-decoration: none;
 }
 
-.task-bookmarks-list ul li:hover .task-bookmarks-list-control a {
-  visibility: visible;
+#tt-bookmarks-list .tt-entry {
+  width: 100%;
 }
 
-.task-bookmarks-list-entry-header {
-  width: 100%;
-  display: table;
-  font-size: 11px;
-  font-weight: 400;
-  text-transform: uppercase;
-  font-family: 'Lato', Calibri, Arial, sans-serif;
+#tt-bookmarks-list .tt-entry:hover {
+  background-color: #535F6D;
+}
 
-  margin: 5px 0px 0px 0px;
-  padding: 5px 5px 5px 5px;
+#tt-bookmarks-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
   color: #666666;
   background-color: #DFDFDF;
-}
-
-.task-bookmarks-list-entry-header div {
-  display: table-cell;
-}
-
-.task-bookmarks-list-control { 
-  width: 50px;
-  text-align: right;
-  text-transform: none;
-}
-
-.task-bookmarks-list-entry {
-  width: 100%;
   display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-bookmarks-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-bookmarks-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 40px;
+}
+
+#tt-bookmarks-list ul li .tt-header-control a {
+  padding-right: 5px;
+}
+
+#tt-bookmarks-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-bookmarks-list ul li .tt-content {
+  display: table;
+  width: 100%;
   padding: 5px;
   background-color: #EFEFEF;
 }
 
-.task-bookmarks-list-entry div {
+#tt-bookmarks-list ul li .tt-thumbnail {
   display: table-cell;
-}
-
-.task-bookmarks-list-entry div.inline-edit {
-  display: none;
-  width: 100%;
-  margin: 2px;
-  padding: 2px;
-}
-
-.task-bookmarks-list-content {
-  width: 100%;
-  padding: 0px 5px 0px 5px;
-}
-
-.task-bookmarks-list-content .thumbnail > img {
-  border: 1px solid #DFDFDF;
   width: 75px;
-  max-width: 75px;
-  height: 50px;
-  max-height: 50px;
 }
 
-.task-bookmarks-list-content .description {
+#tt-bookmarks-list ul li .tt-thumbnail > img {
+  border: 3px solid #FFFFFF;
+  width: 75px;
+  height: 50px;
+}
+
+#tt-bookmarks-list ul li .tt-description {
+  display: table-cell;
+  font-family: 'Roboto', sans-serif;
   width: 100%;
   padding: 0px 5px 0px 5px;
   vertical-align: top;
-
 }
 
-.task-bookmarks-list-content .description .title {
-  font-family: 'Roboto', sans-serif;
+#tt-bookmarks-list ul li .tt-title {
+  color: #333333;
   font-weight: 500;
   font-size: 13px;
 }
 
-.task-bookmarks-list-content .description .url {
+#tt-bookmarks-list ul li .tt-url {
   font-size: 9px;
   font-weight: normal;
   font-style: italic;
   color: #666666;
   overflow: hidden;
-    text-overflow: ellipsis;
 }
 
+#tt-bookmarks-list ul li .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+}
 
 /*
  * HISTORY
