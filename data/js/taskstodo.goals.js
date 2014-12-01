@@ -1,5 +1,15 @@
 $(document).ready(function() {
 
+  $('#tt-goal-list div.tt-entry')
+    .mouseenter(function() {
+      console.log("Fade in");
+      $(this).find('.tt-goal-control a').fadeIn();
+    })
+    .mouseleave(function() { 
+      console.log("Fade out");
+      $(this).find('.tt-goal-control a').fadeOut();
+    });
+
   ko.punches.enableAll();
   
   var activeUser;
@@ -224,7 +234,6 @@ $(document).ready(function() {
    */
   function updateGoal(goal) {
     goal.modified(new Date());
-    console.log("Updating goal " + JSON.stringify(goal));
     addon.port.emit("UpdateGoal", ko.toJSON(goal));
   }
 

@@ -6,14 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <!--<link rel="stylesheet" href="css/normalize.css"/>
-    <link rel="stylesheet" href="css/main.css"/>-->
     <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
-    <!--<link rel="stylesheet" href="css/jquery.fileupload.css"/>
-    <link rel="stylesheet" href="css/jquery.treetable.css"/>
-    <link rel="stylesheet" href="css/bootstrap-tagsinput.css"/>
-    <link rel="stylesheet" href="css/datepicker3.css"/>-->
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/taskstodo.css"/>
     <link rel="stylesheet" href="css/taskstodo.goals.css"/>
@@ -37,6 +31,7 @@
     <script src="js/knockout-sortable.js"></script>
     <script src="js/knockout-bootstrap.min.js"></script>
     <script src="js/koExternalTemplateEngine_all.min.js"></script>
+    <script src="js/i18next-1.7.4.min.js"></script>
     <script src="js/moment.min.js"></script>
     <script src="js/taskstodo.js"></script>    
     <script src="js/taskstodo.goals.js"></script>
@@ -68,40 +63,10 @@
         <div id="top-menu-search">
           <!-- TODO -->
         </div>
-     </div>
-     <div class="inline-content">
-      <h1>Your Goals</h1>
-      <div class="goal-list">
-        <!-- ko if: goals() == null || goals().length == 0 -->
-        <div class="empty-list">
-          You have not defined any goals yet.
-        </div>
-        <!-- /ko -->
-        <ol data-bind="sortable: { data: goals, connectClass: 'move', afterMove: moveGoal }">
-          <li data-bind="attr: { 'id': id }">
-            <div class="goal-list-entry">
-              <div class="goal-list-entry-content" data-bind="css: 'indent-'+$data.level()">
-                <div class="goal-list-entry-check">
-                  <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
-                </div>
-                <div class="goal-list-entry-title" data-bind="event : { click: $parent.selectGoal }">
-                  <span data-bind="text: title()"></span>
-                </div>
-                <div class="goal-list-entry-control">
-                  <a href="#" data-bind="click: $parent.editGoal, tooltip: {title: 'Edit goal', placement: 'left'}" class="fa fa-pencil"></a>
-                  <a href="#" data-bind="click: $parent.deleteGoal, tooltip: {title: 'Delete goal', placement: 'left'}" class="fa fa-trash-o"></a>
-                </div>
-              </div>
-            </div>
-            <div class="inline-edit">
-              <p>
-                <textarea id="edit-goal-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title()" autofocus></textarea>
-              </p>
-              <button data-bind="click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
-              <button data-bind="click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
-            </div>
-          </li>
-        </ol>
+      </div>
+      <div class="inline-content">
+        <h1>Your Goals</h1>
+
         <button id="new-goal-form-button-new" data-bind="click: newGoal" class="btn btn-primary btn-sm">New goal</button>
         <div id="new-goal-form">
           <p>
@@ -111,23 +76,59 @@
           <button data-bind="click: cancelNewGoal" class="btn btn-default btn-sm">Cancel</button>
         </div>
 
+        <!-- ko if: goals() == null || goals().length == 0 -->
+        <div class="tt-empty-list">
+          You have not defined any goals yet.
+        </div>
+        <!-- /ko -->
+
+        <!-- ko if: goals() != null && goals().length > 0 -->
+        <div id="tt-goal-list">
+          <ol data-bind="sortable: { data: goals, connectClass: 'move', afterMove: moveGoal }">
+            <li data-bind="attr: { 'id': id }">
+              <div class="tt-entry">
+                <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
+                  <div class="tt-goal-check">
+                    <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
+                  </div>
+                  <div class="tt-goal-title" data-bind="event : { click: $parent.selectGoal }">
+                    <span data-bind="text: title()"></span>
+                  </div>
+                  <div class="tt-goal-control">
+                    <a href="#" data-bind="click: $parent.editGoal, tooltip: {title: 'Edit goal', placement: 'left'}" class="fa fa-pencil"></a>
+                    <a href="#" data-bind="click: $parent.deleteGoal, tooltip: {title: 'Delete goal', placement: 'left'}" class="fa fa-trash-o"></a>
+                  </div>
+                </div>
+              </div>
+              <div class="tt-inline-edit">
+                <p>
+                  <textarea id="edit-goal-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title()" autofocus></textarea>
+                </p>
+                <button data-bind="click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
+                <button data-bind="click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <!-- /ko -->
+
         <!-- ko if: completedGoals() != null && completedGoals().length > 0 -->
-        <div class="completed-goals">
+        <div id="tt-completed-goals-list">
           <section>
-            <div class="header">
+            <div class="tt-header">
               Your latest completed goals
             </div>
-            <div class="option">
+            <div class="tt-option">
               <a href="#">hide</a>
             </div>
           </section>
          
-          <ol id="completed-goals-list" data-bind="foreach: completedGoals">
+          <ol data-bind="foreach: completedGoals">
             <li data-bind="attr: { 'id': id }">
-              <div class="check">
+              <div class="tt-check">
                 <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
               </div>
-              <div class="title">
+              <div class="tt-title">
                 <span data-bind="text: title()"></span>
               </div>
             </li>
@@ -135,11 +136,9 @@
         </div>
         <!-- /ko -->
 
+        <!-- ko template: {name: 'configuration', data: user}-->
+        <!-- /ko -->
       </div>
-
-      <!-- ko template: {name: 'configuration', data: user}-->
-      <!-- /ko -->
-
     </div>
   </body>
 </html>

@@ -1,11 +1,18 @@
 $(document).ready(function() {
+
+  $("#login-form button").html(i18n.t('login.btn-login'));
+  $("#register-form button").html(i18n.t('login.btn-register'));
+  $("#forgot-password-form button").html(i18n.t('general.btn-submit'));
+
+  $(".modal-footer button").html(i18n.t('general.btn-close'));
+
   /////////////////////////////////////////////////////////////////////////////
   // ERROR HANDLING                                                          //
   /////////////////////////////////////////////////////////////////////////////
   
   addon.port.on("Error", function(error) {
     if (error != null && error.length > 0) {
-      $('<div class="alert alert-danger" role="alert">'+error+'</div>').insertAfter('.inline-content h1').delay(3000).fadeOut(1000);
+      showErrorMessage(error, '.inline-content h1');
     }
   });
 
@@ -17,6 +24,9 @@ $(document).ready(function() {
   
     self.user = ko.observable();
 
+    /**
+     * Login user.
+     */
     self.login = function(data) {
       var json = { 
         "username" : $("#login-username").val(),
@@ -24,7 +34,41 @@ $(document).ready(function() {
       };
       loginUser(JSON.stringify(json));
     };
-    
+
+    /**
+     * Register new user.
+     */
+    self.register = function(data) {
+      var username = $("#register-username").val();
+      var password = $("#register-password").val();
+      if (validateEmail(username)) {
+        if (password != null && password.length > 0) {
+          registerUser(new User({
+            "username" : username,
+            "password" : password,
+            "created" : new Date(),
+            "modified" : new Date()
+          }));          
+        } else {
+          showErrorMessage(i18n.t("login.alert-valid-password"), '#modal-panel-register .dialog-alert');
+        }
+      } else {
+        showErrorMessage(i18n.t("login.alert-valid-username"), '#modal-panel-register .dialog-alert');
+      }
+    };
+
+    /**
+     * Reset user password
+     */
+    self.sendPassword = function(data) {
+      var username = $("#forgot-password-username").val();
+      
+      if (validateEmail(username)) {
+        sendPassword(username);
+      } else {
+        showErrorMessage(i18n.t("login.alert-invalid-username"), '#modal-panel-forgot-password .dialog-alert');
+      }
+    };
   };
 
   // Apply view model
@@ -46,5 +90,30 @@ $(document).ready(function() {
       // Redirect to goals page
       addon.port.emit("Redirect", "goals.html");
     }
-  })
+  });
+
+  /**
+   * Register user.
+   */
+  function registerUser(user) {
+    addon.port.emit("RegisterUser", ko.toJSON(user));
+  }
+
+  addon.port.on("UserRegistered", function(user) {
+    $("#register-username").val(null);
+    $("#register-password").val(null);
+    showSuccessMessage(i18n.t("login.success-register"), '#modal-panel-register .dialog-alert');
+  });
+
+  /**
+   * Forgot password.
+   */
+  function sendPassword(username) {
+    addon.port.emit("SendPassword", username);
+    showSuccessMessage(i18n.t("login.success-password-sent"), '#modal-panel-forgot-password .dialog-alert');
+  }
+
+  addon.port.on("PasswordReset", function(user) {
+    $("#register-username").val(null);
+  });
 });

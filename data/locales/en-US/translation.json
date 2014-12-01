@@ -1,0 +1,22 @@
+{
+  "general": {
+  	"btn-submit" : "Submit",
+    "btn-close": "Close",
+    "btn-save": "Save",
+    "btn-cancel": "Cancel"
+  },
+  "login": {
+    "hdr-login": "User Login",
+    "lbl-username": "E-Mail address",
+	"lbl-password": "Password",
+    "txt-register" : "Register",
+    "txt-forgot-password" : "Forgot Password",
+	"btn-login" : "Login",
+	"btn-register" : "Register",
+	"alert-valid-username": "The username must be a valid mail address",
+  	"alert-valid-password": "Please define a valid password",
+  	"alert-invalid-username": "Please type in a valid username",
+  	"success-register": "Successfully registered! You can now login an manage your tasks.",
+  	"success-password-sent": "A new password has been sent to your e-mail address."
+  }  
+}

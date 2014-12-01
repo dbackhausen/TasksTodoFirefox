@@ -4,11 +4,14 @@
 
 #new-goal-form {
   display: none;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin: 10px 0px 10px 0px;
 }
 
-.goal-list ol {
+#tt-goal-list {
+  margin-top: 5px;
+}
+
+#tt-goal-list ol {
   list-style: none;
   margin-left: 0px;
   padding-left: 0px;
@@ -16,94 +19,81 @@
   border-bottom: 1px solid #E3E3E3;
 }
 
-.goal-list ol li {
+#tt-goal-list ol li {
   border-bottom: 1px solid #E3E3E3;
 }
 
-.goal-list ol li:hover div.goal-list-entry {
+#tt-goal-list ol li:hover div.tt-entry {
+  color: #535F6D;
   background-color: #E2E7ED;
   transition: 1s;
   -moz-transition: 1s;
   -webkit-transition: 1s;
 }
 
-.goal-list ol li:hover div.goal-list-entry-control a {
-  visibility: visible;
+#tt-goal-list ol li:hover div.tt-entry-content {
+  font-weight: 400;
 }
 
-.goal-list ol li:last-child {
+#tt-goal-list ol li:last-child {
   border: none;
 }
 
-/* */
-
-.goal-list-entry {
+#tt-goal-list .tt-entry {
   width: 100%;
 }
 
-.goal-list-entry.selected {
-  margin: 0px;
-  background-color: #E2E7ED;
-}
-
-.goal-list-entry a {
+#tt-goal-list .tt-entry a {
   color: #000000;
   text-decoration: none;
 }
 
-.goal-list-entry a:hover {
-  color: #535F6D;
-}
-
-.goal-list .inline-edit {
-  display: none;
-  width: 100%;
-  margin: 5px 0px 5px 0px;
-  background-color: white;
-}
-
-.goal-list-entry-content {
+#tt-goal-list .tt-entry-content {
   display: table;
   width: 100%;
   padding: 5px 0px 5px 0px;
 }
 
-.goal-list-entry-content.indent-0 {
+#tt-goal-list .tt-entry-content.indent-0 {
   padding-left: 0px;
 }
 
-.goal-list-entry-content.indent-1 {
+#tt-goal-list .tt-entry-content.indent-1 {
   padding-left: 10px;
 }
 
-.goal-list-entry-content.indent-2 {
+#tt-goal-list .tt-entry-content.indent-2 {
   padding-left: 20px;
 }
 
-.goal-list-entry-content.indent-3 {
+#tt-goal-list .tt-entry-content.indent-3 {
   padding-left: 30px;
 }
 
-.goal-list-entry-check {
+#tt-goal-list .tt-entry-content.indent-4 {
+  padding-left: 40px;
+}
+
+#tt-goal-list .tt-entry-content.indent-5 {
+  padding-left: 50px;
+}
+
+#tt-goal-list .tt-goal-check {
   display: table-cell;
   width: 25px;
 }
 
-.goal-list-entry-check a {
+#tt-goal-list .tt-goal-check a {
   padding-left: 5px;
 }
 
-.goal-list-entry-title {
+#tt-goal-list .tt-goal-title {
   display: table-cell;
   cursor: pointer;
   padding: 0px 5px 0px 5px;
 }
 
-.goal-list-entry-title:hover {
-  color: #535F6D;
-}
-
-.goal-list-entry-control { 
+#tt-goal-list .tt-goal-control { 
   display: table-cell;
   width: 50px;
   text-align: right;
@@ -111,23 +101,30 @@
   text-transform: none;
 }
 
-.goal-list-entry-control a { 
+#tt-goal-list .tt-goal-control a { 
   visibility: hidden;
   padding-right: 5px;
 }
 
+#tt-goal-list .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+  background-color: white;
+}
+
 /* COMPLETED GOALS */
 
-.completed-goals {
+#tt-completed-goals-list {
   margin-top: 20px;
 }
 
-.completed-goals section {
+#tt-completed-goals-list section {
   width: 100%;
   height: 25px;
 }
 
-.completed-goals .header {
+#tt-completed-goals-list .tt-header {
   width: 275px;
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
@@ -137,32 +134,36 @@
   float: left;
 }
 
-.completed-goals .option {
+#tt-completed-goals-list .tt-option {
   margin-left: 275px;
   font-size: 12px;
   text-align: right;
+  /* TODO */ visibility: hidden;
 }
 
-.completed-goals ol li {
+#tt-completed-goals-list ol {
+  list-style: none;
+}
+
+#tt-completed-goals-list ol li {
   width: 100%;  
   margin: 0px;
   padding: 5px 0px 5px 0px;
   color: #666666;
 }
 
-.completed-goals ol li a {
+#tt-completed-goals-list ol li a {
   color: #666666;
   text-decoration: none;
 }
 
-.completed-goals .check {
+#tt-completed-goals-list .tt-check {
   width: 20px;
   float: left;
 }
 
-.completed-goals .title {
+#tt-completed-goals-list .tt-title {
   margin-left: 20px;
   font-style: italic;
   text-decoration: line-through;
 }
-

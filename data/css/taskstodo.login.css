@@ -27,3 +27,8 @@ div.login-form input[type="password"] {
   transition: all 0.3s ease-out 0s;
   width: 100%;
 }
+
+div.login-options {
+  color: #DEDEDE;
+  margin-top: 20px;
+}
