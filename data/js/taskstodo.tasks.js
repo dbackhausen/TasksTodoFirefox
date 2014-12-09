@@ -28,10 +28,10 @@ function ViewModel() {
       addon.port.emit("SetActiveTask", ko.toJS(task));
 
       // Load task bookmarks      
-      loadBookmarks(self.selectedTask);
+      //loadBookmarks(self.selectedTask);
 
       // Load task history      
-      loadHistory(self.selectedTask);
+      //loadHistory(self.selectedTask);
 
       // Load latest tabs for restoring
       //loadTabs(self.selectedTask);
@@ -51,9 +51,10 @@ function ViewModel() {
   self.newTask = function() {
     self.selectedTask = ko.observable();
 
-    $('#new-task-form-button-new').hide();
-    $('#new-task-form:visible').hide();
-
+    $('#new-task-form-button-new').hide(); // Hide "New" button
+    $('#content').find('.tt-empty-list').hide(); // Hide empty-list div
+    $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
+    
     $('#new-task-form-input-title').val(null);
     $('#new-task-form').show('fast');
     $('#new-task-form-input-title').focus();
@@ -68,7 +69,8 @@ function ViewModel() {
     $('#new-task-form').hide();
     $('#new-task-form-input-title').val(null);
 
-    $('#new-task-form-button-new').show();
+    $('#new-task-form-button-new').fadeToggle("fast"); // Show "New" button
+    $('#content').find('.tt-empty-list').fadeToggle("fast"); // Show empty-list div
   };
   
   self.editTask = function(task) {
@@ -333,20 +335,22 @@ function ViewModel() {
   }
 
   self.newBookmark = function() {
-    $('.task-bookmarks-list').find(".inline-edit:visible").hide();
-    $('#new-bookmark-form-button-new').toggle();
-    $('.task-bookmarks-list-empty').toggle();
+    $('#new-bookmark-form-button-new').hide(); // Hide "New" button
+    $('#modal-panel-bookmarks').find('.tt-empty-list').hide(); // Hide empty-list div
+    $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
+    
     $('#new-bookmark-form').fadeToggle("fast");
     $('#new-bookmark-form-input-title').focus();
   };
   
   self.cancelNewBookmark = function() {
-    $('#new-bookmark-form-button-new').toggle();
-    $('.task-bookmarks-list-empty').toggle();
-    $('#new-bookmark-form').toggle();
+    $('#new-bookmark-form').hide();
     $('#new-bookmark-form-input-title').val(null);
     $('#new-bookmark-form-input-url').val(null);
     $('#new-bookmark-form-input-description').val(null);    
+
+    $('#new-task-form-button-new').fadeToggle("fast"); // Show "New" button
+    $('#modal-panel-bookmarks').find('.tt-empty-list').fadeToggle("fast"); // Show empty-list div
   };
   
   self.addBookmark = function() {
@@ -572,14 +576,22 @@ addon.port.on("ActiveGoalLoaded", function(goal) {
  * Loads all tasks.
  */
 function loadTasks(goal) {
+  $('#content .tt-loader').show();
   addon.port.emit("LoadTasks", goal);
 }
 
 addon.port.on("TasksLoaded", function(tasks) { 
+  $('#content .tt-loader').hide();
+
   viewModel.tasks.removeAll();
-  ko.utils.arrayForEach(tasks, function(task) {
-    viewModel.tasks.push(new Task(task));
-  });
+
+  if (tasks && tasks.length > 0) {  
+    ko.utils.arrayForEach(tasks, function(task) {
+      viewModel.tasks.push(new Task(task));
+    });
+  } else {
+    $('#content .tt-empty-list').show();
+  }
 });
 
 /**
@@ -676,15 +688,22 @@ function selectTask(task) {
  * Loads all notes regarding to the selected task.
  */
 function loadNotes(task) {
+  $('#modal-panel-notes .tt-loader').show();
   addon.port.emit("LoadNotes", task);
 }
 
 addon.port.on("NotesLoaded", function(notes) {
-  viewModel.notes.removeAll();
+  $('#modal-panel-notes .tt-loader').hide();
   
-  ko.utils.arrayForEach(notes, function(note){
-    viewModel.notes.push(new Note(note));
-  });
+  viewModel.notes.removeAll();
+
+  if (notes && notes.length > 0) {
+    ko.utils.arrayForEach(notes, function(note){
+      viewModel.notes.push(new Note(note));
+    });
+  } else {
+    $('#modal-panel-notes .tt-empty-list').show();
+  }  
 });
 
 /**
@@ -729,15 +748,22 @@ addon.port.on("NoteDeleted", function(data) {
  * Loads all bookmarks regarding to the selected task.
  */
 function loadBookmarks(task) {
+  $('#modal-panel-bookmarks .tt-loader').show();
   addon.port.emit("LoadBookmarks", task);
 }
 
 addon.port.on("BookmarksLoaded", function(bookmarks) {
-  viewModel.bookmarks.removeAll();
+  $('#modal-panel-bookmarks .tt-loader').hide();
   
-  ko.utils.arrayForEach(bookmarks, function(bookmark){
-    viewModel.bookmarks.push(new Bookmark(bookmark));
-  });
+  viewModel.bookmarks.removeAll();
+
+  if (bookmarks && bookmarks.length > 0) {
+    ko.utils.arrayForEach(bookmarks, function(bookmark){
+      viewModel.bookmarks.push(new Bookmark(bookmark));
+    });
+  } else {
+    $('#modal-panel-bookmarks .tt-empty-list').show();
+  }  
 
   // Call main.js to set bookmarks of active task
   addon.port.emit("SetActiveTaskBookmarks", bookmarks);
@@ -836,15 +862,22 @@ addon.port.on("TabDeleted", function(data) {
  * Loads all history regarding to the selected task.
  */
 function loadHistory(task) {
+  $('#modal-panel-history .tt-loader').show();
   addon.port.emit("LoadHistory", task);
 }
 
 addon.port.on("HistoryLoaded", function(history) {
-  viewModel.history.removeAll();
+  $('#modal-panel-history .tt-loader').hide();
   
-  ko.utils.arrayForEach(history, function(entry) {
-    viewModel.history.push(new HistoryEntry(entry));
-  });
+  viewModel.history.removeAll();
+
+  if (history && history.length > 0) { 
+    ko.utils.arrayForEach(history, function(entry) {
+      viewModel.history.push(new HistoryEntry(entry));
+    });
+  } else {
+    $('#modal-panel-history .tt-empty-list').show();
+  }
 
   // Call main.js to set history of active task
   addon.port.emit("SetActiveTaskHistory", history);
@@ -891,25 +924,36 @@ addon.port.on("HistoryEntryDeleted", function(data) {
  * Loads all attachments regarding to the selected task.
  */
 function loadAttachments(task) {
+  $('#modal-panel-attachments .tt-loader').show();
   addon.port.emit("LoadAttachments", task);
 }
 
 addon.port.on("AttachmentsLoaded", function(attachments) {
+  $('#modal-panel-attachments .tt-loader').hide();
+  
   viewModel.attachments.removeAll();
-  console.log("attachments loaded");
-  ko.utils.arrayForEach(attachments, function(attachment) {
-    viewModel.attachments.push(new Attachment(attachment));
-  });
+
+  if (attachments && attachments.length > 0) {
+    ko.utils.arrayForEach(attachments, function(attachment) {
+      viewModel.attachments.push(new Attachment(attachment));
+    });
+  } else {
+    $('#modal-panel-attachments .tt-empty-list').show();
+  }
 });
 
 /**
  * Add task attachment.
  */
 function addAttachment(task, data, filename, filetype) {
+  $('#tt-attachments-list .tt-droparea-text').hide();
+  $('#tt-attachments-list .tt-droparea-loader').show();
   addon.port.emit("AddAttachment", task, data, filename, filetype);
 }
 
 addon.port.on("AttachmentAdded", function(attachment) {
+  $('#tt-attachments-list .tt-droparea-text').show();
+  $('#tt-attachments-list .tt-droparea-loader').hide();
   viewModel.attachments.unshift(new Attachment(attachment));
 });
 

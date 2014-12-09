@@ -35,6 +35,14 @@
   font-weight: 400;
 }
 
+#tt-task-list ol li:hover .tt-task-control a { 
+  visibility: visible;
+  color: #535F6D;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
 #tt-task-list ol li:last-child {
   border: none;
 }
@@ -574,7 +582,6 @@
   vertical-align: top;
 }
 
-
 #tt-attachments-list ul li .tt-filename {
   color: #333333;
   font-weight: 500;
@@ -608,6 +615,20 @@
   hyphens: auto;
 }
 
+#tt-attachments-list .tt-droparea-text {
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+}
+
+#tt-attachments-list .tt-droparea-loader {
+  display: none;
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+}
 
 /* 
  * COMPLETED TASKS

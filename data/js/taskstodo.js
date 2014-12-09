@@ -205,6 +205,7 @@ function Bookmark(data) {
   this.url = ko.observable(data.url);
   this.description = ko.observable(data.description);
   this.thumbnail = ko.observable(data.thumbnail);
+  this.content = ko.observable(data.content);
   this.relevance = ko.observable(data.relevance);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);

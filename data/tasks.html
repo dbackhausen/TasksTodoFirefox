@@ -76,6 +76,11 @@
           <button data-bind="click: cancelNewTask" class="btn btn-default btn-sm">Cancel</button>
         </div>
 
+        <div class="tt-loader">
+          <p>Loading data ...</p>
+          <img src="img/ajax-loader.gif" width="42" height="42" />
+        </div>
+
         <!-- ko if: tasks() == null || tasks().length == 0 -->
         <div class="tt-empty-list">
           You have not defined any tasks yet.
@@ -154,6 +159,20 @@
                 <h4 class="modal-title" id="modal-title-notes">Task notes</h4>
               </div>
               <div class="modal-body">
+                <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
+                <form id="new-note-form" data-bind="submit: addNote">
+                  <p>
+                    <textarea id="new-note-form-input-body" class="flexible" autofocus></textarea>
+                  </p>
+                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                  <button data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
+                </form>
+
+                <div class="tt-loader">
+                  <p>Loading data ...</p>
+                  <img src="img/ajax-loader.gif" width="42" height="42" />
+                </div>
+                  
                 <!-- ko if: notes() == null || notes().length == 0 -->
                 <div class="tt-empty-list">
                   Your task has no notes yet.
@@ -161,16 +180,6 @@
                 <!-- /ko -->
 
                 <div id="tt-note-list">
-
-                  <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
-                  <form id="new-note-form" data-bind="submit: addNote">
-                    <p>
-                      <textarea id="new-note-form-input-body" class="flexible" autofocus></textarea>
-                    </p>
-                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                    <button data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
-                  </form>
-
                   <ul class="sortable" data-bind="foreach: notes">
                     <li data-bind="attr: { 'id': id }">
                       <div class="tt-entry">
@@ -232,6 +241,11 @@
                   <button data-bind="click: cancelNewBookmark" class="btn btn-default btn-sm">Cancel</button>
                 </form>
                   
+                <div class="tt-loader">
+                  <p>Loading data ...</p>
+                  <img src="img/ajax-loader.gif" width="42" height="42" />
+                </div>
+
                 <!-- ko if: bookmarks() == null || bookmarks().length == 0 -->
                 <div class="tt-empty-list">
                   Your task has no bookmarks yet.
@@ -266,6 +280,7 @@
                         <script type="text/html" id="bookmarkZoomView">
                           <img data-bind="attr: { src: thumbnail() }" width="225" height="150"/>
                         </script>
+                        
                       </div>
                       <div class="tt-inline-edit">
                         <p>
@@ -303,6 +318,11 @@
                 <h4 class="modal-title" id="taskHistoryLabel">Browsing history</h4>
               </div>
               <div class="modal-body">
+                <div class="tt-loader">
+                  <p>Loading data ...</p>
+                  <img src="img/ajax-loader.gif" width="42" height="42" />
+                </div>
+
                 <!-- ko if: history() == null || history().length == 0 -->
                 <div class="tt-empty-list">
                   Your task has no browsing history yet.
@@ -324,7 +344,7 @@
                         <div class="tt-content">
                           <a data-bind="attr: { href: url() }" target="_blank">
                             <div class="tt-thumbnail">
-                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'bookmarkZoomView', trigger: 'hover', placement: 'bottom'}"  />
+                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'historyZoomView', trigger: 'hover', placement: 'bottom'}"  />
                             </div>
                             <div class="tt-description" data-bind="tooltip: {title: description(), placement: 'bottom'}">
                               <p class="tt-title"><span data-bind="text: title()"></span></p>
@@ -363,9 +383,20 @@
                   <div data-bind="uploader: true">
                     <!-- Dropzone -->
                     <div class="droparea" data-bind="droparea: { drop: uploadFiles }">
-                      Drag files here to start uploading.<br/>
-                      You can drag multiple files at the same time.
+                      <div class="tt-droparea-loader">
+                        <p>Uploading file ...</p>
+                        <img src="img/ajax-loader.gif" width="42" height="42" />
+                      </div>
+                      <div class="tt-droparea-text">
+                        <p>Drag files here to start uploading.</p>
+                        <p>You can drag multiple files at the same time.</p>
+                      </div>
                     </div>
+                  </div>
+
+                  <div class="tt-loader">
+                    <p>Loading data ...</p>
+                    <img src="img/ajax-loader.gif" width="42" height="42" />
                   </div>
 
                   <!-- ko if: attachments() == null || attachments().length == 0 -->

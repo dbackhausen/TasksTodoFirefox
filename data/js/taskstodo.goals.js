@@ -1,15 +1,5 @@
 $(document).ready(function() {
 
-  $('#tt-goal-list div.tt-entry')
-    .mouseenter(function() {
-      console.log("Fade in");
-      $(this).find('.tt-goal-control a').fadeIn();
-    })
-    .mouseleave(function() { 
-      console.log("Fade out");
-      $(this).find('.tt-goal-control a').fadeOut();
-    });
-
   ko.punches.enableAll();
   
   var activeUser;
@@ -72,19 +62,21 @@ $(document).ready(function() {
     self.editGoal = function(goal) {
       $('#new-goal-form-button-new').hide(); // hide new button
       $('#new-goal-form:visible').hide(); // hide new goal form
-      $('.goal-list').find('.inline-edit:visible').hide(); // hide all open inline forms
-      $('.goal-list').find('.goal-list-entry:hidden').show(); // show hidden entries
 
-      $('#'+goal.id+' #edit-goal-form-input-title').val(goal.title()); // set title as value
-      $('#'+goal.id).find('.goal-list-entry').hide(); // hide list item to show form
-      $('#'+goal.id+' .inline-edit').fadeIn('fast'); // show inline form
+      $('#tt-goal-list').find('.tt-inline-edit:visible').hide();
+      $('#'+goal.id).find('.tt-entry').hide();
+
+      $('#'+goal.id+' #edit-task-form-input-title').val(goal.title());
+      $('#'+goal.id+' .tt-inline-edit').fadeIn('fast');
+      
+      $('#edit-goal-form-input-title').height($('#edit-goal-form-input-title').prop('scrollHeight'));
     };
     
     self.cancelEditGoal = function(goal) {
       $('#new-goal-form-button-new').show();
-      $('#'+goal.id).find('.goal-list-entry').show();
+      $('#'+goal.id).find('.tt-entry').show();
 
-      $('#'+goal.id+' .inline-edit').hide();
+      $('#'+goal.id+' .tt-inline-edit').hide();
       $('#'+goal.id+' #edit-goal-form-input-title').val(null);
     };
 

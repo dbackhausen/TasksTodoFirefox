@@ -35,6 +35,14 @@
   font-weight: 400;
 }
 
+#tt-goal-list ol li:hover .tt-goal-control a { 
+  visibility: visible;
+  color: #535F6D;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
 #tt-goal-list ol li:last-child {
   border: none;
 }
