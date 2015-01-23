@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/taskstodo.css"/>
     <link rel="stylesheet" href="css/taskstodo.goals.css"/>
     <link href='http://fonts.googleapis.com/css?family=Roboto:300,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
     <script src="js/jquery-1.10.2.min.js"></script>
     <script src="js/jquery.ui.widget.js"></script>
     <script src="js/jquery.iframe-transport.js"></script>
@@ -37,25 +38,7 @@
     <script src="js/taskstodo.goals.js"></script>
   </head>
   <body>
-    <div id="top-menu">
-      <div id="top-menu-close-button" class="button">
-        <i class="fa fa-times padding-right-5"></i><span>Close menu</span>
-      </div>
-      <div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
-        <i class="fa fa-cog padding-right-5"></i><span>Configuration</span>
-      </div>
-      <div id="top-menu-goals-button" class="button">
-        <i class="fa fa-bullseye padding-right-5"></i><span>Your goals</span>
-      </div>
-      <ol data-bind="sortable: { data: goals }">
-        <li data-bind="attr: { 'id': 'top-nav-goal-'+id }">
-          <div class="goal-entry" data-bind="click: $parent.selectGoal">
-            <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
-          </div>
-        </li>
-      </ol>
-    </div>
-    <div id="content">
+    <div id="header">
       <div id="menubar">
         <div id="top-menu-open-button">
            <i class="fa fa-list fa-2"></i>
@@ -64,8 +47,31 @@
           <!-- TODO -->
         </div>
       </div>
+      <div id="top-menu">
+        <div id="top-menu-close-button" class="button">
+          <i class="fa fa-times padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-close-menu'"></span>
+        </div>
+        <div id="top-menu-help-button" class="button" data-bind="click: showHelp">
+          <i class="fa fa-question-circle padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-help'"></span>
+        </div>
+        <div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
+          <i class="fa fa-cog padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-configuration'"></span>
+        </div>
+        <div id="top-menu-goals-button" class="button">
+          <i class="fa fa-bullseye padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-your-goals'"></span>
+        </div>
+        <ol data-bind="sortable: { data: goals }">
+          <li data-bind="attr: { 'id': 'top-nav-goal-'+id }">
+            <div class="goal-entry" data-bind="click: $parent.selectGoal">
+              <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+    <div id="content">
       <div class="inline-content">
-        <h1>Your Goals</h1>
+        <h1><span data-bind="i18n: 'goal.hdr-goals'"></span></h1>
 
         <button id="new-goal-form-button-new" data-bind="click: newGoal" class="btn btn-primary btn-sm">New goal</button>
         <div id="new-goal-form">
@@ -76,9 +82,14 @@
           <button data-bind="click: cancelNewGoal" class="btn btn-default btn-sm">Cancel</button>
         </div>
 
+        <div class="tt-loader">
+          <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
+          <img src="img/ajax-loader.gif" width="42" height="42" />
+        </div>
+
         <!-- ko if: goals() == null || goals().length == 0 -->
         <div class="tt-empty-list">
-          You have not defined any goals yet.
+          <span data-bind="i18n: 'goals.text-no-goals'"></span>
         </div>
         <!-- /ko -->
 
@@ -102,7 +113,7 @@
               </div>
               <div class="tt-inline-edit">
                 <p>
-                  <textarea id="edit-goal-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title()" autofocus></textarea>
+                  <textarea id="edit-goal-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title" autofocus></textarea>
                 </p>
                 <button data-bind="click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
                 <button data-bind="click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
@@ -119,7 +130,12 @@
               Your latest completed goals
             </div>
             <div class="tt-option">
-              <a href="#">hide</a>
+              <!-- ko if: user().showCompletedGoals -->
+              <a href="#" data-bind="click: $root.hideCompletedGoals">hide</a>
+              <!-- /ko -->
+              <!-- ko ifnot: user().showCompletedGoals  -->
+              <a href="#" data-bind="click: $root.showCompletedGoals">show</a>
+              <!-- /ko -->
             </div>
           </section>
          
@@ -136,7 +152,7 @@
         </div>
         <!-- /ko -->
 
-        <!-- ko template: {name: 'configuration', data: user}-->
+        <!-- ko template: {name: 'configuration', data: $root.user}-->
         <!-- /ko -->
       </div>
     </div>

@@ -8,7 +8,8 @@
 }
 
 #tt-task-list {
-  margin-top: 5px;
+  height: 100%;
+  margin-top: 10px;
 }
 
 #tt-task-list ol {
@@ -61,6 +62,7 @@
 #tt-task-list .tt-entry.selected .tt-task-title:hover {
   font-weight: 400;
   color: #535F6D;
+  background-color: #E2E7ED;
 }
 
 #tt-task-list .tt-entry a {
@@ -127,25 +129,16 @@
 }
 
 #tt-task-list .tt-entry-options {
-  width: 100%;
-  height: 45px;
-  display: none;
-  padding: 0px 0px 0px 30px;
-
-  cursor: pointer;
+  width: auto;
+  padding: 10px 0px 20px 25px;
   background-color: white;
-/*  background-color: #DEDEDE; */
+  display: none;
 }
 
 #tt-task-list .tt-entry-options a {
   cursor: pointer;
   color: #999999;
-  padding: 10px;
   text-decoration: none;
-  /*background-color: #DEDEDE;
-  border: 1px solid #333333;
-  border-bottom-left-radius: 0.35em;
-  border-bottom-right-radius: 0.35em;*/
 }
 
 #tt-task-list .tt-entry-options a:hover {
@@ -218,6 +211,7 @@
 
 #tt-note-list ul li .tt-header-control a {
   padding-right: 5px;
+  cursor: pointer;
 }
 
 #tt-note-list ul li .tt-header-control a:hover {
@@ -305,6 +299,7 @@
 
 #tt-bookmarks-list ul li .tt-header-control a {
   padding-right: 5px;
+  cursor: pointer;
 }
 
 #tt-bookmarks-list ul li .tt-header-control a:hover {
@@ -439,6 +434,7 @@
 
 #tt-history-list ul li .tt-header-control a {
   padding-right: 5px;
+  cursor: pointer;
 }
 
 #tt-history-list ul li .tt-header-control a:hover {
@@ -530,6 +526,7 @@
 
 #tt-attachments-list .tt-entry {
   width: 100%;
+  height: auto;
 }
 
 #tt-attachments-list .tt-entry:hover {
@@ -565,6 +562,7 @@
 
 #tt-attachments-list ul li .tt-header-control a {
   padding-right: 5px;
+  cursor: pointer;
 }
 
 #tt-attachments-list ul li .tt-header-control a:hover {
@@ -573,12 +571,10 @@
 
 #tt-attachments-list ul li .tt-content {
   width: 100%;
+  height: 50px;
   padding: 5px;
   background-color: #EFEFEF;
-
   font-family: 'Roboto', sans-serif;
-  width: 100%;
-  padding: 5px;
   vertical-align: top;
 }
 
@@ -586,6 +582,7 @@
   color: #333333;
   font-weight: 500;
   font-size: 12px;
+  cursor: pointer;
 
   -ms-word-break: break-all;
   /* Be VERY careful with this, breaks normal words wh_erever */
@@ -657,23 +654,41 @@
   margin-left: 275px;
   font-size: 12px;
   text-align: right;
-  /* TODO */ visibility: hidden;
 }
 
 #tt-completed-tasks-list ol {
   list-style: none;
+  display: none;
 }
 
 #tt-completed-tasks-list ol li {
   width: 100%;  
   margin: 0px;
-  padding: 5px 0px 5px 0px;
+  padding: 2px 0px 2px 0px;
   color: #666666;
 }
 
 #tt-completed-tasks-list ol li a {
   color: #666666;
   text-decoration: none;
+}
+
+#tt-completed-tasks-list .tt-entry-options {
+  width: 100%;
+  padding-left: 23px;
+  cursor: pointer;
+  background-color: white;
+}
+
+#tt-completed-tasks-list .tt-entry-options a {
+  cursor: pointer;
+  color: #999999;
+  padding-right: 3px;
+  text-decoration: none;
+}
+
+#tt-completed-tasks-list .tt-entry-options a:hover {
+  color: #333333;
 }
 
 #tt-completed-tasks-list .tt-check {

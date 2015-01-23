@@ -8,7 +8,8 @@
 }
 
 #tt-goal-list {
-  margin-top: 5px;
+  height: 100%;
+  margin-top: 10px;
 }
 
 #tt-goal-list ol {
@@ -107,6 +108,7 @@
   text-align: right;
   padding-right: 5px;
   text-transform: none;
+  cursor: pointer;
 }
 
 #tt-goal-list .tt-goal-control a { 
@@ -146,11 +148,11 @@
   margin-left: 275px;
   font-size: 12px;
   text-align: right;
-  /* TODO */ visibility: hidden;
 }
 
 #tt-completed-goals-list ol {
   list-style: none;
+  display: none;
 }
 
 #tt-completed-goals-list ol li {

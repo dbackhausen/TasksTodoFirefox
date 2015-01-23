@@ -12,17 +12,17 @@
       <div class="modal-body">
         <p>
           <label for="login-password">E-Mail / Username</label>
-          <input type="text" id="username" class="round" value="" />
+          <input type="text" id="username" class="round" data-bind="value: $data.username" />
         </p>
         <p>
           <label for="login-password">Password</label>
-          <input type="password" id="password" class="round" value="" />
+          <input type="password" id="password" class="round" data-bind="value: $data.password" />
         </p>
         <p>
           <label for="login-password">Password (confirmation)</label>
-          <input type="password" id="password-confirm" class="round" value="" />
+          <input type="password" id="password-confirm" class="round" data-bind="value: $data.password" />
         </p>
-        <input type="button" id="save" value="Save" class="btn btn-primary btn-sm" />
+        <input type="button" id="save" value="Save" class="btn btn-primary btn-sm" style="visibility: hidden" />
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

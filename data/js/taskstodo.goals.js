@@ -1,261 +1,314 @@
+var viewModel = new ViewModel();
+
+function ViewModel() {
+  var self = this;
+  
+  self.user = ko.observable();
+  self.selectedGoal = ko.observable();
+  self.goals = ko.observableArray();
+  self.completedGoals = ko.observableArray();
+
+  self.selectGoal = function(goal) {
+    self.selectedGoal = goal;
+    selectGoal(goal);
+  };
+  
+  self.newGoal = function() {
+    self.selectedGoal = ko.observable();
+    
+    $('#new-goal-form-button-new').hide(); // Hide "New" button
+    $('#content').find('.tt-empty-list').hide(); // Hide empty-list div
+    $('#tt-goal-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
+
+    $('#new-goal-form-input-title').val(null);
+    $('#new-goal-form').show('fast');
+    $('#new-goal-form-input-title').focus();
+    
+    // Reset width and height
+    $('#new-goal-form-input-title').css({"width":"", "height":"", "top": "", "left" : ""});
+  };
+  
+  self.cancelNewGoal = function() {
+    self.selectedGoal = ko.observable();
+
+    $("#new-goal-form").hide(); // Hide new goal from
+    $("#new-goal-form-input-title").val(null);
+
+    $('#new-goal-form-button-new').fadeIn("fast"); // Show "New" button
+    $('#content').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
+  };
+  
+  self.editGoal = function(goal) {
+    $('#new-goal-form-button-new').hide(); // hide new button
+    $('#new-goal-form:visible').hide(); // hide new goal form
+
+    $('#tt-goal-list').find('.tt-inline-edit:visible').hide();  // Hide open inline editors
+    $('#'+goal.id).find('.tt-entry').hide(); // Hide current entry
+    $('#'+goal.id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
+    
+    $('#edit-goal-form-input-title').height($('#edit-goal-form-input-title').prop('scrollHeight'));
+  };
+  
+  self.cancelEditGoal = function(goal) {
+    goal.title.reset();
+
+    $('#new-goal-form-button-new').show(); // Show "New" button
+    $('#'+goal.id).find('.tt-entry').show(); // Show list entry
+    $('#'+goal.id+' .tt-inline-edit').hide(); // Hide inline editor
+  };
+
+  self.addGoal = function() {
+    var title = $("#new-goal-form-input-title").val();
+    
+    if (title && title.length > 0) {
+      addGoal(new Goal({ 
+        "userId" : self.user().id,
+        "title" : title,
+        "description" : "",
+        "position" : self.goals().length > 0 ? (self.goals().length + 1) : 1,
+        "level" : 0,
+        "urgency" : 0,
+        "priority" : 0,
+        "created" : new Date(),
+        "modified" : null
+      }));
+    }
+
+    self.cancelNewGoal();
+  };
+
+  self.updateGoal = function(goal) {
+    if (goal && goal.title() && goal.title().length > 0) {
+      goal.title.commit();
+      goal.modified(new Date());
+      updateGoal(goal);
+    } else if (goal) {
+      goal.title.reset();
+    }
+
+    self.cancelEditGoal(goal);
+  };
+
+  self.deleteGoal = function(goal) {
+    deleteGoal(goal);
+    $('#content').find('.tt-empty-list').fadeIn("fast");
+  };
+
+  self.completeGoal = function(goal) {
+    if (goal.completed()) {
+      goal.completed(false);
+      goal.completedDate(null);
+      updateGoal(goal);
+      self.goals.push(goal);
+      self.completedGoals.remove(goal);
+    } else {
+      goal.completed(true);
+      goal.completedDate(new Date());
+      updateGoal(goal);
+      self.goals.remove(goal);
+      self.completedGoals.push(goal);
+    }
+  };
+
+  self.showCompletedGoals = function() {
+    $('#tt-completed-goals-list ol').fadeIn("fast");  
+    self.user().showCompletedGoals(true);
+    updateUser(self.user());
+  };
+
+  self.hideCompletedGoals = function() {
+    $('#tt-completed-goals-list ol').fadeOut("fast");  
+    self.user().showCompletedGoals(false);
+    updateUser(self.user());
+  };
+
+  self.moveGoal = function(arg, event, ui) {
+    console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
+
+    if (arg.sourceIndex != arg.targetIndex) {
+      arg.item.position(arg.targetIndex + 1);
+
+      if (arg.item.level() > 0) {
+        // If goal is a subtask
+        if (arg.targetIndex == 0) {
+          // If goal is moved to the top, the
+          // goal level has to be set to 0
+          arg.item.level(0);
+          // and the parent has to be set to 0
+          arg.item.parentId(null);
+        } else {
+          // Set the new parent
+          arg.item.parentId(self.goals()[arg.targetIndex - 1].id);
+        }
+      }
+
+      updateGoal(arg.item);
+
+      // If goal position has been modified
+      ko.utils.arrayForEach(self.goals(), function(goal) {
+        // console.log(self.tasks.indexOf(goal) + ": " + goal.title);
+        if (goal.id != arg.item.id) {
+          if (arg.sourceIndex < arg.targetIndex) {
+            // Task has been moved to a lower position
+            if (goal.position() > (arg.sourceIndex + 1) && goal.position() <= (arg.targetIndex + 1)) {
+              goal.position(goal.position() - 1);
+              updateGoal(goal);
+              // console.log("Setting " + goal.title() + " to position " + goal.position());
+            }
+          } else {
+            // Task has been moved to a higher position
+            if (goal.position() < (arg.sourceIndex + 1) && goal.position() >= (arg.targetIndex + 1)) {
+              goal.position(goal.position() + 1);
+              updateGoal(goal);
+              // console.log("Setting " + goal.title() + " to position " + goal.position());
+            }
+          }
+        }
+      });
+    }
+  };
+
+  // -- HELP
+
+  self.showHelp = function() {
+    addon.port.emit("ShowHelp");
+  };
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// USER                                                                    //
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Saves changes to the user.
+ */
+function updateUser(user) {
+  user.modified(new Date());
+  addon.port.emit("UpdateUser", ko.toJSON(user));
+}
+
+addon.port.on("UserUpdated", function(user) {
+  console.log("User data has been updated");
+});
+
+/////////////////////////////////////////////////////////////////////////////
+// GOAL                                                                    //
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Loads all goals.
+ */
+function loadGoals(user) {
+  $('#content .tt-loader').show();
+  addon.port.emit("LoadGoals", user);
+}
+
+addon.port.on("GoalsLoaded", function(goals) {
+  $('#content .tt-loader').hide();
+  viewModel.goals.removeAll();
+
+  if (goals && goals.length > 0) {
+    ko.utils.arrayForEach(goals, function(goal) {
+      viewModel.goals.push(new Goal(goal));
+    });
+  } else {
+    $('#content .tt-empty-list').show();
+  }
+});
+
+/**
+ * Loads all completed goals.
+ */
+function loadCompletedGoals(user) {
+  addon.port.emit("LoadCompletedGoals", user);
+}
+
+addon.port.on("CompletedGoalsLoaded", function(goals) {
+  viewModel.completedGoals.removeAll();
+  ko.utils.arrayForEach(goals, function(goal) {
+    viewModel.completedGoals.push(new Goal(goal));
+  });
+});
+  
+/**
+ * Adds a new goal.
+ */
+function addGoal(goal) {
+  addon.port.emit("AddGoal", ko.toJSON(goal));
+}
+
+addon.port.on("GoalAdded", function(goal) {
+  viewModel.goals.push(new Goal(goal));
+});
+
+/**
+ * Saves changes to an existing goal.
+ */
+function updateGoal(goal) {
+  //goal.modified(new Date());
+  addon.port.emit("UpdateGoal", ko.toJSON(goal));
+}
+
+addon.port.on("GoalUpdated", function(goal) {
+  console.log("Goal '" + goal.title + "' has been updated");
+});
+
+/**
+ * Deletes an existing goal.
+ */
+function deleteGoal(goal) {
+  // addon.port.emit("DeleteGoal", goal);
+  goal.deleted(true);
+  goal.position(-1);
+  goal.parentId(null);
+  goal.level(0);
+  updateGoal(goal);
+  viewModel.goals.remove(goal);
+}
+
+addon.port.on("GoalDeleted", function(goal) {
+});
+
+/**
+ * Selects a goal.
+ */
+function selectGoal(goal) {
+  // trigger goal selection to addon script      
+  addon.port.emit("SetActiveGoal", ko.toJS(goal));
+
+  // Redirect to tasks page
+  addon.port.emit("Redirect", "tasks.html");
+}
+
+
+/*
+ * ON PAGE READY
+ */
 $(document).ready(function() {
 
   ko.punches.enableAll();
-  
-  var activeUser;
 
   /**
    * Get active user
    */
-   addon.port.emit("GetActiveUser");
+  addon.port.emit("GetActiveUser");
 
-   addon.port.on("ActiveUserLoaded", function(user) {
+  /**
+   * Callback method, when active user is loaded.
+   */
+  addon.port.on("ActiveUserLoaded", function(user) {
     if (user != null) {
       // Set active user
-      activeUser = user;
-      viewModel.user(activeUser);
+      viewModel.user(new User(user));
 
       // Load all user goals
-      loadGoals(activeUser);
+      loadGoals(viewModel.user());
 
       // Load all completed goals
-      loadCompletedGoals(activeUser);
+      loadCompletedGoals(viewModel.user());
     }
   });
-
-  function ViewModel() {
-    var self = this;
-    
-    self.user = ko.observable();
-    self.selectedGoal = ko.observable();
-    self.goals = ko.observableArray();
-    self.completedGoals = ko.observableArray();
-
-    self.selectGoal = function(goal) {
-      self.selectedGoal = goal;
-      selectGoal(goal);
-    };
-    
-    self.newGoal = function() {
-      self.selectedGoal = ko.observable();
-      
-      $('#new-goal-form-button-new').hide();
-      $('#new-goal-form:visible').hide();
-
-      $('#new-goal-form-input-title').val(null);
-      $('#new-goal-form').show('fast');
-      $('#new-task-form-input-title').focus();
-      
-      // Reset width and height
-      $('#new-goal-form-input-title').css({"width":"", "height":"", "top": "", "left" : ""});
-    };
-    
-    self.cancelNewGoal = function() {
-      self.selectedGoal = ko.observable();
-
-      $("#new-goal-form").hide();
-      $("#new-goal-form-input-title").val(null);
-
-      $('#new-goal-form-button-new').show();
-    };
-    
-    self.editGoal = function(goal) {
-      $('#new-goal-form-button-new').hide(); // hide new button
-      $('#new-goal-form:visible').hide(); // hide new goal form
-
-      $('#tt-goal-list').find('.tt-inline-edit:visible').hide();
-      $('#'+goal.id).find('.tt-entry').hide();
-
-      $('#'+goal.id+' #edit-task-form-input-title').val(goal.title());
-      $('#'+goal.id+' .tt-inline-edit').fadeIn('fast');
-      
-      $('#edit-goal-form-input-title').height($('#edit-goal-form-input-title').prop('scrollHeight'));
-    };
-    
-    self.cancelEditGoal = function(goal) {
-      $('#new-goal-form-button-new').show();
-      $('#'+goal.id).find('.tt-entry').show();
-
-      $('#'+goal.id+' .tt-inline-edit').hide();
-      $('#'+goal.id+' #edit-goal-form-input-title').val(null);
-    };
-
-    self.addGoal = function() {
-      var title = $("#new-goal-form-input-title").val();
-      
-      if (title != null && title.length > 0) {
-        addGoal({ 
-          "userId" : activeUser.id,
-          "title" : title,
-          "description" : "",
-          "position" : self.goals().length > 0 ? (self.goals().length + 1) : 1,
-          "level" : 0,
-          "urgency" : 0,
-          "priority" : 0,
-          "created" : new Date(),
-          "modified" : new Date()
-        });
-      }
-
-      self.cancelNewGoal();
-    }
-
-    self.updateGoal = function(goal) {
-      var title = $('#'+goal.id+' #edit-goal-form-input-title').val();
-
-      if (title != null && title.length > 0) {
-        goal.title(title);
-        updateGoal(goal);
-      }
-
-      self.cancelEditGoal(goal);
-    }
-
-    self.deleteGoal = function(goal) {
-      deleteGoal(goal);
-    };
-
-    self.completeGoal = function(goal) {
-      if (goal.completed()) {
-        goal.completed(false);
-        goal.completedDate(null);
-        updateGoal(goal);
-        self.goals.push(goal);
-        self.completedGoals.remove(goal);
-      } else {
-        goal.completed(true);
-        goal.completedDate(new Date());
-        updateGoal(goal);
-        self.goals.remove(goal);
-        self.completedGoals.push(goal);
-      }
-    };
-
-    self.moveGoal = function(arg, event, ui) {
-      console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
-
-      if (arg.sourceIndex != arg.targetIndex) {
-        arg.item.position(arg.targetIndex + 1);
-
-        if (arg.item.level() > 0) {
-          // If goal is a subtask
-          if (arg.targetIndex == 0) {
-            // If goal is moved to the top, the
-            // goal level has to be set to 0
-            arg.item.level(0);
-            // and the parent has to be set to 0
-            arg.item.parentId(null);
-          } else {
-            // Set the new parent
-            arg.item.parentId(self.goals()[arg.targetIndex - 1].id);
-          }
-        }
-
-        updateGoal(arg.item);
-
-        // If goal position has been modified
-        ko.utils.arrayForEach(self.goals(), function(goal) {
-          // console.log(self.tasks.indexOf(goal) + ": " + goal.title);
-          if (goal.id != arg.item.id) {
-            if (arg.sourceIndex < arg.targetIndex) {
-              // Task has been moved to a lower position
-              if (goal.position() > (arg.sourceIndex + 1) && goal.position() <= (arg.targetIndex + 1)) {
-                goal.position(goal.position() - 1);
-                updateGoal(goal);
-                // console.log("Setting " + goal.title() + " to position " + goal.position());
-              }
-            } else {
-              // Task has been moved to a higher position
-              if (goal.position() < (arg.sourceIndex + 1) && goal.position() >= (arg.targetIndex + 1)) {
-                goal.position(goal.position() + 1);
-                updateGoal(goal);
-                // console.log("Setting " + goal.title() + " to position " + goal.position());
-              }
-            }
-          }
-        });
-      }
-    }
-  }
 
   // Apply view model
-  var viewModel = new ViewModel();
   ko.applyBindings(viewModel);
-
-  /**
-   * Loads all gaols.
-   */
-  function loadGoals(user) {
-    addon.port.emit("LoadGoals", user);
-  }
-
-  addon.port.on("GoalsLoaded", function(goals) {
-    viewModel.goals.removeAll();
-    ko.utils.arrayForEach(goals, function(goal) {
-      viewModel.goals.push(new Goal(goal));
-    });
-  });
-
-  /**
-   * Loads all completed gaols.
-   */
-  function loadCompletedGoals(user) {
-    addon.port.emit("LoadCompletedGoals", user);
-  }
-
-  addon.port.on("CompletedGoalsLoaded", function(goals) {
-    viewModel.completedGoals.removeAll();
-    ko.utils.arrayForEach(goals, function(goal) {
-      viewModel.completedGoals.push(new Goal(goal));
-    });
-  });
-    
-  /**
-   * Adds a new goal.
-   */
-  function addGoal(goal) {
-    addon.port.emit("AddGoal", ko.toJSON(goal));
-  }
-
-  addon.port.on("GoalAdded", function(goal) {
-    viewModel.goals.push(new Goal(goal));
-  });
-
- /**
-   * Saves changes to an existing goal.
-   */
-  function updateGoal(goal) {
-    goal.modified(new Date());
-    addon.port.emit("UpdateGoal", ko.toJSON(goal));
-  }
-
-  addon.port.on("GoalUpdated", function(data) {
-  });
-  
-  /**
-   * Deletes an existing goal.
-   */
-  function deleteGoal(goal) {
-    // addon.port.emit("DeleteGoal", goal);
-    goal.deleted(true);
-    goal.position(-1);
-    goal.parentId(null);
-    goal.level(0);
-    updateGoal(goal);
-    viewModel.goals.remove(goal);
-  }
-
-  addon.port.on("GoalDeleted", function(data) {
-  });
-
-  /**
-   * Selects a goal.
-   */
-  function selectGoal(goal) {
-    // trigger goal selection to addon script      
-    addon.port.emit("SetActiveGoal", ko.toJS(goal));
-
-    // Redirect to tasks page
-    addon.port.emit("Redirect", "tasks.html");
-  }
 });

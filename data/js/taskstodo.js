@@ -111,6 +111,42 @@ $(document).ready(function() {
     }
   };
 
+  /*
+   * Wrapper to an observable that requires accept/cancel
+   * (see http://www.knockmeout.net/2011/03/guard-your-model-accept-or-cancel-edits.html)
+   */
+  ko.protectedObservable = function(initialValue) {
+    //private variables
+    var _actualValue = ko.observable(initialValue),
+        _tempValue = initialValue;
+
+    //computed observable that we will return
+    var result = ko.computed({
+      //always return the actual value
+      read: function() {
+        return _actualValue();
+      },
+      //stored in a temporary spot until commit
+      write: function(newValue) {
+        _tempValue = newValue;
+      }
+    }).extend({ notify: "always" });
+
+    //if different, commit temp value
+    result.commit = function() {
+      if (_tempValue !== _actualValue()) {
+        _actualValue(_tempValue);
+      }
+    };
+
+    //force subscribers to take original
+    result.reset = function() {
+      _actualValue.valueHasMutated();
+      _tempValue = _actualValue();   //reset temp value
+    };
+
+    return result;
+  };
 
   /////////////////////////////////////////////////////////////////////////////
   // ERROR HANDLING                                                          //
@@ -145,15 +181,17 @@ function showErrorMessage(message, location) {
 
 function User(data) {
   this.id = data.id;
-  this.username = ko.observable(data.username);
-  this.password = ko.observable(data.password);
+  this.username = ko.protectedObservable(data.username);
+  this.password = ko.protectedObservable(data.password);
+  this.showCompletedGoals = ko.observable(data.showCompletedGoals);
+  this.showCompletedTasks = ko.observable(data.showCompletedTasks);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
 }
 
 function Goal(data) {
   this.id = data.id;
-  this.title = ko.observable(data.title);
+  this.title = ko.protectedObservable(data.title);
   this.description = ko.observable(data.description);
   this.userId = ko.observable(data.userId);
   this.parentId = ko.observable(data.parentId);
@@ -172,7 +210,7 @@ function Goal(data) {
 
 function Task(data) {
   this.id = data.id;
-  this.title = ko.observable(data.title);
+  this.title = ko.protectedObservable(data.title);
   this.description = ko.observable(data.description);
   this.goalId = ko.observable(data.goalId);
   this.parentId = ko.observable(data.parentId);
@@ -192,7 +230,7 @@ function Task(data) {
 function Note(data) {
   this.id = data.id;
   this.taskId = ko.observable(data.taskId);
-  this.body = ko.observable(data.body);
+  this.body = ko.protectedObservable(data.body);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
   this.deleted = ko.observable(data.deleted);
@@ -201,9 +239,9 @@ function Note(data) {
 function Bookmark(data) {
   this.id = data.id;
   this.taskId = ko.observable(data.taskId);
-  this.title = ko.observable(data.title);
-  this.url = ko.observable(data.url);
-  this.description = ko.observable(data.description);
+  this.title = ko.protectedObservable(data.title);
+  this.url = ko.protectedObservable(data.url);
+  this.description = ko.protectedObservable(data.description);
   this.thumbnail = ko.observable(data.thumbnail);
   this.content = ko.observable(data.content);
   this.relevance = ko.observable(data.relevance);
@@ -231,6 +269,8 @@ function Attachment(data) {
   this.taskId = data.taskId;
   this.filename = data.filename;
   this.size = data.size;
+  this.url = data.url;
+//  this.description = ko.observable(data.description);
   this.contentType = data.contentType;
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);

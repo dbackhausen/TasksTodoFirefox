@@ -27,11 +27,11 @@ function ViewModel() {
       // Trigger task selection to addon script      
       addon.port.emit("SetActiveTask", ko.toJS(task));
 
-      // Load task bookmarks      
-      //loadBookmarks(self.selectedTask);
+      // Load task bookmarks (this is necessary for page annotation)    
+      loadBookmarks(self.selectedTask);
 
-      // Load task history      
-      //loadHistory(self.selectedTask);
+      // Load task history (this is necessary for query overview)     
+      loadHistory(self.selectedTask);
 
       // Load latest tabs for restoring
       //loadTabs(self.selectedTask);
@@ -49,11 +49,19 @@ function ViewModel() {
   };
   
   self.newTask = function() {
+    if (self.selectedTask && self.selectedTask.id) {
+      // Deselect current task
+      $("li#" + self.selectedTask.id).find('div').removeClass('selected');
+      // Hide task options for current task
+      $("li#" + self.selectedTask.id).find('.tt-entry-options').hide();
+    }
+
+    // Set the new task as selected task
     self.selectedTask = ko.observable();
 
     $('#new-task-form-button-new').hide(); // Hide "New" button
     $('#content').find('.tt-empty-list').hide(); // Hide empty-list div
-    $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
+    $('#tt-task-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
     
     $('#new-task-form-input-title').val(null);
     $('#new-task-form').show('fast');
@@ -66,38 +74,45 @@ function ViewModel() {
   self.cancelNewTask = function() {
     self.selectedTask = ko.observable();
 
-    $('#new-task-form').hide();
+    $('#new-task-form').hide(); // Hide new task from
     $('#new-task-form-input-title').val(null);
 
-    $('#new-task-form-button-new').fadeToggle("fast"); // Show "New" button
-    $('#content').find('.tt-empty-list').fadeToggle("fast"); // Show empty-list div
+    $('#new-task-form-button-new').fadeIn("fast"); // Show "New" button
+    $('#content').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
   
   self.editTask = function(task) {
-    $('#new-task-form-button-new').hide();
-    $('#new-task-form:visible').hide();
+    if (self.selectedTask && self.selectedTask.id) {
+      // Deselect current task
+      $("li#" + self.selectedTask.id).find('div').removeClass('selected');
+      // Hide task options for current task
+      $("li#" + self.selectedTask.id).find('.tt-entry-options').hide();
+      // Set a new task as selected task
+      self.selectedTask = ko.observable();
+    }
 
-    $('#tt-task-list').find('.tt-inline-edit:visible').hide();
-    $('#'+task.id).find('.tt-entry').hide();
+    $('#new-task-form-button-new').hide(); // Hide "New" button
+    $('#new-task-form:visible').hide(); // Hide new task from
 
-    $('#'+task.id+' #edit-task-form-input-title').val(task.title());
-    $('#'+task.id+' .tt-inline-edit').fadeIn('fast');
+    $('#tt-task-list').find('.tt-inline-edit:visible').hide(); // Hide open inline editors
+    $('#'+task.id).find('.tt-entry').hide(); // Hide current entry
+    $('#'+task.id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
     
     $('#edit-task-form-input-title').height($('#edit-task-form-input-title').prop('scrollHeight'));
   };
 
   self.cancelEditTask = function(task) {
-    $('#new-task-form-button-new').show();
-    $('#'+task.id).find('.tt-entry').show();
+    task.title.reset();
 
-    $('#'+task.id+' .tt-inline-edit').hide();
-    $('#'+task.id+' #edit-task-form-input-title').val(null);
+    $('#new-task-form-button-new').show(); // Show "New" button
+    $('#'+task.id).find('.tt-entry').show(); // Show list entry
+    $('#'+task.id+' .tt-inline-edit').hide(); // Hide inline editor
   };
 
   self.addTask = function() {
     var title = $("#new-task-form-input-title").val();
 
-    if (title != null && title.length > 0) {
+    if (title && title.length > 0) {
       addTask(new Task({
         "goalId" : self.selectedGoal().id,
         "title" : title,
@@ -107,28 +122,28 @@ function ViewModel() {
         "dueDate" : null,
         "reminderDate" : null,
         "created" : new Date(),
-        "modified" : new Date()
+        "modified" : null
       }));
     }
 
     self.cancelNewTask();
-  }
+  };
 
   self.updateTask = function(task) {
-    var title = $('#'+task.id+' #edit-task-form-input-title').val();
-
-    if (task.title() != null && task.title().length > 0) {
-      task.title(title);
+    if (task && task.title() && task.title().length > 0) {
+      task.title.commit();
+      task.modified(new Date());
       updateTask(task);
-    } else {
-      deleteTask(task);
+    } else if (task) {
+      task.title.reset();
     }
 
     self.cancelEditTask(task);
-  }
+  };
 
   self.deleteTask = function(task) {
     deleteTask(task);
+    $('#content').find('.tt-empty-list').fadeIn("fast");  
   };
 
   self.completeTask = function(task) {
@@ -147,10 +162,24 @@ function ViewModel() {
     }
   };
 
+  self.showCompletedTasks = function() {
+    $('#tt-completed-tasks-list ol').fadeIn("fast");  
+    self.user().showCompletedTasks(true);
+    updateUser(self.user());
+  };
+
+  self.hideCompletedTasks = function() {
+    $('#tt-completed-tasks-list ol').fadeOut("fast");  
+    self.user().showCompletedTasks(false);
+    updateUser(self.user());
+  };
+
   self.indentTask = function(task) {
-    if (task != null && task.position() > 1) {
+    if (task != null && task.position() > 1) { // only allow indents where index > 1
       for (var i = task.position() - 2; i >= 0; i--) {  
-        if ((task.level() + 1) - self.tasks()[i].level() == 1) {
+        if ((task.level() + 1) - self.tasks()[i].level() == 0 
+          || (task.level() + 1) - self.tasks()[i].level() == 1) { 
+          // indent only if previous task is on same level or one lower
           task.parentId(self.tasks()[i].id);
           task.level(task.level() + 1);
           console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
@@ -253,26 +282,28 @@ function ViewModel() {
   
   self.notes = ko.observableArray();
 
-  self.loadNotes = function() {
-    loadNotes(self.selectedTask);
-  }
+  self.loadNotes = function(task) {
+    loadNotes(task);
+  };
 
   self.newNote = function() {
     $('#new-note-form-button-new').hide(); // Hide "New" button
     $('#modal-panel-notes').find('.tt-empty-list').hide(); // Hide empty-list div
     $('#tt-note-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
     
-    $('#new-note-form').fadeToggle("fast");
+    $('#new-note-form').fadeIn("fast");
+
     $('#new-note-form-input-body').focus();
     $('#new-note-form-input-body').css({"width":"", "height":"", "top": "", "left" : ""}); // Reset width and height
   };
   
   self.cancelNewNote = function() {
     $('#new-note-form').hide(); // Hide new entity form
+
     $('#new-note-form-input-body').val(null); // Reset value
 
-    $('#new-note-form-button-new').fadeToggle("fast"); // Show "New" button
-    $('#modal-panel-notes').find('.tt-empty-list').fadeToggle("fast"); // Show empty-list div
+    $('#new-note-form-button-new').fadeIn("fast"); // Show "New" button
+    $('#modal-panel-notes').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
   
   self.addNote = function() {
@@ -283,7 +314,7 @@ function ViewModel() {
         "taskId" : self.selectedTask.id,
         "body" : body,
         "created" : new Date(),
-        "modified" : new Date()
+        "modified" : null
       }));        
     }
 
@@ -291,32 +322,31 @@ function ViewModel() {
   };
   
   self.editNote = function(note) {
-    $('#new-note-form-button-new').toggle(); // Hide "New" button
-    $('#new-note-form:visible').toggle(); // Hide new entity form
+    $('#new-note-form-button-new').hide(); // Hide "New" button
+    $('#new-note-form:visible').hide(); // Hide new entity form
     $('#tt-note-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
 
     $('#'+note.id+' .tt-entry').hide(); // Hide list entry
-
     $('#'+note.id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
 
-    $('#edit-note-form-input-body').val(note.body());
     $('#edit-note-form-input-body').focus();
   };
 
   self.cancelEditNote = function(note) {
-    $('#new-note-form-button-new').toggle(); // Show "New" button
-
+    note.body.reset();
+    
+    $('#new-note-form-button-new').show(); // Show "New" button
     $('#'+note.id+' .tt-entry').fadeIn('fast'); // Show entry 
-
     $('#'+note.id+' .tt-inline-edit').hide(); // Hide inline form
   };
   
   self.updateNote = function(note) {
-    if (note.body() != null && note.body().length > 0) {
+    if (note && note.body() && note.body().length > 0) {
+      note.body.commit();
       note.modified(new Date());
       updateNote(note);
-    } else {
-      // deleteNote(note);
+    } else if (note) {
+      note.body.reset();
     }
 
     self.cancelEditNote(note);
@@ -324,33 +354,35 @@ function ViewModel() {
   
   self.deleteNote = function(note) {
     deleteNote(note);
+    $('#modal-panel-notes').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };   
   
   // -- BOOKMARKS
   
   self.bookmarks = ko.observableArray();
   
-  self.loadBookmarks = function() {
-    loadBookmarks(self.selectedTask);
-  }
+  self.loadBookmarks = function(task) {
+    loadBookmarks(task);
+  };
 
   self.newBookmark = function() {
     $('#new-bookmark-form-button-new').hide(); // Hide "New" button
     $('#modal-panel-bookmarks').find('.tt-empty-list').hide(); // Hide empty-list div
     $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
     
-    $('#new-bookmark-form').fadeToggle("fast");
+    $('#new-bookmark-form').fadeIn("fast");
     $('#new-bookmark-form-input-title').focus();
   };
   
   self.cancelNewBookmark = function() {
     $('#new-bookmark-form').hide();
+
     $('#new-bookmark-form-input-title').val(null);
     $('#new-bookmark-form-input-url').val(null);
     $('#new-bookmark-form-input-description').val(null);    
 
-    $('#new-task-form-button-new').fadeToggle("fast"); // Show "New" button
-    $('#modal-panel-bookmarks').find('.tt-empty-list').fadeToggle("fast"); // Show empty-list div
+    $('#new-task-form-button-new').fadeIn("fast"); // Show "New" button
+    $('#modal-panel-bookmarks').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
   
   self.addBookmark = function() {
@@ -365,7 +397,7 @@ function ViewModel() {
         "url" : url,
         "description" : description,
         "created" : new Date(),
-        "modified" : new Date()
+        "modified" : null
       }));
     } else {
       // TODO show error!
@@ -377,31 +409,36 @@ function ViewModel() {
   self.editBookmark = function(bookmark) {
     $('#new-bookmark-form-button-new').hide();
     $('#new-bookmark-form:visible').hide();
-    $('#'+bookmark.id+' .task-bookmarks-list-content').toggle();
-    $('#'+bookmark.id+' .inline-edit').fadeToggle("fast");
-    $('#edit-bookmark-form-input-title').val(bookmark.title());
-    $('#edit-bookmark-form-input-url').val(bookmark.url());
-    $('#edit-bookmark-form-input-description').val(bookmark.description());  
+    $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
+
+    $('#'+bookmark.id+' .tt-entry').hide(); // Hide list entry
+    $('#'+bookmark.id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
+
     $('#edit-bookmark-form-input-title').focus();
   };
 
   self.cancelEditBookmark = function(bookmark) {
+    bookmark.title.reset();
+    bookmark.url.reset();
+    bookmark.description.reset();
+    
     $('#new-bookmark-form-button-new').show();
-    $('#'+bookmark.id+' .task-bookmarks-list-content').fadeToggle("fast");
-    $('#'+bookmark.id+' .inline-edit').toggle();
-    $('#edit-bookmark-form-input-title').val(null);
-    $('#edit-bookmark-form-input-url').val(null);
-    $('#edit-bookmark-form-input-description').val(null);    
+    $('#'+bookmark.id+' .tt-inline-edit').hide(); // Hide inline form
+    $('#'+bookmark.id+' .tt-entry').fadeIn('fast'); // Show list entry
   };
   
   self.updateBookmark = function(bookmark) {
-    JSON.stringify("Updating bookmark: " + bookmark);
-    if (bookmark.title().length > 0 && bookmark.title().url > 0) {
+    if (bookmark && bookmark.title() && bookmark.url() 
+      && bookmark.title().length > 0 && bookmark.url().length > 0) {
+      bookmark.title.commit();
+      bookmark.url.commit();
+      bookmark.description.commit();
       bookmark.modified(new Date());
-
       updateBookmark(bookmark);
-    } else {
-      // TODO show error!
+    } else if (bookmark) {
+      bookmark.title.reset();
+      bookmark.url.reset();
+      bookmark.description.reset();
     }
 
     self.cancelEditBookmark(bookmark);
@@ -409,27 +446,29 @@ function ViewModel() {
   
   self.deleteBookmark = function(bookmark) {
     deleteBookmark(bookmark);
+    $('#modal-panel-bookmarks').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
 
   // -- HISTORY
   
   self.history = ko.observableArray();
   
-  self.loadHistory = function() {
-    loadHistory(self.selectedTask);
-  }
+  self.loadHistory = function(task) {
+    loadHistory(task);
+  };
 
   self.deleteHistoryEntry = function(entry) {
     deleteHistoryEntry(entry);
+    $('#modal-panel-history').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
 
   // -- TABS
   
   self.tabs = ko.observableArray();
   
-  self.loadTabs = function() {
-    loadTabs(self.selectedTask);
-  }
+  self.loadTabs = function(task) {
+    loadTabs(task);
+  };
 
   self.deleteTab = function(tab) {
     deleteTab(tab);
@@ -439,12 +478,23 @@ function ViewModel() {
   
   self.attachments = ko.observableArray();
   
-  self.loadAttachments = function() {
-    loadAttachments(self.selectedTask);
-  }
+  self.loadAttachments = function(task) {
+    loadAttachments(task);
+  };
   
   self.deleteAttachment = function(attachment) {
     deleteAttachment(attachment);
+    $('#modal-panel-attachments').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
+  };
+
+  self.downloadAttachment = function(attachment) {
+    downloadAttachment(attachment);
+  };
+
+  // -- HELP
+  
+  self.showHelp = function() {
+    addon.port.emit("ShowHelp");
   };
 };
 
@@ -526,6 +576,22 @@ ko.bindingHandlers.uploader = {
 };
 
 /////////////////////////////////////////////////////////////////////////////
+// USER                                                                    //
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Saves changes to the user.
+ */
+function updateUser(user) {
+  user.modified(new Date());
+  addon.port.emit("UpdateUser", ko.toJSON(user));
+}
+
+addon.port.on("UserUpdated", function(user) {
+  console.log("User data has been updated");
+});
+
+/////////////////////////////////////////////////////////////////////////////
 // GOAL                                                                    //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -582,7 +648,6 @@ function loadTasks(goal) {
 
 addon.port.on("TasksLoaded", function(tasks) { 
   $('#content .tt-loader').hide();
-
   viewModel.tasks.removeAll();
 
   if (tasks && tasks.length > 0) {  
@@ -623,7 +688,7 @@ addon.port.on("TaskAdded", function(data) {
  * Saves changes to an existing task.
  */
 function updateTask(task) {
-  task.modified(new Date());
+  //task.modified(new Date());
   addon.port.emit("UpdateTask", ko.toJSON(task));
 }
 
@@ -644,7 +709,6 @@ function deleteTask(task) {
 }
 
 addon.port.on("TaskDeleted", function(data) {
-  console.log("Task '" + task.title + "' has been marked as deleted");
 });
 
 /**
@@ -655,12 +719,16 @@ function selectTask(task) {
   $('#tt-task-list').find('.tt-inline-edit').hide();
   $('#tt-task-list').find('.tt-entry').show();
 
+  // Hide new task form and show "New" button
+  $('#new-task-form').hide();
+  $('#new-task-form-button-new').fadeIn("fast");
+
   // Disable all other task selections
   $('#tt-task-list').find('.selected').removeClass('selected');
   // Hide all visible options, before showing another one  
   $('#tt-task-list').find('.tt-entry-options:visible').not($(ttListEntry).find('.tt-entry-options')).hide();
   // Hide all visible options, before showing another one   
-  $('#tt-task-list').find('.tt-task-control a:visible').not($(ttListEntry).find('.tt-task-control a')).hide();
+  //$('#tt-task-list').find('.tt-task-control a:visible').not($(ttListEntry).find('.tt-task-control a')).hide();
 
   if (task != null) {
     // Make sure the input field value is set
@@ -892,6 +960,9 @@ function addHistoryEntry(entry) {
 
 addon.port.on("HistoryEntryAdded", function(entry) {
   viewModel.history.unshift(new HistoryEntry(entry));
+
+  // Call main.js to set history of active task
+  addon.port.emit("SetActiveTaskHistory", history);
 });
 
 /**
@@ -911,6 +982,9 @@ function deleteHistoryEntry(entry) {
   entry.deleted(true);
   updateHistoryEntry(entry);
   viewModel.history.remove(entry);
+
+    // Call main.js to set history of active task
+  addon.port.emit("SetActiveTaskHistory", history);
 }
 
 addon.port.on("HistoryEntryDeleted", function(data) {
@@ -967,6 +1041,13 @@ function deleteAttachment(attachment) {
 
 addon.port.on("AttachmentDeleted", function(data) {
 });
+
+/**
+ * Deletes existing attachment.
+ */
+function downloadAttachment(attachment) {
+  addon.port.emit("DownloadAttachment", attachment);
+}
 
 
 /*
