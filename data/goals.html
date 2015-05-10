@@ -61,7 +61,7 @@
           <i class="fa fa-bullseye padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-your-goals'"></span>
         </div>
         <ol data-bind="sortable: { data: goals }">
-          <li data-bind="attr: { 'id': 'top-nav-goal-'+id }">
+          <li data-bind="attr: { 'id': 'top-nav-goal-' + _id }">
             <div class="goal-entry" data-bind="click: $parent.selectGoal">
               <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
             </div>
@@ -96,7 +96,7 @@
         <!-- ko if: goals() != null && goals().length > 0 -->
         <div id="tt-goal-list">
           <ol data-bind="sortable: { data: goals, connectClass: 'move', afterMove: moveGoal }">
-            <li data-bind="attr: { 'id': id }">
+            <li data-bind="attr: { 'id': _id }">
               <div class="tt-entry">
                 <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
                   <div class="tt-goal-check">
@@ -117,35 +117,6 @@
                 </p>
                 <button data-bind="click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
                 <button data-bind="click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <!-- /ko -->
-
-        <!-- ko if: completedGoals() != null && completedGoals().length > 0 -->
-        <div id="tt-completed-goals-list">
-          <section>
-            <div class="tt-header">
-              Your latest completed goals
-            </div>
-            <div class="tt-option">
-              <!-- ko if: user().showCompletedGoals -->
-              <a href="#" data-bind="click: $root.hideCompletedGoals">hide</a>
-              <!-- /ko -->
-              <!-- ko ifnot: user().showCompletedGoals  -->
-              <a href="#" data-bind="click: $root.showCompletedGoals">show</a>
-              <!-- /ko -->
-            </div>
-          </section>
-         
-          <ol data-bind="foreach: completedGoals">
-            <li data-bind="attr: { 'id': id }">
-              <div class="tt-check">
-                <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
-              </div>
-              <div class="tt-title">
-                <span data-bind="text: title()"></span>
               </div>
             </li>
           </ol>

@@ -1,3 +1,4 @@
+
 /////////////////////////////////////////////////////////////////////////////
 // I18N                                                                    //
 /////////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,6 @@ i18n.init({
     }
   };
 });
-
 
 $(document).ready(function() { 
 
@@ -157,11 +157,18 @@ $(document).ready(function() {
   });
 });
 
+/////////////////////////////////////////////////////////////////////////////
+// INPUT VALIDATION                                                        //
+/////////////////////////////////////////////////////////////////////////////
 
 function validateEmail(email) { 
   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+// USER NOTIFICATIONS                                                      //
+/////////////////////////////////////////////////////////////////////////////
 
 function showSuccessMessage(message, location) {
   $('<div class="alert alert-success" role="alert">'+message+'</div>').appendTo(location).delay(3000).fadeOut(1000);
@@ -176,21 +183,45 @@ function showErrorMessage(message, location) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// LOGGING                                                                 //
+/////////////////////////////////////////////////////////////////////////////
+
+function loadLogEntries(user) {
+  addon.port.emit("LoadLogEntries", user._id);  
+}
+
+function addLogEntry(userId, key, value) {
+  addon.port.emit("AddLogEntry", 
+    {
+      "userId": userId,
+      "key": key,
+      "value": value
+    }
+  );
+}
+
+function updateLogEntry(entry) {
+  
+}
+
+function deleteLogEntry(entry) {
+  
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // MODEL CLASSES                                                           //
 /////////////////////////////////////////////////////////////////////////////  
 
 function User(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.username = ko.protectedObservable(data.username);
   this.password = ko.protectedObservable(data.password);
-  this.showCompletedGoals = ko.observable(data.showCompletedGoals);
-  this.showCompletedTasks = ko.observable(data.showCompletedTasks);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
 }
 
 function Goal(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.title = ko.protectedObservable(data.title);
   this.description = ko.observable(data.description);
   this.userId = ko.observable(data.userId);
@@ -209,13 +240,12 @@ function Goal(data) {
 }
 
 function Task(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.title = ko.protectedObservable(data.title);
   this.description = ko.observable(data.description);
   this.goalId = ko.observable(data.goalId);
   this.parentId = ko.observable(data.parentId);
   this.dueDate = ko.observable(data.dueDate);
-  this.completedDate = ko.observable(data.completedDate);
   this.reminderDate = ko.observable(data.reminderDate);
   this.urgency = ko.observable(data.urgency);
   this.priority = ko.observable(data.priority);
@@ -228,7 +258,7 @@ function Task(data) {
 }
 
 function Note(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.taskId = ko.observable(data.taskId);
   this.body = ko.protectedObservable(data.body);
   this.created = ko.observable(data.created);
@@ -237,7 +267,7 @@ function Note(data) {
 }
 
 function Bookmark(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.taskId = ko.observable(data.taskId);
   this.title = ko.protectedObservable(data.title);
   this.url = ko.protectedObservable(data.url);
@@ -251,21 +281,31 @@ function Bookmark(data) {
 }
 
 function HistoryEntry(data) {
-  this.id = data.id;
-  this.taskId = ko.observable(data.taskId);
-  this.title = ko.observable(data.title);
-  this.url = ko.observable(data.url);
-  this.description = ko.observable(data.description);
-  this.thumbnail = ko.observable(data.thumbnail);
-  this.content = ko.observable(data.content);
-  this.relevance = ko.observable(data.relevance);
+  this._id = data._id;
+
+  for (i = 0; i < data.parameters.length; i++) { 
+    var parameter = data.parameters[i];
+
+    if (parameter.key == "taskId") {
+      this.taskId = ko.observable(parameter.value);
+    } else if (parameter.key == "url") {
+      this.url = ko.observable(parameter.value);
+    } else if (parameter.key == "title") {
+      this.title = ko.observable(parameter.value);
+    } else if (parameter.key == "thumbnail") {
+      this.thumbnail = ko.observable(parameter.value);
+    } else if (parameter.key == "body") {
+      this.body = ko.observable(parameter.value);
+    }
+  }
+  
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
   this.deleted = ko.observable(data.deleted);
 }
 
 function Attachment(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.taskId = data.taskId;
   this.filename = data.filename;
   this.size = data.size;
@@ -278,7 +318,7 @@ function Attachment(data) {
 }
 
 function Tab(data) {
-  this.id = data.id;
+  this._id = data._id;
   this.taskId = ko.observable(data.taskId);
   this.title = ko.observable(data.title);
   this.url = ko.observable(data.url);

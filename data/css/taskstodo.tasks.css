@@ -115,6 +115,12 @@
   padding: 0px 5px 0px 5px;
 }
 
+#tt-task-list .tt-task-title.completed {
+  text-decoration: line-through;
+  font-style: italic;
+  color: #999999;
+}
+
 #tt-task-list .tt-task-control { 
   display: table-cell;
   width: 50px;
@@ -631,7 +637,7 @@
  * COMPLETED TASKS
  */
 
-#tt-completed-tasks-list {
+/*#tt-completed-tasks-list {
   margin-top: 20px;
 }
 
@@ -700,4 +706,4 @@
   margin-left: 20px;
   font-style: italic;
   text-decoration: line-through;
-}
+}*/

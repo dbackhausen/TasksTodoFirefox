@@ -65,7 +65,8 @@ a {
 
 #menubar {
   width: 100%;
-  background-color: #E2E7ED;
+  /*background-color: #E2E7ED;*/
+  background-color: #F6F6F6;
   color: #535F6D;
   padding: 10px;
   height: 40px;
@@ -286,7 +287,8 @@ textarea.flexible:focus {
 }
 
 .tt-entry-options a.cntbadge:after {
-  content: "4";
+  /*content: "4";*/
+  content: attr(badge-count);
   position: absolute;
   height: 13px;
   width: 13px;

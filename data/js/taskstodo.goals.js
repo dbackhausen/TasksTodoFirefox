@@ -6,7 +6,6 @@ function ViewModel() {
   self.user = ko.observable();
   self.selectedGoal = ko.observable();
   self.goals = ko.observableArray();
-  self.completedGoals = ko.observableArray();
 
   self.selectGoal = function(goal) {
     self.selectedGoal = goal;
@@ -43,8 +42,8 @@ function ViewModel() {
     $('#new-goal-form:visible').hide(); // hide new goal form
 
     $('#tt-goal-list').find('.tt-inline-edit:visible').hide();  // Hide open inline editors
-    $('#'+goal.id).find('.tt-entry').hide(); // Hide current entry
-    $('#'+goal.id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
+    $('#'+goal._id).find('.tt-entry').hide(); // Hide current entry
+    $('#'+goal._id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
     
     $('#edit-goal-form-input-title').height($('#edit-goal-form-input-title').prop('scrollHeight'));
   };
@@ -53,8 +52,8 @@ function ViewModel() {
     goal.title.reset();
 
     $('#new-goal-form-button-new').show(); // Show "New" button
-    $('#'+goal.id).find('.tt-entry').show(); // Show list entry
-    $('#'+goal.id+' .tt-inline-edit').hide(); // Hide inline editor
+    $('#'+goal._id).find('.tt-entry').show(); // Show list entry
+    $('#'+goal._id+' .tt-inline-edit').hide(); // Hide inline editor
   };
 
   self.addGoal = function() {
@@ -62,7 +61,7 @@ function ViewModel() {
     
     if (title && title.length > 0) {
       addGoal(new Goal({ 
-        "userId" : self.user().id,
+        "userId" : self.user()._id,
         "title" : title,
         "description" : "",
         "position" : self.goals().length > 0 ? (self.goals().length + 1) : 1,
@@ -99,27 +98,19 @@ function ViewModel() {
       goal.completed(false);
       goal.completedDate(null);
       updateGoal(goal);
-      self.goals.push(goal);
-      self.completedGoals.remove(goal);
     } else {
       goal.completed(true);
       goal.completedDate(new Date());
       updateGoal(goal);
-      self.goals.remove(goal);
-      self.completedGoals.push(goal);
     }
   };
 
   self.showCompletedGoals = function() {
-    $('#tt-completed-goals-list ol').fadeIn("fast");  
-    self.user().showCompletedGoals(true);
-    updateUser(self.user());
+//    $('#tt-completed-goals-list ol').fadeIn("fast");  
   };
 
   self.hideCompletedGoals = function() {
-    $('#tt-completed-goals-list ol').fadeOut("fast");  
-    self.user().showCompletedGoals(false);
-    updateUser(self.user());
+//    $('#tt-completed-goals-list ol').fadeOut("fast");  
   };
 
   self.moveGoal = function(arg, event, ui) {
@@ -138,7 +129,7 @@ function ViewModel() {
           arg.item.parentId(null);
         } else {
           // Set the new parent
-          arg.item.parentId(self.goals()[arg.targetIndex - 1].id);
+          arg.item.parentId(self.goals()[arg.targetIndex - 1]._id);
         }
       }
 
@@ -147,7 +138,7 @@ function ViewModel() {
       // If goal position has been modified
       ko.utils.arrayForEach(self.goals(), function(goal) {
         // console.log(self.tasks.indexOf(goal) + ": " + goal.title);
-        if (goal.id != arg.item.id) {
+        if (goal._id != arg.item._id) {
           if (arg.sourceIndex < arg.targetIndex) {
             // Task has been moved to a lower position
             if (goal.position() > (arg.sourceIndex + 1) && goal.position() <= (arg.targetIndex + 1)) {
@@ -215,20 +206,6 @@ addon.port.on("GoalsLoaded", function(goals) {
     $('#content .tt-empty-list').show();
   }
 });
-
-/**
- * Loads all completed goals.
- */
-function loadCompletedGoals(user) {
-  addon.port.emit("LoadCompletedGoals", user);
-}
-
-addon.port.on("CompletedGoalsLoaded", function(goals) {
-  viewModel.completedGoals.removeAll();
-  ko.utils.arrayForEach(goals, function(goal) {
-    viewModel.completedGoals.push(new Goal(goal));
-  });
-});
   
 /**
  * Adds a new goal.
@@ -258,11 +235,13 @@ addon.port.on("GoalUpdated", function(goal) {
  */
 function deleteGoal(goal) {
   // addon.port.emit("DeleteGoal", goal);
-  goal.deleted(true);
+  goal.deleted(new Date());
   goal.position(-1);
   goal.parentId(null);
   goal.level(0);
+  
   updateGoal(goal);
+
   viewModel.goals.remove(goal);
 }
 
@@ -273,11 +252,16 @@ addon.port.on("GoalDeleted", function(goal) {
  * Selects a goal.
  */
 function selectGoal(goal) {
-  // trigger goal selection to addon script      
-  addon.port.emit("SetActiveGoal", ko.toJS(goal));
+  if (goal != null) {
+    // trigger goal selection to addon script      
+    addon.port.emit("SetActiveGoal", goal);
 
-  // Redirect to tasks page
-  addon.port.emit("Redirect", "tasks.html");
+    // Log goal selection
+    addLogEntry(viewModel.user()._id, "goal_selected", goal._id);
+
+    // Redirect to tasks page
+    addon.port.emit("Redirect", "tasks.html");
+  }
 }
 
 
@@ -298,17 +282,18 @@ $(document).ready(function() {
    */
   addon.port.on("ActiveUserLoaded", function(user) {
     if (user != null) {
-      // Set active user
-      viewModel.user(new User(user));
+      // Set user to model
+      viewModel.user(new User(JSON.parse(user)));
+
+      // Log user log in
+      addLogEntry(user._id, "login", null);
 
       // Load all user goals
       loadGoals(viewModel.user());
-
-      // Load all completed goals
-      loadCompletedGoals(viewModel.user());
     }
   });
 
   // Apply view model
+
   ko.applyBindings(viewModel);
 });

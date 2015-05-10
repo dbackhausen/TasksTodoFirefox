@@ -6,11 +6,12 @@
 		$('#tt-notification-layer').remove();
 	}
 
-	var css = 'width:100%; margin: 0px; padding: 5px; background-color: green; color: white; font-family: Arial; font-size: 14px; text-align: center; vertical-align: middle';
-	var html = '<div id="tt-notification-layer" style="' + css + '">' + message + '</div>';
-
+	var html  = '<div id="tt-notification-layer" style="width:100%; height: 40px; background-color:#3F9D3F">';
+	html += '<div style="width: 200px; height: 40px; float: right; text-align: right;"><img src="http://taskstodo.org/wordpress/wp-content/uploads/2015/04/bookmark1.png" style="height: 40px" /></div>';
+	html += '<div style="height: 40px; padding: 10px 0px 0px 30px; overflow: hidden;">' + message + '</div>';
+	html += '</div>';
+	
 	$(document.body).prepend(html);
-
 });
 
 /**

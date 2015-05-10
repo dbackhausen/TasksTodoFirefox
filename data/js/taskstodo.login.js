@@ -28,11 +28,13 @@ $(document).ready(function() {
      * Login user.
      */
     self.login = function(data) {
-      var json = { 
-        "username" : $("#login-username").val(),
-        "password" : $("#login-password").val()
-      };
-      loginUser(JSON.stringify(json));
+      var username = $("#login-username").val();
+      var password = $("#login-password").val();
+
+      loginUser(new User({
+        "username" : username,
+        "password" : password
+      }));
     };
 
     /**
@@ -41,14 +43,14 @@ $(document).ready(function() {
     self.register = function(data) {
       var username = $("#register-username").val();
       var password = $("#register-password").val();
+
       if (validateEmail(username)) {
         if (password != null && password.length > 0) {
           registerUser(new User({
             "username" : username,
             "password" : password,
-            "created" : new Date(),
-            "modified" : new Date()
-          }));          
+            "created" : new Date()
+          }));       
         } else {
           showErrorMessage(i18n.t("login.alert-valid-password"), '#modal-panel-register .dialog-alert');
         }
@@ -79,7 +81,7 @@ $(document).ready(function() {
    * Log in user.
    */
   function loginUser(user) {
-    addon.port.emit("LoginUser", user);
+    addon.port.emit("LoginUser", ko.toJSON(user));
   }
 
   addon.port.on("UserLoggedIn", function(user) {

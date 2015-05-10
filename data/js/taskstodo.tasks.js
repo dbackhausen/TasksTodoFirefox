@@ -8,7 +8,6 @@ function ViewModel() {
   self.goals = ko.observableArray();
   self.selectedTask = ko.observable();
   self.tasks = ko.observableArray();
-  self.completedTasks = ko.observableArray();
 
   self.selectGoal = function(goal) {
     $('#content').animate({ left: 0 }, 'normal', function() {
@@ -17,15 +16,18 @@ function ViewModel() {
   };
 
   self.selectTask = function(task) {     
-    if (self.selectedTask.id != task.id) {
+    if (self.selectedTask._id != task._id) {
       // Set task in model
       self.selectedTask = task;
+
+      // Trigger task selection to addon script      
+      addon.port.emit("SetActiveTask", ko.toJS(task));
 
       // Select the current task and show options
       selectTask(self.selectedTask);
 
-      // Trigger task selection to addon script      
-      addon.port.emit("SetActiveTask", ko.toJS(task));
+      // Load task notes   
+      loadNotes(self.selectedTask);
 
       // Load task bookmarks (this is necessary for page annotation)    
       loadBookmarks(self.selectedTask);
@@ -49,11 +51,11 @@ function ViewModel() {
   };
   
   self.newTask = function() {
-    if (self.selectedTask && self.selectedTask.id) {
+    if (self.selectedTask && self.selectedTask._id) {
       // Deselect current task
-      $("li#" + self.selectedTask.id).find('div').removeClass('selected');
+      $("li#" + self.selectedTask._id).find('div').removeClass('selected');
       // Hide task options for current task
-      $("li#" + self.selectedTask.id).find('.tt-entry-options').hide();
+      $("li#" + self.selectedTask._id).find('.tt-entry-options').hide();
     }
 
     // Set the new task as selected task
@@ -82,11 +84,11 @@ function ViewModel() {
   };
   
   self.editTask = function(task) {
-    if (self.selectedTask && self.selectedTask.id) {
+    if (self.selectedTask && self.selectedTask._id) {
       // Deselect current task
-      $("li#" + self.selectedTask.id).find('div').removeClass('selected');
+      $("li#" + self.selectedTask._id).find('div').removeClass('selected');
       // Hide task options for current task
-      $("li#" + self.selectedTask.id).find('.tt-entry-options').hide();
+      $("li#" + self.selectedTask._id).find('.tt-entry-options').hide();
       // Set a new task as selected task
       self.selectedTask = ko.observable();
     }
@@ -95,8 +97,8 @@ function ViewModel() {
     $('#new-task-form:visible').hide(); // Hide new task from
 
     $('#tt-task-list').find('.tt-inline-edit:visible').hide(); // Hide open inline editors
-    $('#'+task.id).find('.tt-entry').hide(); // Hide current entry
-    $('#'+task.id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
+    $('#'+task._id).find('.tt-entry').hide(); // Hide current entry
+    $('#'+task._id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
     
     $('#edit-task-form-input-title').height($('#edit-task-form-input-title').prop('scrollHeight'));
   };
@@ -105,8 +107,8 @@ function ViewModel() {
     task.title.reset();
 
     $('#new-task-form-button-new').show(); // Show "New" button
-    $('#'+task.id).find('.tt-entry').show(); // Show list entry
-    $('#'+task.id+' .tt-inline-edit').hide(); // Hide inline editor
+    $('#'+task._id).find('.tt-entry').show(); // Show list entry
+    $('#'+task._id+' .tt-inline-edit').hide(); // Hide inline editor
   };
 
   self.addTask = function() {
@@ -114,7 +116,7 @@ function ViewModel() {
 
     if (title && title.length > 0) {
       addTask(new Task({
-        "goalId" : self.selectedGoal().id,
+        "goalId" : self.selectedGoal()._id,
         "title" : title,
         "description" : "",
         "position" : self.tasks().length > 0 ? (self.tasks().length + 1) : 1,
@@ -147,31 +149,21 @@ function ViewModel() {
   };
 
   self.completeTask = function(task) {
-    if (task.completed()) {
-      task.completed(false);
-      task.completedDate(null);
+    if (task.completed() == null) {
+      task.completed(new Date());
       updateTask(task);
-      self.tasks.push(task);
-      self.completedTasks.remove(task);
     } else {
-      task.completed(true);
-      task.completedDate(new Date());
+      task.completed(null);
       updateTask(task);
-      self.tasks.remove(task);
-      self.completedTasks.push(task);
     }
   };
 
   self.showCompletedTasks = function() {
-    $('#tt-completed-tasks-list ol').fadeIn("fast");  
-    self.user().showCompletedTasks(true);
-    updateUser(self.user());
+//    $('#tt-completed-tasks-list ol').fadeIn("fast");  
   };
 
   self.hideCompletedTasks = function() {
-    $('#tt-completed-tasks-list ol').fadeOut("fast");  
-    self.user().showCompletedTasks(false);
-    updateUser(self.user());
+//    $('#tt-completed-tasks-list ol').fadeOut("fast");  
   };
 
   self.indentTask = function(task) {
@@ -180,7 +172,7 @@ function ViewModel() {
         if ((task.level() + 1) - self.tasks()[i].level() == 0 
           || (task.level() + 1) - self.tasks()[i].level() == 1) { 
           // indent only if previous task is on same level or one lower
-          task.parentId(self.tasks()[i].id);
+          task.parentId(self.tasks()[i]._id);
           task.level(task.level() + 1);
           console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
           updateTask(task);
@@ -221,7 +213,7 @@ function ViewModel() {
           arg.item.parentId(null);
         } else {
           // Set the new parent
-          arg.item.parentId(self.tasks()[arg.targetIndex - 1].id);
+          arg.item.parentId(self.tasks()[arg.targetIndex - 1]._id);
           arg.item.level(self.tasks()[arg.targetIndex - 1].level() + 1);
         }
       }
@@ -230,7 +222,7 @@ function ViewModel() {
 
       // If task position has been modified
       ko.utils.arrayForEach(self.tasks(), function(task) {
-        if (task.id != arg.item.id) {
+        if (task._id != arg.item._id) {
           if (arg.sourceIndex < arg.targetIndex) {
             // Task has been moved to a lower position
             if (task.position() > (arg.sourceIndex + 1) && task.position() <= (arg.targetIndex + 1)) {
@@ -259,10 +251,10 @@ function ViewModel() {
 
           if (task.position() > 1 && task.level() > 0) {
             for (var i = task.position() - 2; i >= 0; i--) {
-              if ((task.level() - self.tasks()[i].level() == 1) && task.parentId() != self.tasks()[i].id) {
+              if ((task.level() - self.tasks()[i].level() == 1) && task.parentId() != self.tasks()[i]._id) {
                 // if task level is higher than the previous task, 
                 // than set new parent
-                task.parentId(self.tasks()[i].id);
+                task.parentId(self.tasks()[i]._id);
                 updateTask(task);
                 // console.log("Setting parent of " + task.title() + " to " + self.tasks()[i].title());
                 break;
@@ -272,7 +264,7 @@ function ViewModel() {
         }
       });
 
-      if (self.selectedTask != null && self.selectedTask.id == arg.item.id) {
+      if (self.selectedTask != null && self.selectedTask._id == arg.item._id) {
         selectTask(arg.item);
       }
     }
@@ -311,7 +303,7 @@ function ViewModel() {
 
     if (body != null && body.length > 0) {
       addNote(new Note({
-        "taskId" : self.selectedTask.id,
+        "taskId" : self.selectedTask._id,
         "body" : body,
         "created" : new Date(),
         "modified" : null
@@ -326,8 +318,8 @@ function ViewModel() {
     $('#new-note-form:visible').hide(); // Hide new entity form
     $('#tt-note-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
 
-    $('#'+note.id+' .tt-entry').hide(); // Hide list entry
-    $('#'+note.id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
+    $('#'+note._id+' .tt-entry').hide(); // Hide list entry
+    $('#'+note._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
 
     $('#edit-note-form-input-body').focus();
   };
@@ -336,8 +328,8 @@ function ViewModel() {
     note.body.reset();
     
     $('#new-note-form-button-new').show(); // Show "New" button
-    $('#'+note.id+' .tt-entry').fadeIn('fast'); // Show entry 
-    $('#'+note.id+' .tt-inline-edit').hide(); // Hide inline form
+    $('#'+note._id+' .tt-entry').fadeIn('fast'); // Show entry 
+    $('#'+note._id+' .tt-inline-edit').hide(); // Hide inline form
   };
   
   self.updateNote = function(note) {
@@ -392,7 +384,7 @@ function ViewModel() {
 
     if (false || title.length > 0 && url.length > 0) {
       addBookmark(new Bookmark({ 
-        "taskId" : self.selectedTask.id,
+        "taskId" : self.selectedTask._id,
         "title" : title, 
         "url" : url,
         "description" : description,
@@ -411,8 +403,8 @@ function ViewModel() {
     $('#new-bookmark-form:visible').hide();
     $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
 
-    $('#'+bookmark.id+' .tt-entry').hide(); // Hide list entry
-    $('#'+bookmark.id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
+    $('#'+bookmark._id+' .tt-entry').hide(); // Hide list entry
+    $('#'+bookmark._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
 
     $('#edit-bookmark-form-input-title').focus();
   };
@@ -423,8 +415,8 @@ function ViewModel() {
     bookmark.description.reset();
     
     $('#new-bookmark-form-button-new').show();
-    $('#'+bookmark.id+' .tt-inline-edit').hide(); // Hide inline form
-    $('#'+bookmark.id+' .tt-entry').fadeIn('fast'); // Show list entry
+    $('#'+bookmark._id+' .tt-inline-edit').hide(); // Hide inline form
+    $('#'+bookmark._id+' .tt-entry').fadeIn('fast'); // Show list entry
   };
   
   self.updateBookmark = function(bookmark) {
@@ -611,7 +603,7 @@ addon.port.on("GoalsLoaded", function(goals) {
  */
 function selectGoal(goal) {
   // Set goal selection to addon script      
-  addon.port.emit("SetActiveGoal", ko.toJS(goal));
+  addon.port.emit("SetActiveGoal", goal);
 
   // Load active goal
   addon.port.emit("GetActiveGoal");
@@ -626,9 +618,6 @@ addon.port.on("ActiveGoalLoaded", function(goal) {
 
   // Load all goal tasks
   loadTasks(viewModel.selectedGoal());
-
-  // Load all completed tasks
-  loadCompletedTasks(viewModel.selectedGoal());
 
   // Reset selected task
   viewModel.selectedTask = ko.observable();
@@ -660,20 +649,6 @@ addon.port.on("TasksLoaded", function(tasks) {
 });
 
 /**
- * Loads all completed tasks.
- */
-function loadCompletedTasks(goal) {
-  addon.port.emit("LoadCompletedTasks", goal);
-}
-
-addon.port.on("CompletedTasksLoaded", function(tasks) { 
-  viewModel.completedTasks.removeAll();
-  ko.utils.arrayForEach(tasks, function(task) {
-    viewModel.completedTasks.push(new Task(task));
-  });
-});
-
-/**
  * Adds a new task to the project.
  */
 function addTask(task) {
@@ -700,11 +675,14 @@ addon.port.on("TaskUpdated", function(task) {
  * Deletes an existing task.
  */
 function deleteTask(task) {
-  task.deleted(true);
+  task.modified(new Date());
+  task.deleted(new Date());
   task.position(-1);
   task.parentId(null);
   task.level(0);
+
   updateTask(task);
+  
   viewModel.tasks.remove(task);
 }
 
@@ -727,15 +705,13 @@ function selectTask(task) {
   $('#tt-task-list').find('.selected').removeClass('selected');
   // Hide all visible options, before showing another one  
   $('#tt-task-list').find('.tt-entry-options:visible').not($(ttListEntry).find('.tt-entry-options')).hide();
-  // Hide all visible options, before showing another one   
-  //$('#tt-task-list').find('.tt-task-control a:visible').not($(ttListEntry).find('.tt-task-control a')).hide();
 
   if (task != null) {
     // Make sure the input field value is set
     $("#edit-task-form-input-title").val(task.title());
 
     // Get list entry
-    var ttListEntry = $("li#" + task.id);
+    var ttListEntry = $("li#" + task._id);
 
     // Select current list entry
     $(ttListEntry).find('div').addClass('selected');
@@ -745,6 +721,12 @@ function selectTask(task) {
 
     // Show options for selected task
     $(ttListEntry).find('.tt-task-control a').fadeIn();  
+
+    // Log task selection
+    addLogEntry(viewModel.user()._id, "task_selected", task._id);
+  } else {
+    // Log task deselection
+    addLogEntry(viewModel.user()._id, "task_selected", null);
   }
 }
 
@@ -769,9 +751,15 @@ addon.port.on("NotesLoaded", function(notes) {
     ko.utils.arrayForEach(notes, function(note){
       viewModel.notes.push(new Note(note));
     });
+
+    // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length);
   } else {
     $('#modal-panel-notes .tt-empty-list').show();
-  }  
+
+    // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').removeClass('cntbadge');
+  }
 });
 
 /**
@@ -783,6 +771,14 @@ function addNote(note) {
 
 addon.port.on("NoteAdded", function(note) {
   viewModel.notes.unshift(new Note(note));
+
+  if (viewModel.notes && viewModel.notes().length > 0) {
+    // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length);
+  } else {
+    // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').removeClass('cntbadge');
+  }
 });
 
 /**
@@ -800,9 +796,21 @@ addon.port.on("NoteUpdated", function(note) {
  */
 function deleteNote(note) {
   // addon.port.emit("DeleteNote", note);
-  note.deleted(true);
+  note.deleted(new Date());
+
+  // update note because delete flag
   updateNote(note);
+
+  // remove note from model
   viewModel.notes.remove(note);
+
+  if (viewModel.notes && viewModel.notes().length > 0) {
+    // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length);
+  } else {
+    // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard a.cntbadge').css('display', 'none');
+  }
 }
 
 addon.port.on("NoteDeleted", function(data) {
@@ -829,8 +837,14 @@ addon.port.on("BookmarksLoaded", function(bookmarks) {
     ko.utils.arrayForEach(bookmarks, function(bookmark){
       viewModel.bookmarks.push(new Bookmark(bookmark));
     });
+
+    // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').attr('badge-count', viewModel.bookmarks().length);
   } else {
     $('#modal-panel-bookmarks .tt-empty-list').show();
+
+    // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').removeClass('cntbadge');
   }  
 
   // Call main.js to set bookmarks of active task
@@ -846,6 +860,14 @@ function addBookmark(bookmark) {
 
 addon.port.on("BookmarkAdded", function(bookmark) {
   viewModel.bookmarks.unshift(new Bookmark(bookmark));
+
+  if (viewModel.bookmarks && viewModel.bookmarks().length > 0) {
+    // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').attr('badge-count', viewModel.bookmarks().length);
+  } else {
+    // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').removeClass('cntbadge');
+  }
 });
 
 /**
@@ -862,9 +884,19 @@ addon.port.on("BookmarkUpdated", function(bookmark) {
  * Deletes an existing bookmark.
  */
 function deleteBookmark(bookmark) {
-  bookmark.deleted(true);
+  bookmark.deleted(new Date());
+
   updateBookmark(bookmark);
+  
   viewModel.bookmarks.remove(bookmark);
+
+  if (viewModel.bookmarks && viewModel.bookmarks().length > 0) {
+    // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').attr('badge-count', viewModel.bookmarks().length);
+  } else {
+    // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').removeClass('cntbadge');
+  }
 }
 
 addon.port.on("BookmarkDeleted", function(data) {
@@ -914,8 +946,10 @@ addon.port.on("TabUpdated", function(tab) {
  * Deletes an existing tab.
  */
 function deleteTab(tab) {
-  tab.deleted(true);
+  tab.deleted(new Date());
+
   updateTab(tab);
+
   viewModel.tabs.remove(tab);
 }
 
@@ -951,40 +985,39 @@ addon.port.on("HistoryLoaded", function(history) {
   addon.port.emit("SetActiveTaskHistory", history);
 });
 
-/**
- * Adds a new history entry to the selected task.
- */
-function addHistoryEntry(entry) {
-  addon.port.emit("AddHistoryEntry", ko.toJSON(entry));
-}
+// /**
+//  * Adds a new history entry to the selected task.
+//  */
+// function addHistoryEntry(entry) {
+//   addon.port.emit("AddHistoryEntry", ko.toJSON(entry));
+// }
 
-addon.port.on("HistoryEntryAdded", function(entry) {
-  viewModel.history.unshift(new HistoryEntry(entry));
+// addon.port.on("HistoryEntryAdded", function(entry) {
+//   viewModel.history.unshift(new HistoryEntry(entry));
 
-  // Call main.js to set history of active task
-  addon.port.emit("SetActiveTaskHistory", history);
-});
+//   // Call main.js to set history of active task
+//   addon.port.emit("SetActiveTaskHistory", history);
+// });
 
-/**
- * Saves changes to an existing history entry.
- */
-function updateHistoryEntry(entry) {
-  addon.port.emit("UpdateHistoryEntry", ko.toJSON(entry));
-}
+// /**
+//  * Saves changes to an existing history entry.
+//  */
+// function updateHistoryEntry(entry) {
+//   addon.port.emit("UpdateHistoryEntry", ko.toJSON(entry));
+// }
 
-addon.port.on("HistoryEntryUpdated", function(entry) {
-});
+// addon.port.on("HistoryEntryUpdated", function(entry) {
+// });
 
 /**
  * Deletes an existing history entry.
  */
 function deleteHistoryEntry(entry) {
-  entry.deleted(true);
-  updateHistoryEntry(entry);
-  viewModel.history.remove(entry);
+  // Delete entry from database
+  addon.port.emit("DeleteLogEntry", entry._id);
 
-    // Call main.js to set history of active task
-  addon.port.emit("SetActiveTaskHistory", history);
+  // Remove entry from list
+  viewModel.history.remove(entry);
 }
 
 addon.port.on("HistoryEntryDeleted", function(data) {
@@ -1011,8 +1044,14 @@ addon.port.on("AttachmentsLoaded", function(attachments) {
     ko.utils.arrayForEach(attachments, function(attachment) {
       viewModel.attachments.push(new Attachment(attachment));
     });
+
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
   } else {
     $('#modal-panel-attachments .tt-empty-list').show();
+
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').removeClass('cntbadge');
   }
 });
 
@@ -1029,6 +1068,14 @@ addon.port.on("AttachmentAdded", function(attachment) {
   $('#tt-attachments-list .tt-droparea-text').show();
   $('#tt-attachments-list .tt-droparea-loader').hide();
   viewModel.attachments.unshift(new Attachment(attachment));
+
+  if (viewModel.attachments && viewModel.attachments().length > 0) {
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
+  } else {
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').removeClass('cntbadge');
+  }
 });
 
 /**
@@ -1047,6 +1094,14 @@ addon.port.on("AttachmentDeleted", function(data) {
  */
 function downloadAttachment(attachment) {
   addon.port.emit("DownloadAttachment", attachment);
+
+  if (viewModel.attachments && viewModel.attachments().length > 0) {
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
+  } else {
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').removeClass('cntbadge');
+  }
 }
 
 
@@ -1072,10 +1127,10 @@ $(document).ready(function() {
   addon.port.on("ActiveUserLoaded", function(user) {
     if (user != null) {
       // Set active user
-      viewModel.user(new User(user));
+      viewModel.user(new User(JSON.parse(user)));
 
       // Load all user goals
-      addon.port.emit("LoadGoals", user);
+      addon.port.emit("LoadGoals", viewModel.user());
 
       // Get the active goal
       addon.port.emit("GetActiveGoal");

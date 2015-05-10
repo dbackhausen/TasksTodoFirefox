@@ -61,7 +61,7 @@
           <i class="fa fa-bullseye padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-your-goals'"></span>
         </div>
         <ol data-bind="sortable: { data: goals }">
-          <li data-bind="attr: { 'id': 'top-nav-goal-'+id }">
+          <li data-bind="attr: { 'id': 'top-nav-goal-' + _id }">
             <div class="goal-entry" data-bind="click: $parent.selectGoal">
               <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
             </div>
@@ -96,13 +96,18 @@
         <!-- ko if: tasks() != null && tasks().length > 0 -->
         <div id="tt-task-list">
           <ol data-bind="sortable: { data: tasks, connectClass: 'move', afterMove: moveTask }">
-            <li data-bind="attr: { 'id': id }">
+            <li data-bind="attr: { 'id': _id }">
               <div class="tt-entry">
                 <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
                   <div class="tt-task-check">
+                    <!-- ko if: completed() == null -->
                     <a href="#" data-bind="click: $parent.completeTask, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
+                    <!-- /ko -->
+                    <!-- ko if: completed() != null -->
+                    <a href="#" data-bind="click: $parent.completeTask, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
+                    <!-- /ko -->
                   </div>
-                  <div class="tt-task-title" data-bind="event : { click: $parent.selectTask, dblclick: $parent.editTask }">
+                  <div class="tt-task-title" data-bind="event: { click: $parent.selectTask, dblclick: $parent.editTask }, css: { completed: completed() != null }">
                     <span data-bind="text: title()"></span>
                   </div>
                   <div class="tt-task-control">
@@ -113,10 +118,10 @@
                 <div class="tt-entry-options">
                   <a href="#" class="fa fa-outdent icon-grey" data-bind="click: $parent.outdentTask, tooltip: {title: 'Lease from previous task', placement: 'bottom'}"></a>
                   <a href="#" class="fa fa-indent icon-grey" data-bind="click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
-                  <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes"></a>
-                  <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks"></a>
+                  <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
+                  <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
                   <a href="#" class="fa fa-history icon-grey" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history"></a>
-                  <a href="#" class="fa fa-paperclip icon-grey" data-bind="click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments"></a>
+                  <a href="#" class="fa fa-paperclip icon-grey" data-bind="click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments" badge-count=""></a>
                 </div>
               </div>
               <div class="tt-inline-edit">
@@ -130,42 +135,6 @@
           </ol>
         </div>
         <!-- /ko -->
-
-        <!-- ko if: completedTasks() != null && completedTasks().length > 0 -->
-        <div id="tt-completed-tasks-list">
-          <section>
-            <div class="tt-header">
-              Your latest completed tasks
-            </div>
-            <div class="tt-option">
-              <!-- ko if: user().showCompletedTasks -->
-              <a href="#" data-bind="click: $root.hideCompletedTasks">hide</a>
-              <!-- /ko -->
-              <!-- ko ifnot: user().showCompletedTasks  -->
-              <a href="#" data-bind="click: $root.showCompletedTasks">show</a>
-              <!-- /ko -->
-            </div>
-          </section>
-         
-          <ol data-bind="foreach: completedTasks">
-            <li data-bind="attr: { 'id': id }">
-              <div class="tt-check">
-                <a href="#" data-bind="click: $parent.completeTask, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
-              </div>
-              <div class="tt-title">
-                <span data-bind="text: title()"></span>
-              </div>
-              <div class="tt-entry-options">
-                  <a href="#" class="fa fa-clipboard" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes"></a>
-                  <a href="#" class="fa fa-link" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks"></a>
-                  <a href="#" class="fa fa-history" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history"></a>
-                  <a href="#" class="fa fa-paperclip" data-bind="click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments"></a>
-                </div>
-            </li>
-          </ol>
-        </div>
-        <!-- /ko -->
-
 
         <!-- Modal panel: Task Notes -->
         <div class="modal fade" id="modal-panel-notes" tabindex="-1" role="dialog" aria-labelledby="modal-title-notes" aria-hidden="true">
@@ -198,11 +167,11 @@
 
                 <div id="tt-note-list">
                   <ul class="sortable" data-bind="foreach: notes">
-                    <li data-bind="attr: { 'id': id }">
+                    <li data-bind="attr: { 'id': _id }">
                       <div class="tt-entry">
                         <div class="tt-header">
                           <div class="tt-header-text">
-                            <span data-bind="text: modified() | smartdate"></span>
+                            <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
                             <a href="#" data-bind="click: $parent.editNote, tooltip: {title: 'Edit note', placement: 'left'}" class="fa fa-pencil"></a>
@@ -271,11 +240,11 @@
 
                 <div id="tt-bookmarks-list">
                   <ul class="sortable" data-bind="foreach: bookmarks">
-                    <li data-bind="attr: { 'id': id }">
+                    <li data-bind="attr: { 'id': _id }">
                       <div class="tt-entry">
                         <div class="tt-header">
                           <div class="tt-header-text">
-                            <span data-bind="text: modified() | smartdate"></span>
+                            <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
                             <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
@@ -348,11 +317,11 @@
 
                 <div id="tt-history-list">
                   <ul data-bind="foreach: history">
-                    <li data-bind="attr: { 'id': id }">
+                    <li data-bind="attr: { 'id': _id }">
                       <div class="tt-entry">
                         <div class="tt-header">
                           <div class="tt-header-text">
-                            <span data-bind="text: modified() | smartdate"></span>
+                            <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
                             <a href="#" data-bind="click: $parent.deleteHistoryEntry, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
@@ -363,7 +332,7 @@
                             <div class="tt-thumbnail">
                               <img data-bind="attr: { src: thumbnail() }, popover: {template: 'historyZoomView', trigger: 'hover', placement: 'bottom'}"  />
                             </div>
-                            <div class="tt-description" data-bind="tooltip: {title: description(), placement: 'bottom'}">
+                            <div class="tt-description" data-bind="tooltip: {title: title(), placement: 'bottom'}">
                               <p class="tt-title"><span data-bind="text: title()"></span></p>
                               <p class="tt-url"><span data-bind="text: url()"></span></p>
                             </div>
@@ -423,7 +392,7 @@
                   <!-- /ko -->
 
                   <ul data-bind="foreach: attachments">
-                    <li data-bind="attr: { 'id': id }">
+                    <li data-bind="attr: { 'id': _id }">
                       <div class="tt-entry">
                         <div class="tt-header">
                           <div class="tt-header-text">
