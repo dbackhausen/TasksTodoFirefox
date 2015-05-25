@@ -753,7 +753,8 @@ addon.port.on("NotesLoaded", function(notes) {
     });
 
     // Set badge counts for notes 
-    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length);
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').addClass('cntbadge');
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length); 
   } else {
     $('#modal-panel-notes .tt-empty-list').show();
 
@@ -772,8 +773,9 @@ function addNote(note) {
 addon.port.on("NoteAdded", function(note) {
   viewModel.notes.unshift(new Note(note));
 
-  if (viewModel.notes && viewModel.notes().length > 0) {
+  if (viewModel.notes() && viewModel.notes().length > 0) {
     // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length);
   } else {
     // Set badge counts for notes 
@@ -804,12 +806,13 @@ function deleteNote(note) {
   // remove note from model
   viewModel.notes.remove(note);
 
-  if (viewModel.notes && viewModel.notes().length > 0) {
+  if (viewModel.notes() && viewModel.notes().length > 0) {
     // Set badge counts for notes 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').attr('badge-count', viewModel.notes().length);
   } else {
     // Set badge counts for notes 
-    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard a.cntbadge').css('display', 'none');
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-clipboard').removeClass('cntbadge');
   }
 }
 
@@ -839,6 +842,7 @@ addon.port.on("BookmarksLoaded", function(bookmarks) {
     });
 
     // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').attr('badge-count', viewModel.bookmarks().length);
   } else {
     $('#modal-panel-bookmarks .tt-empty-list').show();
@@ -863,6 +867,7 @@ addon.port.on("BookmarkAdded", function(bookmark) {
 
   if (viewModel.bookmarks && viewModel.bookmarks().length > 0) {
     // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').attr('badge-count', viewModel.bookmarks().length);
   } else {
     // Set badge counts for bookmarks 
@@ -892,6 +897,7 @@ function deleteBookmark(bookmark) {
 
   if (viewModel.bookmarks && viewModel.bookmarks().length > 0) {
     // Set badge counts for bookmarks 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-link').attr('badge-count', viewModel.bookmarks().length);
   } else {
     // Set badge counts for bookmarks 
@@ -1046,6 +1052,7 @@ addon.port.on("AttachmentsLoaded", function(attachments) {
     });
 
     // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
   } else {
     $('#modal-panel-attachments .tt-empty-list').show();
@@ -1071,6 +1078,7 @@ addon.port.on("AttachmentAdded", function(attachment) {
 
   if (viewModel.attachments && viewModel.attachments().length > 0) {
     // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
   } else {
     // Set badge counts for attachments 
@@ -1097,6 +1105,7 @@ function downloadAttachment(attachment) {
 
   if (viewModel.attachments && viewModel.attachments().length > 0) {
     // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').addClass('cntbadge');
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
   } else {
     // Set badge counts for attachments 

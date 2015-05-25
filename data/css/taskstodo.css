@@ -294,7 +294,7 @@ textarea.flexible:focus {
   width: 13px;
   top: -0.30rem;
   right: 0.25rem;
- 
+
   background: radial-gradient( 5px -9px, circle, white 8%, red 26px );
   background: -moz-radial-gradient( 5px -9px, circle, white 8%, red 26px );
   background: -ms-radial-gradient( 5px -9px, circle, white 8%, red 26px );
