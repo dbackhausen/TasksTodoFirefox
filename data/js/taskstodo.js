@@ -306,15 +306,11 @@ function HistoryEntry(data) {
 
 function Attachment(data) {
   this._id = data._id;
-  this.taskId = data.taskId;
+  this.taskId = data.metadata.taskId;
   this.filename = data.filename;
-  this.size = data.size;
-  this.url = data.url;
-//  this.description = ko.observable(data.description);
+  this.length = data.length;
   this.contentType = data.contentType;
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-  this.deleted = ko.observable(data.deleted);
+  this.uploadDate = data.uploadDate;
 }
 
 function Tab(data) {

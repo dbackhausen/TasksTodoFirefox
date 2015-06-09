@@ -1095,6 +1095,14 @@ function deleteAttachment(attachment) {
 }
 
 addon.port.on("AttachmentDeleted", function(data) {
+  if (viewModel.attachments && viewModel.attachments().length > 0) {
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').addClass('cntbadge');
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').attr('badge-count', viewModel.attachments().length);
+  } else {
+    // Set badge counts for attachments 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-paperclip').removeClass('cntbadge');
+  }
 });
 
 /**
