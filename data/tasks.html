@@ -40,33 +40,13 @@
   <body>
     <div id="header">
       <div id="menubar">
-        <div id="top-menu-open-button">
+        <div id="top-menu-toggle-button" data-bind="tooltip: {title: 'Toogle menu', placement: 'right'}">
            <i class="fa fa-list fa-2"></i>
         </div>
-        <div id="top-menu-search">
-          <!-- TODO -->
-        </div>
       </div>
-      <div id="top-menu">     
-        <div id="top-menu-close-button" class="button">
-          <i class="fa fa-times padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-close-menu'"></span>
-        </div>
-        <div id="top-menu-help-button" class="button" data-bind="click: showHelp">
-          <i class="fa fa-question-circle padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-help'"></span>
-        </div>
-        <div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
-          <i class="fa fa-cog padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-configuration'"></span>
-        </div>
-        <div id="top-menu-goals-button" class="button">
-          <i class="fa fa-bullseye padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-your-goals'"></span>
-        </div>
-        <ol data-bind="sortable: { data: goals }">
-          <li data-bind="attr: { 'id': 'top-nav-goal-' + _id }">
-            <div class="goal-entry" data-bind="click: $parent.selectGoal">
-              <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
-            </div>
-          </li>
-        </ol>
+      <div id="top-menu">
+        <!-- ko template: {name: 'topmenu', data: $root}-->
+        <!-- /ko -->
       </div>
     </div>
     <div id="content">
@@ -89,7 +69,7 @@
 
         <!-- ko if: tasks() == null || tasks().length == 0 -->
         <div class="tt-empty-list">
-          You have not defined any tasks yet.
+          <span data-bind="i18n: 'tasks.text-no-tasks'"></span>
         </div>
         <!-- /ko -->
 
@@ -120,7 +100,8 @@
                   <a href="#" class="fa fa-indent icon-grey" data-bind="click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
                   <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
                   <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
-                  <a href="#" class="fa fa-history icon-grey" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history"></a>
+                  <a href="#" class="fa fa-history icon-grey" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history" badge-count=""></a>
+                  <a href="#" class="fa fa-folder-o icon-grey" data-bind="click: $parent.loadTabs, tooltip: {title: 'Tabs', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-tabs" badge-count=""></a>
                   <a href="#" class="fa fa-paperclip icon-grey" data-bind="click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments" badge-count=""></a>
                 </div>
               </div>
@@ -354,6 +335,69 @@
             </div>
           </div>
         </div>
+        
+        <!-- Modal panel: Task Tabs -->
+        <div class="modal fade" id="modal-panel-tabs" tabindex="-1" role="dialog" aria-labelledby="modal-title-tabs" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="taskTabsLabel">Tabs</h4>
+              </div>
+              <div class="modal-body">
+                <div class="modal-functions">
+                  <button type="button" data-bind="click: restoreTabs" class="btn btn-default btn-sm">Restore all tabs</button>
+                </div>
+                                
+                <div class="tt-loader">
+                  <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
+                  <img src="img/ajax-loader.gif" width="42" height="42" />
+                </div>
+
+                <!-- ko if: tabs() == null || tabs().length == 0 -->
+                <div class="tt-empty-list">
+                  Your task has no stored tabs yet.
+                </div>
+                <!-- /ko -->
+
+                <div id="tt-tabs-list">
+                  <ul data-bind="foreach: tabs">
+                    <li data-bind="attr: { 'id': _id }">
+                      <div class="tt-entry">
+                        <div class="tt-header">
+                          <div class="tt-header-text">
+                            <span data-bind="text: created() | smartdate"></span>
+                          </div>
+                          <div class="tt-header-control">
+                            <a href="#" data-bind="click: $parent.deleteTab, tooltip: {title: 'Delete tab', placement: 'left'}" class="fa fa-trash-o"></a>
+                          </div>
+                        </div>
+                        <div class="tt-content">
+                          <a data-bind="attr: { href: url() }" target="_blank">
+                            <div class="tt-thumbnail">
+                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'tabZoomView', trigger: 'hover', placement: 'bottom'}"  />
+                            </div>
+                            <div class="tt-description" data-bind="tooltip: {title: title(), placement: 'bottom'}">
+                              <p class="tt-title"><span data-bind="text: title()"></span></p>
+                            </div>
+                          </a>
+
+                          <script type="text/html" id="tabZoomView">
+                            <img data-bind="attr: { src: thumbnail() }" width="225" height="150"/>
+                          </script>
+
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Modal panel: Task Attachments -->
         <div class="modal fade" id="modal-panel-attachments" tabindex="-1" role="dialog" aria-labelledby="modal-title-attachments" aria-hidden="true">
@@ -419,7 +463,10 @@
         </div>
       </div>
 
-      <!-- ko template: {name: 'configuration', data: $root.user}-->
+      <!-- ko template: {name: 'modal-config', data: $root.user}-->
+      <!-- /ko -->
+
+      <!-- ko template: {name: 'modal-log', data: $root.user}-->
       <!-- /ko -->
 
     </div>

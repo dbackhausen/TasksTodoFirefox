@@ -7,9 +7,9 @@
     "txt-loading-data": "Loading data ..."
   },
   "top-nav": {
-    "btn-close-menu" : "Close menu",
     "btn-help" : "Help",
     "btn-configuration" : "Configuration",
+    "btn-log" : "Log view",
     "btn-your-goals" : "Your goals"    
   },
   "login": {
@@ -31,6 +31,7 @@
     "txt-no-goals": "You have not defined any goals yet."
   },
   "task": {
-    
+    "hdr-goals": "Your goals / projects",
+    "txt-no-tasks": "You have not defined any tasks yet."
   }
 }

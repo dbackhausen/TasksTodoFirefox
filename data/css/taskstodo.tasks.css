@@ -510,6 +510,132 @@
 
 
 /*
+ * TABS
+ */
+
+#tt-tabs-list {
+}
+
+#tt-tabs-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-tabs-list ul li {
+}
+
+#tt-tabs-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-tabs-list .tt-entry {
+  width: 100%;
+}
+
+#tt-tabs-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-tabs-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-history-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-tabs-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-tabs-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-tabs-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-tabs-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+}
+
+#tt-tabs-list ul li .tt-thumbnail {
+  display: table-cell;
+  width: 78px;
+  height: 53px;
+}
+
+#tt-tabs-list ul li .tt-thumbnail > img {
+  border: 3px solid #FFFFFF;
+  width: 75px;
+  height: 50px;
+}
+
+#tt-tabs-list ul li .tt-description {
+  display: table-cell;
+  font-family: 'Roboto', sans-serif;
+  width: 100%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
+
+#tt-tabs-list ul li .tt-title {
+  color: #333333;
+  font-weight: 500;
+  font-size: 13px;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-tabs-list ul li .tt-url {
+  font-size: 9px;
+  font-weight: normal;
+  font-style: italic;
+  color: #666666;
+  overflow: hidden;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+/*
  * ATTACHMENTS
  */
 
@@ -632,78 +758,3 @@
   width: 100%;
   height: 100%;
 }
-
-/* 
- * COMPLETED TASKS
- */
-
-/*#tt-completed-tasks-list {
-  margin-top: 20px;
-}
-
-#tt-completed-tasks-list section {
-  width: 100%;
-  height: 25px;
-}
-
-#tt-completed-tasks-list .tt-header {
-  width: 275px;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  font-style: italic;
-  color: #535F6D;
-  float: left;
-}
-
-#tt-completed-tasks-list .tt-option {
-  margin-left: 275px;
-  font-size: 12px;
-  text-align: right;
-}
-
-#tt-completed-tasks-list ol {
-  list-style: none;
-  display: none;
-}
-
-#tt-completed-tasks-list ol li {
-  width: 100%;  
-  margin: 0px;
-  padding: 2px 0px 2px 0px;
-  color: #666666;
-}
-
-#tt-completed-tasks-list ol li a {
-  color: #666666;
-  text-decoration: none;
-}
-
-#tt-completed-tasks-list .tt-entry-options {
-  width: 100%;
-  padding-left: 23px;
-  cursor: pointer;
-  background-color: white;
-}
-
-#tt-completed-tasks-list .tt-entry-options a {
-  cursor: pointer;
-  color: #999999;
-  padding-right: 3px;
-  text-decoration: none;
-}
-
-#tt-completed-tasks-list .tt-entry-options a:hover {
-  color: #333333;
-}
-
-#tt-completed-tasks-list .tt-check {
-  width: 20px;
-  float: left;
-}
-
-#tt-completed-tasks-list .tt-title {
-  margin-left: 20px;
-  font-style: italic;
-  text-decoration: line-through;
-}*/

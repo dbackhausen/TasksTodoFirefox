@@ -40,33 +40,13 @@
   <body>
     <div id="header">
       <div id="menubar">
-        <div id="top-menu-open-button">
+        <div id="top-menu-toggle-button" data-bind="tooltip: {title: 'Toogle menu', placement: 'right'}">
            <i class="fa fa-list fa-2"></i>
-        </div>
-        <div id="top-menu-search">
-          <!-- TODO -->
         </div>
       </div>
       <div id="top-menu">
-        <div id="top-menu-close-button" class="button">
-          <i class="fa fa-times padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-close-menu'"></span>
-        </div>
-        <div id="top-menu-help-button" class="button" data-bind="click: showHelp">
-          <i class="fa fa-question-circle padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-help'"></span>
-        </div>
-        <div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
-          <i class="fa fa-cog padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-configuration'"></span>
-        </div>
-        <div id="top-menu-goals-button" class="button">
-          <i class="fa fa-bullseye padding-right-5"></i><span data-bind="i18n: 'top-nav.btn-your-goals'"></span>
-        </div>
-        <ol data-bind="sortable: { data: goals }">
-          <li data-bind="attr: { 'id': 'top-nav-goal-' + _id }">
-            <div class="goal-entry" data-bind="click: $parent.selectGoal">
-              <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
-            </div>
-          </li>
-        </ol>
+        <!-- ko template: {name: 'topmenu', data: $root}-->
+        <!-- /ko -->
       </div>
     </div>
     <div id="content">
@@ -85,8 +65,8 @@
         <div class="tt-loader">
           <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
           <img src="img/ajax-loader.gif" width="42" height="42" />
-        </div>
-
+        </div>      
+        
         <!-- ko if: goals() == null || goals().length == 0 -->
         <div class="tt-empty-list">
           <span data-bind="i18n: 'goals.text-no-goals'"></span>
@@ -121,9 +101,13 @@
             </li>
           </ol>
         </div>
-        <!-- /ko -->
+        
+          Continue working on your latest task <span data-bind="text: latestTask().title"></span>
 
-        <!-- ko template: {name: 'configuration', data: $root.user}-->
+        <!-- ko template: {name: 'modal-config', data: $root.user}-->
+        <!-- /ko -->
+        
+        <!-- ko template: {name: 'modal-log', data: $root.user}-->
         <!-- /ko -->
       </div>
     </div>

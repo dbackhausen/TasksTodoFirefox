@@ -20,18 +20,33 @@ i18n.init({
   };
 });
 
+
+/////////////////////////////////////////////////////////////////////////////
+// TOP MENU                                                                //
+/////////////////////////////////////////////////////////////////////////////
+
+showHelp = function() {
+  addon.port.emit("ShowHelp");
+};
+
+showGoals = function() {
+  $('#content').animate({ left: 0 }, 'slow', function() {
+    addon.port.emit("Redirect", "goals.html");
+  });
+};
+
 $(document).ready(function() { 
 
   /////////////////////////////////////////////////////////////////////////////
   // TOP MENU                                                                //
   /////////////////////////////////////////////////////////////////////////////
 
-  $('#top-menu-open-button').click(function() { 
-    $('#content').animate({ left: 350 }, 'slow', function() { });  
-  });
-
-  $('#top-menu-close-button').click(function() { 
-    $('#content').animate({ left: 0 }, 'slow', function() { });  
+  $('#top-menu-toggle-button').click(function() { 
+    if ($('#content').css('left') == '350px') { 
+      $('#content').animate({ left: 0 }, 'slow', function() { }); 
+    } else {
+      $('#content').animate({ left: 350 }, 'slow', function() { }); 
+    }  
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -190,22 +205,14 @@ function loadLogEntries(user) {
   addon.port.emit("LoadLogEntries", user._id);  
 }
 
-function addLogEntry(userId, key, value) {
+function addLogEntry(userId, action, paramters) {
   addon.port.emit("AddLogEntry", 
     {
       "userId": userId,
-      "key": key,
-      "value": value
+      "action": action,
+      "paramters": paramters
     }
   );
-}
-
-function updateLogEntry(entry) {
-  
-}
-
-function deleteLogEntry(entry) {
-  
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -315,11 +322,25 @@ function Attachment(data) {
 
 function Tab(data) {
   this._id = data._id;
-  this.taskId = ko.observable(data.taskId);
-  this.title = ko.observable(data.title);
-  this.url = ko.observable(data.url);
-  this.description = ko.observable(data.description);
-  this.thumbnail = ko.observable(data.thumbnail);
+
+  for (i = 0; i < data.parameters.length; i++) { 
+    var parameter = data.parameters[i];
+
+    if (parameter.key == "taskId") {
+      this.taskId = ko.observable(parameter.value);
+    } else if (parameter.key == "tabUrl") {
+      this.url = ko.observable(parameter.value);
+    } else if (parameter.key == "tabTitle") {
+      this.title = ko.observable(parameter.value);
+    } else if (parameter.key == "tabThumbnail") {
+      this.thumbnail = ko.observable(parameter.value);
+    } else if (parameter.key == "tabIndex") {
+      this.index = ko.observable(parameter.value);
+    } else if (parameter.key == "tabPinned") {
+      this.pinned = ko.observable(parameter.value);
+    }
+  }
+  
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
   this.deleted = ko.observable(data.deleted);

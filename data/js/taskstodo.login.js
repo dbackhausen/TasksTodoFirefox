@@ -12,7 +12,7 @@ $(document).ready(function() {
   
   addon.port.on("Error", function(error) {
     if (error != null && error.length > 0) {
-      showErrorMessage(error, '.inline-content h1');
+      showErrorMessage(error, '#error');
     }
   });
 

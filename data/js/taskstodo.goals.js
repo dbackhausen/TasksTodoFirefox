@@ -6,7 +6,8 @@ function ViewModel() {
   self.user = ko.observable();
   self.selectedGoal = ko.observable();
   self.goals = ko.observableArray();
-
+  self.latestTask = ko.observable();
+  
   self.selectGoal = function(goal) {
     self.selectedGoal = goal;
     selectGoal(goal);
@@ -158,11 +159,16 @@ function ViewModel() {
       });
     }
   };
-
-  // -- HELP
-
-  self.showHelp = function() {
-    addon.port.emit("ShowHelp");
+  
+  // -- LOG
+  
+  self.log = ko.observableArray();
+  
+  self.loadLog = function() {
+    console.log("Loading user log");
+  };
+  
+  self.deleteLogEntry = function(entry) {
   };
 }
 
@@ -254,16 +260,42 @@ addon.port.on("GoalDeleted", function(goal) {
 function selectGoal(goal) {
   if (goal != null) {
     // trigger goal selection to addon script      
-    addon.port.emit("SetActiveGoal", goal);
-
-    // Log goal selection
-    addLogEntry(viewModel.user()._id, "goal_selected", goal._id);
+    addon.port.emit("SetActiveGoal", ko.toJS(goal));
 
     // Redirect to tasks page
     addon.port.emit("Redirect", "tasks.html");
   }
 }
 
+var latestTaskId = null;
+
+addon.port.on("LatestLogEntriesLoaded", function(entries) {
+  console.log(JSON.stringify(entries));
+
+  if (entries && entries.length > 0) { 
+    ko.utils.arrayForEach(entries, function(entry) {
+      if (entry.action === "task_selected") {
+        for (i = 0; i < entry.parameters.length; i++) { 
+          var parameter = entry.parameters[i];
+
+          if (parameter.key == "taskId" && parameter.value != null && parameter.value.length > 0) {
+//            
+            latestTaskId = parameter.value;
+            addon.port.emit("LoadTask", parameter.value);
+          }
+        }
+      }
+    });
+  }
+});
+
+addon.port.on("TaskLoaded", function(task) {
+  if (task._id == latestTaskId) {
+    console.log("Latest task was " + task.title);
+    viewModel.latestTask = ko.observable(task);
+  }
+});
+              
 
 /*
  * ON PAGE READY
@@ -284,9 +316,6 @@ $(document).ready(function() {
     if (user != null) {
       // Set user to model
       viewModel.user(new User(JSON.parse(user)));
-
-      // Log user log in
-      addLogEntry(user._id, "login", null);
 
       // Load all user goals
       loadGoals(viewModel.user());

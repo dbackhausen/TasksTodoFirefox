@@ -72,14 +72,10 @@ a {
   height: 40px;
 }
 
-#top-menu-open-button {
+#top-menu-toggle-button {
   float: left;
   cursor: pointer;
   padding-right: 20px;
-}
-
-#top-menu-search {
-  /* TODO */ 
 }
 
 .top-login {
@@ -98,19 +94,10 @@ a {
   background-color: #E8E8E8;
 }
 
-#top-menu-close-button {
-  background-color: #D9D9D9;
-  border-bottom: 1px solid #666666;
-}
-
 #top-menu .button {
   padding: 5px 0px 5px 3px;
   cursor: pointer;
   border-top: 1px solid #E3E3E3;
-}
-
-#top-menu-close-button.button {
-  padding: 5px 0px 5px 3px;
 }
 
 #top-menu-help-button.button {

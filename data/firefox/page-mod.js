@@ -6,9 +6,9 @@ self.port.on("ShowPageNotification", function(message) {
     $('#tt-notification-layer').remove();
   }
 
-  var html  = '<div id="tt-notification-layer" style="width:100%; height: 40px; background-color:#3F9D3F">';
+  var html  = '<div id="tt-notification-layer" style="width:100%; height: 40px; background-color:#3F9D3F; top: 0px">';
   html += '<div style="width: 200px; height: 40px; float: right; text-align: right;"><img src="http://taskstodo.org/wordpress/wp-content/uploads/2015/04/bookmark1.png" style="height: 40px" /></div>';
-  html += '<div style="height: 40px; padding: 10px 0px 0px 30px; overflow: hidden;">' + message + '</div>';
+  html += '<div style="height: 40px; padding: 10px 0px 0px 30px; overflow: hidden; font: bold 14px Georgia;">' + message + '</div>';
   html += '</div>';
 
   $(document.body).prepend(html);
