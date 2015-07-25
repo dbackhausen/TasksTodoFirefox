@@ -31,7 +31,6 @@
     "txt-no-goals": "You have not defined any goals yet."
   },
   "task": {
-    "hdr-goals": "Your goals / projects",
     "txt-no-tasks": "You have not defined any tasks yet."
   }
 }
