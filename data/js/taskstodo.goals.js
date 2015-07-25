@@ -6,8 +6,7 @@ function ViewModel() {
   self.user = ko.observable();
   self.selectedGoal = ko.observable();
   self.goals = ko.observableArray();
-  self.latestTask = ko.observable();
-  
+    
   self.selectGoal = function(goal) {
     self.selectedGoal = goal;
     selectGoal(goal);
@@ -170,6 +169,10 @@ function ViewModel() {
   
   self.deleteLogEntry = function(entry) {
   };
+    
+  // -- LATEST TASK
+  
+  self.latestTask = ko.observable();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -196,11 +199,13 @@ addon.port.on("UserUpdated", function(user) {
  * Loads all goals.
  */
 function loadGoals(user) {
+  //console.log("load goals ... ");
   $('#content .tt-loader').show();
   addon.port.emit("LoadGoals", user);
 }
 
 addon.port.on("GoalsLoaded", function(goals) {
+  //console.log("... goals loaded ");
   $('#content .tt-loader').hide();
   viewModel.goals.removeAll();
 
@@ -269,6 +274,9 @@ function selectGoal(goal) {
 
 var latestTaskId = null;
 
+/**
+ * Get the latrst log entries to retrieve the last task.
+ */
 addon.port.on("LatestLogEntriesLoaded", function(entries) {
   console.log(JSON.stringify(entries));
 
@@ -279,7 +287,6 @@ addon.port.on("LatestLogEntriesLoaded", function(entries) {
           var parameter = entry.parameters[i];
 
           if (parameter.key == "taskId" && parameter.value != null && parameter.value.length > 0) {
-//            
             latestTaskId = parameter.value;
             addon.port.emit("LoadTask", parameter.value);
           }
@@ -289,10 +296,26 @@ addon.port.on("LatestLogEntriesLoaded", function(entries) {
   }
 });
 
+/**
+ * Port on last task
+ */ 
 addon.port.on("TaskLoaded", function(task) {
-  if (task._id == latestTaskId) {
-    console.log("Latest task was " + task.title);
-    viewModel.latestTask = ko.observable(task);
+  if (task != null && task._id == latestTaskId) {
+    console.log("Latest active task was \"" + task.title + "\"");
+    viewModel.latestTask(task);
+    
+    $('#modal-panel-latest-task').modal();
+    
+    $('#modal-panel-latest-task .btn-primary').on('click', function() {
+      ko.utils.arrayForEach(viewModel.goals(), function(goal) {
+        if (goal._id === viewModel.latestTask().goalId) {
+          addon.port.emit("SetActiveGoal", ko.toJS(goal));
+        }
+      });
+      
+      addon.port.emit("SetActiveTask", ko.toJS(viewModel.latestTask()));  
+      addon.port.emit("Redirect", "tasks.html");    
+    });
   }
 });
               
@@ -319,6 +342,9 @@ $(document).ready(function() {
 
       // Load all user goals
       loadGoals(viewModel.user());
+      
+      // Get lastest active task
+      addon.port.emit("GetLatestActiveTask");
     }
   });
 

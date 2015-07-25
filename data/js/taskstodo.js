@@ -193,6 +193,10 @@ function showWarningMessage(message, location) {
   $('<div class="alert alert-warning" role="alert">'+message+'</div>').appendTo(location).delay(3000).fadeOut(1000);
 }
 
+function showInfoMessage(message, location) {
+  $('<div class="alert alert-info" role="alert">'+message+'</div>').appendTo(location).delay(3000).fadeOut(1000);
+}
+
 function showErrorMessage(message, location) {
   $('<div class="alert alert-danger" role="alert">'+message+'</div>').appendTo(location).delay(3000).fadeOut(1000);
 }
@@ -307,8 +311,26 @@ function HistoryEntry(data) {
   }
   
   this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-  this.deleted = ko.observable(data.deleted);
+}
+
+function Query(data) {
+  this._id = data._id;
+
+  for (i = 0; i < data.parameters.length; i++) { 
+    var parameter = data.parameters[i];
+
+    if (parameter.key == "taskId") {
+      this.taskId = ko.observable(parameter.value);
+    } else if (parameter.key == "provider") {
+      this.provider = ko.observable(parameter.value);
+    } else if (parameter.key == "query") {
+      this.query = ko.observable(parameter.value);
+    } else if (parameter.key == "url") {
+      this.url = ko.observable(parameter.value);
+    }
+  }
+  
+  this.created = ko.observable(data.created);
 }
 
 function Attachment(data) {

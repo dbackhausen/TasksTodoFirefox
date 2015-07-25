@@ -12,19 +12,19 @@ function ViewModel() {
   self.selectGoal = function(goal) {
     $('#content').animate({ left: 0 }, 'normal', function() {
       selectGoal(goal);
-    });
+    });    
   };
 
-  self.selectTask = function(task) {     
-    if (self.selectedTask._id != task._id) {
+  self.selectTask = function(task) {
+    if (self.selectedTask == null || self.selectedTask._id == undefined || self.selectedTask._id !== task._id) {
       // Set task in model
       self.selectedTask = task;
-
+      
       // Trigger task selection to addon script      
       addon.port.emit("SetActiveTask", ko.toJS(task));
 
       // Select the current task and show options
-      selectTask(self.selectedTask);
+      showTaskSelection(self.selectedTask);
 
       // Load task notes   
       loadNotes(self.selectedTask);
@@ -32,8 +32,11 @@ function ViewModel() {
       // Load task bookmarks (preload is necessary for page annotation)    
       loadBookmarks(self.selectedTask);
 
-      // Load task history (preload is necessary for query overview)     
+      // Load task browse history (preload is necessary for query overview)     
       loadHistory(self.selectedTask);
+            
+      // Load task search history (preload is necessary for query overview)     
+      loadSearchHistory(self.selectedTask);
       
       // Load task tabs (preload is necessary for badge preview)     
       loadTabs(self.selectedTask);
@@ -45,7 +48,7 @@ function ViewModel() {
       self.selectedTask = ko.observable();
 
       // Select the current task and show options
-      selectTask(null);
+      showTaskSelection(null);
 
       // Trigger task selection to addon script      
       addon.port.emit("SetActiveTask", null);
@@ -267,7 +270,7 @@ function ViewModel() {
       });
 
       if (self.selectedTask != null && self.selectedTask._id == arg.item._id) {
-        selectTask(arg.item);
+        showTaskSelection(arg.item);
       }
     }
   }
@@ -443,7 +446,7 @@ function ViewModel() {
     $('#modal-panel-bookmarks').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
 
-  // -- HISTORY
+  // -- BROWSE HISTORY
   
   self.history = ko.observableArray();
   
@@ -456,6 +459,19 @@ function ViewModel() {
     $('#modal-panel-history').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
   };
 
+  // -- SEARCH HISTORY
+  
+  self.searchHistory = ko.observableArray();
+  
+  self.loadSearchHistory = function(task) {
+    loadSearchHistory(task);
+  };
+
+  self.deleteSearchHistoryEntry = function(entry) {
+    deleteSearchHistoryEntry(entry);
+    $('#modal-panel-search_history').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
+  };
+  
   // -- TABS
   
   self.tabs = ko.observableArray();
@@ -660,6 +676,11 @@ addon.port.on("TasksLoaded", function(tasks) {
     ko.utils.arrayForEach(tasks, function(task) {
       viewModel.tasks.push(new Task(task));
     });
+    
+    if (viewModel.selectedTask != null && viewModel.selectedTask._id != undefined) {   
+      // Select the current task and show options
+      showTaskSelection(viewModel.selectedTask);
+    }
   } else {
     $('#content .tt-empty-list').show();
   }
@@ -707,9 +728,37 @@ addon.port.on("TaskDeleted", function(data) {
 });
 
 /**
+ * Callback method, when active task is loaded.
+ */
+addon.port.on("ActiveTaskLoaded", function(task) {
+  if (task != null) {
+    // Set task in view model
+    viewModel.selectedTask = new Task(task);
+    
+    // Load task notes   
+    loadNotes(viewModel.selectedTask);
+
+    // Load task bookmarks (preload is necessary for page annotation)    
+    loadBookmarks(viewModel.selectedTask);
+
+    // Load task browse history (preload is necessary for query overview)     
+    loadHistory(viewModel.selectedTask);
+
+    // Load task search history (preload is necessary for query overview)     
+    loadSearchHistory(viewModel.selectedTask);
+
+    // Load task tabs (preload is necessary for badge preview)     
+    loadTabs(viewModel.selectedTask);
+
+    // Load task attachments (preload is necessary for badge preview)     
+    loadAttachments(viewModel.selectedTask);
+  }
+});
+
+/**
  * Selects a task.
  */
-function selectTask(task) {
+function showTaskSelection(task) {
   // Disable all inline editors
   $('#tt-task-list').find('.tt-inline-edit').hide();
   $('#tt-task-list').find('.tt-entry').show();
@@ -722,8 +771,8 @@ function selectTask(task) {
   $('#tt-task-list').find('.selected').removeClass('selected');
   // Hide all visible options, before showing another one  
   $('#tt-task-list').find('.tt-entry-options:visible').not($(ttListEntry).find('.tt-entry-options')).hide();
-
-  if (task != null) {
+  
+  if (task != null && task._id != undefined) {
     // Make sure the input field value is set
     $("#edit-task-form-input-title").val(task.title());
 
@@ -932,7 +981,7 @@ addon.port.on("BookmarkDeleted", function(data) {
 });
 
 /////////////////////////////////////////////////////////////////////////////
-// TASK: HISTORY                                                           //
+// TASK: BROWSE HISTORY                                                    //
 /////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -997,6 +1046,68 @@ addon.port.on("HistoryEntryDeleted", function(data) {
 });
 
 /////////////////////////////////////////////////////////////////////////////
+// TASK: SEARCH HISTORY                                                    //
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Filters all search history regarding to the selected task.
+ */
+function loadSearchHistory(task) {
+  $('#modal-panel-search_history .tt-loader').show();
+  addon.port.emit("LoadSearchHistory", task);
+}
+
+addon.port.on("SearchHistoryLoaded", function(history) {
+  $('#modal-panel-search_history .tt-loader').hide();
+  
+  viewModel.searchHistory.removeAll();
+
+  if (history && history.length > 0) { 
+    ko.utils.arrayForEach(history, function(entry) {
+      viewModel.searchHistory.push(new Query(entry));
+    });
+  } else {
+    $('#modal-panel-search_history .tt-empty-list').show();
+  }
+  
+  if (viewModel.searchHistory && viewModel.searchHistory().length > 0) {
+    var badgeCount = viewModel.searchHistory().length < 10 ? viewModel.searchHistory().length : "*";
+    
+    // Set badge counts for history 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-search').addClass('cntbadge');
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-search').attr('badge-count', badgeCount);
+  } else {
+    // Set badge counts for history 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-search').removeClass('cntbadge');
+  }
+});
+
+/**
+ * Deletes an existing search history entry.
+ */
+function deleteSearchHistoryEntry(entry) {
+  // Delete entry from database
+  addon.port.emit("DeleteLogEntry", entry._id);
+
+  // Remove entry from list
+  viewModel.searchHistory.remove(entry);
+  
+  if (viewModel.searchHistory && viewModel.searchHistory().length > 0) {
+    var badgeCount = viewModel.searchHistory().length < 10 ? viewModel.searchHistory().length : "*";
+    
+    // Set badge counts for history 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-search').addClass('cntbadge');
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-search').attr('badge-count', badgeCount);
+  } else {
+    // Set badge counts for history 
+    $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-search').removeClass('cntbadge');
+  }
+}
+
+addon.port.on("HistoryEntryDeleted", function(data) {
+});
+
+/////////////////////////////////////////////////////////////////////////////
 // TASK: TABS                                                              //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1031,6 +1142,9 @@ addon.port.on("TabsLoaded", function(tabs) {
     // Set badge counts for tabs 
     $("li#" + viewModel.selectedTask._id).find('.tt-entry-options:visible .fa-folder-o').removeClass('cntbadge');
   }
+  
+  // Call main.js to set tabs of active task
+  addon.port.emit("SetActiveTaskTabs", tabs);
 });
 
 /**
@@ -1194,6 +1308,9 @@ $(document).ready(function() {
 
       // Get the active goal
       addon.port.emit("GetActiveGoal");
+          
+      // Get the active task
+      addon.port.emit("GetActiveTask");
     }
   });
 

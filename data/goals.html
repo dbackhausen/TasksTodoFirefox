@@ -65,7 +65,7 @@
         <div class="tt-loader">
           <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
           <img src="img/ajax-loader.gif" width="42" height="42" />
-        </div>      
+        </div>
         
         <!-- ko if: goals() == null || goals().length == 0 -->
         <div class="tt-empty-list">
@@ -82,7 +82,7 @@
                   <div class="tt-goal-check">
                     <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
                   </div>
-                  <div class="tt-goal-title" data-bind="event : { click: $parent.selectGoal }">
+                  <div class="tt-goal-title" data-bind="click: $parent.selectGoal">
                     <span data-bind="text: title()"></span>
                   </div>
                   <div class="tt-goal-control">
@@ -100,10 +100,24 @@
               </div>
             </li>
           </ol>
+        </div>        
+        <!-- /ko -->
+        
+        <!-- Modal panel: Latest task -->
+        <div class="modal fade" id="modal-panel-latest-task" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                Do you want continue working on your latest task <strong><span data-bind="text: latestTask().title"/></strong>?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn" data-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
         </div>
         
-          Continue working on your latest task <span data-bind="text: latestTask().title"></span>
-
         <!-- ko template: {name: 'modal-config', data: $root.user}-->
         <!-- /ko -->
         

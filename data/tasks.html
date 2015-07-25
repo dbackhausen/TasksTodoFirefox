@@ -101,6 +101,7 @@
                   <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
                   <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
                   <a href="#" class="fa fa-history icon-grey" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history" badge-count=""></a>
+                  <a href="#" class="fa fa-search icon-grey" data-bind="click: $parent.loadSearchHistory, tooltip: {title: 'Search history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-search_history" badge-count=""></a>
                   <a href="#" class="fa fa-folder-o icon-grey" data-bind="click: $parent.loadTabs, tooltip: {title: 'Tabs', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-tabs" badge-count=""></a>
                   <a href="#" class="fa fa-paperclip icon-grey" data-bind="click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments" badge-count=""></a>
                 </div>
@@ -282,7 +283,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="taskHistoryLabel">Browsing history</h4>
+                <h4 class="modal-title" id="modal-title-history">Browsing history</h4>
               </div>
               <div class="modal-body">
                 <div class="tt-loader">
@@ -323,6 +324,55 @@
                             <img data-bind="attr: { src: thumbnail() }" width="225" height="150"/>
                           </script>
 
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal panel: Task Search History -->
+        <div class="modal fade" id="modal-panel-search_history" tabindex="-1" role="dialog" aria-labelledby="modal-title-search_history" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="modal-title-search_history">Search history</h4>
+              </div>
+              <div class="modal-body">
+                <div class="tt-loader">
+                  <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
+                  <img src="img/ajax-loader.gif" width="42" height="42" />
+                </div>
+
+                <!-- ko if: history() == null || history().length == 0 -->
+                <div class="tt-empty-list">
+                  Your task has no search history yet.
+                </div>
+                <!-- /ko -->
+
+                <div id="tt-search_history-list">
+                  <ul data-bind="foreach: searchHistory">
+                    <li data-bind="attr: { 'id': _id }">
+                      <div class="tt-entry">
+                        <div class="tt-header">
+                          <div class="tt-header-text">
+                            <span data-bind="text: created() | smartdate"></span> | <span data-bind="text: provider()"></span>
+                          </div>
+                          <div class="tt-header-control">
+                            <a href="#" data-bind="click: $parent.deleteSearchHistoryEntry, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
+                          </div>
+                        </div>
+                        <div class="tt-content">
+                          <a data-bind="attr: { href: url() }" target="_blank">
+                            <span data-bind="text: query()"></span>
+                          </a>
                         </div>
                       </div>
                     </li>
