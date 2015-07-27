@@ -5,7 +5,7 @@
 	"license": "", 
 	"description": "The most advanced task-based search support application.", 
 	"url": "http://www.taskstodo.org", 
-	"dependencies": ["api-utils", "addon-kit"],
+	"dependencies": ["api-utils", "menuitems", "addon-kit"],
 	"version": "1.0", 
 	"lib": "lib", 
 	"icon": "data/img/icon32.png",
