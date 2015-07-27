@@ -396,7 +396,8 @@
               </div>
               <div class="modal-body">
                 <div class="modal-functions">
-                  <button type="button" data-bind="click: restoreTabs" class="btn btn-default btn-sm">Restore all tabs</button>
+                  <button type="button" data-bind="click: restoreTabs" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-repeat"></span> Restore all tabs</button>
+                  <button type="button" data-bind="click: storeTabs" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Store open tabs</button>
                 </div>
                                 
                 <div class="tt-loader">
@@ -429,6 +430,7 @@
                             </div>
                             <div class="tt-description" data-bind="tooltip: {title: title(), placement: 'bottom'}">
                               <p class="tt-title"><span data-bind="text: title()"></span></p>
+                              <p class="tt-url"><span data-bind="text: url()"></span></p>
                             </div>
                           </a>
 

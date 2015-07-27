@@ -1148,6 +1148,16 @@ addon.port.on("TabsLoaded", function(tabs) {
 });
 
 /**
+ * Store open tabs.
+ */
+function storeTabs() {
+  addon.port.emit("StoreTabs");
+}
+
+addon.port.on("TabsStored", function(data) {
+});
+
+/**
  * Restores all tabs.
  */
 function restoreTabs(tabs) {
@@ -1162,7 +1172,7 @@ addon.port.on("TabsRestored", function(data) {
  */
 function deleteTab(entry) {
   // Delete entry from database
-  addon.port.emit("DeleteLogEntry", entry._id);
+  addon.port.emit("DeleteTab", entry);
     
   // Remove entry from list
   viewModel.tabs.remove(entry);
