@@ -94,13 +94,11 @@ function ViewModel() {
   };
 
   self.completeGoal = function(goal) {
-    if (goal.completed()) {
-      goal.completed(false);
-      goal.completedDate(null);
+    if (goal.completed() == null) {
+      goal.completed(new Date());
       updateGoal(goal);
     } else {
-      goal.completed(true);
-      goal.completedDate(new Date());
+      goal.completed(null);
       updateGoal(goal);
     }
   };
@@ -278,15 +276,13 @@ var latestTaskId = null;
  * Get the latrst log entries to retrieve the last task.
  */
 addon.port.on("LatestLogEntriesLoaded", function(entries) {
-  console.log(JSON.stringify(entries));
-
   if (entries && entries.length > 0) { 
     ko.utils.arrayForEach(entries, function(entry) {
       if (entry.action === "task_selected") {
         for (i = 0; i < entry.parameters.length; i++) { 
           var parameter = entry.parameters[i];
 
-          if (parameter.key == "taskId" && parameter.value != null && parameter.value.length > 0) {
+          if (latestTaskId == null && parameter.key == "taskId" && parameter.value != null && parameter.value.length > 0) {
             latestTaskId = parameter.value;
             addon.port.emit("LoadTask", parameter.value);
           }
@@ -300,7 +296,7 @@ addon.port.on("LatestLogEntriesLoaded", function(entries) {
  * Port on last task
  */ 
 addon.port.on("TaskLoaded", function(task) {
-  if (task != null && task._id == latestTaskId) {
+  if (task != null && latestTaskId != null && task._id == latestTaskId) {
     console.log("Latest active task was \"" + task.title + "\"");
     viewModel.latestTask(task);
     
@@ -319,7 +315,6 @@ addon.port.on("TaskLoaded", function(task) {
   }
 });
               
-
 /*
  * ON PAGE READY
  */

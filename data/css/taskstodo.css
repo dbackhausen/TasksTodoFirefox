@@ -132,6 +132,13 @@ a {
   color: #428BCA;
 }
 
+#top-menu li .goal-entry.completed {
+  text-decoration: line-through;
+  font-style: italic;
+  color: #999999;
+}
+
+
 /*
  * CONTENT
  */

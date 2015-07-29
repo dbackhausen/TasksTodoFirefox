@@ -12,7 +12,7 @@
 </div>
 <ol data-bind="sortable: { data: goals }">
   <li data-bind="attr: { 'id': 'top-nav-goal-' + _id }">
-    <div class="goal-entry" data-bind="click: $root.selectGoal">
+    <div class="goal-entry" data-bind="click: $root.selectGoal, css: { completed: completed() != null }">
       <i class="fa fa-caret-right padding-right-5"></i><span data-bind="text: title"></span>
     </div>
   </li>

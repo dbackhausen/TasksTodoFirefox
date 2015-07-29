@@ -8,19 +8,22 @@ self.port.on("ShowPageNotification", function(message) {
   
   $("<style>")
     .prop("type", "text/css")
-    .html('#tt-notification-layer{width:500px;height:50px;position:fixed;bottom:25px;left:10px;z-index:999999}a.tt-tooltip{position:relative;display:inline}a.tt-tooltip span{position:absolute;width:350px;font-family:Verdana,"Lucida Sans Unicode",sans-serif;font-size:13px;color:#FFF;background:#00B524;height:30px;line-height:30px;text-align:center;border-radius:4px;opacity:0;left:75%;top:-75%;margin-top:-15px;margin-left:15px;transition:opacity .5s ease-in-out;-moz-transition:opacity .5s ease-in-out;-webkit-transition:opacity .5s ease-in-out}a.tt-tooltip span:after{content:"";position:absolute;top:50%;right:100%;margin-top:-8px;width:0;height:0;border-right:8px solid #00B524;border-top:8px solid transparent;border-bottom:8px solid transparent}a.tt-tooltip span.active,a:hover.tt-tooltip span{opacity:1;left:75%;top:-75%;margin-top:-15px;margin-left:15px;z-index:999}')
+    .html('#tt-notification-layer{width:500px;height:65px;position:fixed;bottom:25px;left:10px;z-index:999999}#tt-notification-layer div.tt-tooltip{float:right;width:430px;text-decoration:none;margin-top:25px;opacity:0;transition:opacity .5s ease-in-out;-moz-transition:opacity .5s ease-in-out;-webkit-transition:opacity .5s ease-in-out}#tt-notification-layer div.tt-tooltip span{font-family:Verdana,"Lucida Sans Unicode",sans-serif;font-size:13px;color:#FFF;background:#00B524;padding:5px;border-radius:3px}#tt-notification-layer div.tt-tooltip.active{opacity:1}')
     .appendTo("head");
   
-  var notification  = '<div id="tt-notification-layer">';
-  notification += '<a class="tt-tooltip" href="#"><img src="http://taskstodo.org/wordpress/wp-content/uploads/2015/07/thumbs_up.png" /><span>You bookmarked this page to your current task!</span></a>';
-  notification += '</div>';
-
+  var notification = '<div id="tt-notification-layer"><a href="#"><img src="http://taskstodo.org/wordpress/wp-content/uploads/2015/07/thumbs_up.png"/></a><div class="tt-tooltip"><span>You bookmarked this page to your current task!</span></div></div>';
   $(document.body).append(notification);
     
   // Show the bookmark notification text for 5 seconds after page is loaded
-  $('a.tt-tooltip span').addClass("active").delay(5000).queue(function(next){
+  $('div.tt-tooltip').addClass("active").delay(5000).queue(function(next){
     $(this).removeClass("active");
     next();
+  });
+
+  $("#tt-notification-layer a").mouseover(function() {
+    $('#tt-notification-layer > div.tt-tooltip').addClass("active");
+  }).mouseout(function() {
+    $('#tt-notification-layer > div.tt-tooltip').removeClass("active");
   });
 });
 

@@ -1121,7 +1121,6 @@ function loadTabs(task) {
 
 addon.port.on("TabsLoaded", function(tabs) {
   $('#modal-panel-tabs .tt-loader').hide();
-  
   viewModel.tabs.removeAll();
 
   if (tabs && tabs.length > 0) { 

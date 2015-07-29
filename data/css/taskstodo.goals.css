@@ -102,6 +102,12 @@
   padding: 0px 5px 0px 5px;
 }
 
+#tt-goal-list .tt-goal-title.completed {
+  text-decoration: line-through;
+  font-style: italic;
+  color: #999999;
+}
+
 #tt-goal-list .tt-goal-control { 
   display: table-cell;
   width: 50px;

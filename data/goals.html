@@ -80,9 +80,14 @@
               <div class="tt-entry">
                 <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
                   <div class="tt-goal-check">
+                    <!-- ko if: completed() == null -->
                     <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
+                    <!-- /ko -->
+                    <!-- ko if: completed() != null -->
+                    <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
+                    <!-- /ko -->
                   </div>
-                  <div class="tt-goal-title" data-bind="click: $parent.selectGoal">
+                  <div class="tt-goal-title" data-bind="click: $parent.selectGoal, css: { completed: completed() != null }">
                     <span data-bind="text: title()"></span>
                   </div>
                   <div class="tt-goal-control">
