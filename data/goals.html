@@ -58,8 +58,8 @@
           <p>
             <textarea id="new-goal-form-input-title" class="flexible" autofocus></textarea>
           </p>
-          <button data-bind="click: addGoal" class="btn btn-primary btn-sm">Save</button>
-          <button data-bind="click: cancelNewGoal" class="btn btn-default btn-sm">Cancel</button>
+          <button id="btn-save-new-goal" data-bind="click: addGoal" class="btn btn-primary btn-sm">Save</button>
+          <button id="btn-cancel-new-goal" data-bind="click: cancelNewGoal" class="btn btn-default btn-sm">Cancel</button>
         </div>
 
         <div class="tt-loader">
@@ -81,27 +81,27 @@
                 <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
                   <div class="tt-goal-check">
                     <!-- ko if: completed() == null -->
-                    <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-goal-completed-' + _id }, click: $parent.completeGoal, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
                     <!-- /ko -->
                     <!-- ko if: completed() != null -->
-                    <a href="#" data-bind="click: $parent.completeGoal, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-goal-not-completed-' + _id }, click: $parent.completeGoal, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
                     <!-- /ko -->
                   </div>
-                  <div class="tt-goal-title" data-bind="click: $parent.selectGoal, css: { completed: completed() != null }">
-                    <span data-bind="text: title()"></span>
+                  <div class="tt-goal-title" data-bind="attr: { 'id': 'div-goal-title-' + _id }, click: $parent.selectGoal, css: { completed: completed() != null }">
+                    <span data-bind="attr: { 'id': 'span-goal-title-' + _id }, text: title()"></span>
                   </div>
                   <div class="tt-goal-control">
-                    <a href="#" data-bind="click: $parent.editGoal, tooltip: {title: 'Edit goal', placement: 'left'}" class="fa fa-pencil"></a>
-                    <a href="#" data-bind="click: $parent.deleteGoal, tooltip: {title: 'Delete goal', placement: 'left'}" class="fa fa-trash-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-edit-goal-' + _id }, click: $parent.editGoal, tooltip: {title: 'Edit goal', placement: 'left'}" class="fa fa-pencil"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-delete-goal-' + _id }, click: $parent.deleteGoal, tooltip: {title: 'Delete goal', placement: 'left'}" class="fa fa-trash-o"></a>
                   </div>
                 </div>
               </div>
               <div class="tt-inline-edit">
                 <p>
-                  <textarea id="edit-goal-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title" autofocus></textarea>
+                  <textarea data-bind="attr: { 'id': 'edit-goal-form-input-title-' + _id }, koAutoresize: {}, value: title" class="flexible" autofocus></textarea>
                 </p>
-                <button data-bind="click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
-                <button data-bind="click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
+                <button data-bind="attr: { 'id': 'btn-update-goal-' + _id }, click: $parent.updateGoal" class="btn btn-primary btn-sm">Save</button>
+                <button data-bind="attr: { 'id': 'btn-cancel-update-goal-' + _id }, click: $parent.cancelEditGoal" class="btn btn-default btn-sm">Cancel</button>
               </div>
             </li>
           </ol>
@@ -116,8 +116,8 @@
                 Do you want continue working on your latest task <strong><span data-bind="text: latestTask().title"/></strong>?
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
-                <button type="button" class="btn" data-dismiss="modal">No</button>
+                <button id="btn-continue-previous-task" type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button id="btn-not-continue-previous-task" type="button" class="btn" data-dismiss="modal">No</button>
               </div>
             </div>
           </div>

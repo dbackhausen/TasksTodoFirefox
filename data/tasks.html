@@ -53,13 +53,13 @@
       <div class="inline-content">
         <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'"></span></h1>
         
-        <button id="new-task-form-button-new" data-bind="click: newTask" class="btn btn-primary btn-sm">New task</button>
+        <button id="btn-task-form-button-new" data-bind="click: newTask" class="btn btn-primary btn-sm">New task</button>
         <div id="new-task-form">
           <p>
             <textarea id="new-task-form-input-title" class="flexible" autofocus></textarea>
           </p>
-          <button data-bind="click: addTask" class="btn btn-primary btn-sm">Save</button>
-          <button data-bind="click: cancelNewTask" class="btn btn-default btn-sm">Cancel</button>
+          <button id="btn-save-new-task"  data-bind="click: addTask" class="btn btn-primary btn-sm">Save</button>
+          <button id="btn-cancel-new-task"  data-bind="click: cancelNewTask" class="btn btn-default btn-sm">Cancel</button>
         </div>
 
         <div class="tt-loader">
@@ -81,37 +81,37 @@
                 <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
                   <div class="tt-task-check">
                     <!-- ko if: completed() == null -->
-                    <a href="#" data-bind="click: $parent.completeTask, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-task-completed-' + _id }, click: $parent.completeTask, tooltip: {title: 'Mark as completed'}" class="fa fa-square-o"></a>
                     <!-- /ko -->
                     <!-- ko if: completed() != null -->
-                    <a href="#" data-bind="click: $parent.completeTask, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-task-not-completed-' + _id }, click: $parent.completeTask, tooltip: {title: 'Mark as not completed'}" class="fa fa-check-square-o"></a>
                     <!-- /ko -->
                   </div>
-                  <div class="tt-task-title" data-bind="event: { click: $parent.selectTask, dblclick: $parent.editTask }, css: { completed: completed() != null }">
-                    <span data-bind="text: title()"></span>
+                  <div class="tt-task-title" data-bind="attr: { 'id': 'div-task-title-' + _id }, event: { click: $parent.selectTask, dblclick: $parent.editTask }, css: { completed: completed() != null }">
+                    <span data-bind="attr: { 'id': 'span-task-title-' + _id }, text: title()"></span>
                   </div>
                   <div class="tt-task-control">
-                    <a href="#" data-bind="click: $parent.editTask, tooltip: {title: 'Edit task', placement: 'left'}" class="fa fa-pencil"></a>
-                    <a href="#" data-bind="click: $parent.deleteTask, tooltip: {title: 'Delete task', placement: 'left'}" class="fa fa-trash-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-edit-task-' + _id }, click: $parent.editTask, tooltip: {title: 'Edit task', placement: 'left'}" class="fa fa-pencil"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-delete-task-' + _id }, click: $parent.deleteTask, tooltip: {title: 'Delete task', placement: 'left'}" class="fa fa-trash-o"></a>
                   </div>
                 </div>
                 <div class="tt-entry-options">
-                  <a href="#" class="fa fa-outdent icon-grey" data-bind="click: $parent.outdentTask, tooltip: {title: 'Lease from previous task', placement: 'bottom'}"></a>
-                  <a href="#" class="fa fa-indent icon-grey" data-bind="click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
-                  <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
-                  <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
-                  <a href="#" class="fa fa-history icon-grey" data-bind="click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history" badge-count=""></a>
-                  <a href="#" class="fa fa-search icon-grey" data-bind="click: $parent.loadSearchHistory, tooltip: {title: 'Search history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-search_history" badge-count=""></a>
-                  <a href="#" class="fa fa-folder-o icon-grey" data-bind="click: $parent.loadTabs, tooltip: {title: 'Tabs', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-tabs" badge-count=""></a>
-                  <a href="#" class="fa fa-paperclip icon-grey" data-bind="click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments" badge-count=""></a>
+                  <a href="#" class="fa fa-outdent icon-grey" data-bind="attr: { 'id': 'btn-outdent-task-' + _id }, click: $parent.outdentTask, tooltip: {title: 'Lease from previous task', placement: 'bottom'}"></a>
+                  <a href="#" class="fa fa-indent icon-grey" data-bind="attr: { 'id': 'btn-indent-task-' + _id }, click: $parent.indentTask, tooltip: {title: 'Add to previous task', placement: 'bottom'}"></a>
+                  <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="attr: { 'id': 'btn-show-notes-' + _id }, click: $parent.loadNotes, tooltip: {title: 'Notes', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
+                  <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="attr: { 'id': 'btn-show-bookmarks-' + _id }, click: $parent.loadBookmarks, tooltip: {title: 'Bookmarks', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
+                  <a href="#" class="fa fa-history icon-grey" data-bind="attr: { 'id': 'btn-show-history-' + _id }, click: $parent.loadHistory, tooltip: {title: 'Browsing history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history" badge-count=""></a>
+                  <a href="#" class="fa fa-search icon-grey" data-bind="attr: { 'id': 'btn-show-search_history-' + _id }, click: $parent.loadSearchHistory, tooltip: {title: 'Search history', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-search_history" badge-count=""></a>
+                  <a href="#" class="fa fa-folder-o icon-grey" data-bind="attr: { 'id': 'btn-show-tabs-' + _id }, click: $parent.loadTabs, tooltip: {title: 'Tabs', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-tabs" badge-count=""></a>
+                  <a href="#" class="fa fa-paperclip icon-grey" data-bind="attr: { 'id': 'btn-show-attachments-' + _id }, click: $parent.loadAttachments, tooltip: {title: 'Attachments', placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-attachments" badge-count=""></a>
                 </div>
               </div>
               <div class="tt-inline-edit">
                 <p>
                   <textarea id="edit-task-form-input-title" class="flexible" data-bind="koAutoresize: {}, value: title" autofocus></textarea>
                 </p>
-                <button data-bind="click: $parent.updateTask" class="btn btn-primary btn-sm">Save</button>
-                <button data-bind="click: $parent.cancelEditTask" class="btn btn-default btn-sm">Cancel</button>
+                <button id="btn-update-task" data-bind="click: $parent.updateTask" class="btn btn-primary btn-sm">Save</button>
+                <button id="btn-cancel-update-task" data-bind="click: $parent.cancelEditTask" class="btn btn-default btn-sm">Cancel</button>
               </div>
             </li>
           </ol>
@@ -123,17 +123,17 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button id="btn-modal-top-close-notes" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="modal-title-notes">Task notes</h4>
               </div>
               <div class="modal-body">
-                <button id="new-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
+                <button id="btn-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm">New note</button>
                 <form id="new-note-form" data-bind="submit: addNote">
                   <p>
                     <textarea id="new-note-form-input-body" class="flexible" autofocus></textarea>
                   </p>
-                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                  <button data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
+                  <button id="btn-save-new-note" type="submit" class="btn btn-primary btn-sm">Save</button>
+                  <button id="btn-cancel-new-note" data-bind="click: cancelNewNote" class="btn btn-default btn-sm">Cancel</button>
                 </form>
 
                 <div class="tt-loader">
@@ -156,8 +156,8 @@
                             <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
-                            <a href="#" data-bind="click: $parent.editNote, tooltip: {title: 'Edit note', placement: 'left'}" class="fa fa-pencil"></a>
-                            <a href="#" data-bind="click: $parent.deleteNote, tooltip: {title: 'Delete note', placement: 'left'}" class="fa fa-trash-o"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-edit-note-' + _id }, click: $parent.editNote, tooltip: {title: 'Edit note', placement: 'left'}" class="fa fa-pencil"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-delete-note-' + _id }, click: $parent.deleteNote, tooltip: {title: 'Delete note', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
                         <div class="tt-content" data-bind="event: { dblclick: $parent.editNote }">
@@ -166,17 +166,17 @@
                       </div>
                       <div class="tt-inline-edit">
                         <p>
-                          <textarea id="edit-note-form-input-body" class="flexible" data-bind="koAutoresize: {}, value: body" autofocus></textarea>
+                          <textarea class="flexible" data-bind="attr: { 'id': 'edit-note-form-input-body-' + _id }, koAutoresize: {}, value: body" autofocus></textarea>
                         </p>
-                        <button data-bind="click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
-                        <button data-bind="click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
+                        <button data-bind="attr: { 'id': 'btn-update-note-' + _id }, click: $parent.updateNote" class="btn btn-primary btn-sm">Save</button>
+                        <button data-bind="attr: { 'id': 'btn-cancel-update-note-' + _id }, click: $parent.cancelEditNote" class="btn btn-default btn-sm">Cancel</button>
                       </div>
                     </li>
                   </ul>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button id="btn-modal-bottom-close-notes" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -187,11 +187,11 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button id="btn-modal-top-close-bookmarks" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="modal-title-bookmarks">Task bookmarks</h4>
               </div>
               <div class="modal-body">
-                <button id="new-bookmark-form-button-new" data-bind="click: newBookmark" class="btn btn-primary btn-sm">New bookmark</button>
+                <button id="btn-bookmark-form-button-new" data-bind="click: newBookmark" class="btn btn-primary btn-sm">New bookmark</button>
                 <form id="new-bookmark-form" data-bind="submit: addBookmark">
                   <p>
                     <label for="new-bookmark-form-input-title">Title</label>
@@ -205,8 +205,8 @@
                     <label for="new-bookmark-form-input-description">Description</label>
                     <textarea id="new-bookmark-form-input-description" class="flexible"></textarea>
                   </p>
-                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                  <button data-bind="click: cancelNewBookmark" class="btn btn-default btn-sm">Cancel</button>
+                  <button id="btn-save-new-bookmark" type="submit" class="btn btn-primary btn-sm">Save</button>
+                  <button id="btn-cancel-new-bookmark" data-bind="click: cancelNewBookmark" class="btn btn-default btn-sm">Cancel</button>
                 </form>
                   
                 <div class="tt-loader">
@@ -229,14 +229,14 @@
                             <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
-                            <a href="#" data-bind="click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
-                            <a href="#" data-bind="click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark', placement: 'left'}" class="fa fa-trash-o"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-edit-bookmark-' + _id }, click: $parent.editBookmark, tooltip: {title: 'Edit bookmark', placement: 'left'}" class="fa fa-pencil"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-delete-bookmark-' + _id }, click: $parent.deleteBookmark, tooltip: {title: 'Delete bookmark', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
                         <div class="tt-content">
-                          <a data-bind="attr: { href: url() }" target="_blank">
+                          <a data-bind="attr: { 'id': 'bookmark-' + _id, 'href': url() }" target="_blank">
                             <div class="tt-thumbnail">
-                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'bookmarkZoomView', trigger: 'hover', placement: 'bottom'}"  />
+                              <img data-bind="attr: { 'id': 'bookmark-entry-screenshot-' + _id, 'src': thumbnail() }, popover: {template: 'bookmarkZoomView', trigger: 'hover', placement: 'bottom'}"  />
                             </div>
                             <div class="tt-description" data-bind="tooltip: {title: description(), placement: 'bottom'}">
                               <p class="tt-title"><span data-bind="text: title()"></span></p>
@@ -252,26 +252,26 @@
                       </div>
                       <div class="tt-inline-edit">
                         <p>
-                          <label for="edit-bookmark-form-input-title">Title</label>
-                          <input type="text" id="edit-bookmark-form-input-title" data-bind="value: title" autofocus />
+                          <label data-bind="attr: { 'for': 'edit-bookmark-form-input-title-' + _id }">Title</label>
+                          <input type="text" data-bind="attr: { 'id': 'edit-bookmark-form-input-title-' + _id }, value: title" autofocus />
                         </p>
                         <p>
-                          <label for="edit-bookmark-form-input-url">URL</label>
-                          <input type="text" id="edit-bookmark-form-input-url" data-bind="value: url" />
+                          <label data-bind="attr: { 'for': 'edit-bookmark-form-input-url-' + _id }">URL</label>
+                          <input type="text" data-bind="attr: { 'id': 'edit-bookmark-form-input-url-' + _id }, value: url" />
                         </p>
                         <p>
-                          <label for="edit-bookmark-form-input-description">Description</label>
-                          <textarea id="edit-bookmark-form-input-description" class="flexible" data-bind="koAutoresize: {}, value: description"></textarea>
+                          <label data-bind="attr: { 'for': 'edit-bookmark-form-input-description-' + _id }">Description</label>
+                          <textarea class="flexible" data-bind="attr: { 'id': 'edit-bookmark-form-input-description-' + _id }, koAutoresize: {}, value: description"></textarea>
                         </p>
-                        <button data-bind="click: $parent.updateBookmark" class="btn btn-primary btn-sm">Save</button>
-                        <button data-bind="click: $parent.cancelEditBookmark" class="btn btn-default btn-sm">Cancel</button>
+                        <button data-bind="attr: { 'id': 'btn-update-bookmark-' + _id }, click: $parent.updateBookmark" class="btn btn-primary btn-sm">Save</button>
+                        <button data-bind="attr: { 'id': 'btn-cancel-update-bookmark-' + _id }, click: $parent.cancelEditBookmark" class="btn btn-default btn-sm">Cancel</button>
                       </div>
                     </li>
                   </ul>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button id="btn-modal-bottom-close-bookmarks" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -282,10 +282,14 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button id="btn-modal-top-close-history" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="modal-title-history">Browsing history</h4>
               </div>
               <div class="modal-body">
+                <div class="modal-loader">
+                  <button id="btn-clear-history" type="button" data-bind="click: clearHistory" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Clear history</button>
+                </div>
+                
                 <div class="tt-loader">
                   <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
                   <img src="img/ajax-loader.gif" width="42" height="42" />
@@ -306,13 +310,13 @@
                             <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
-                            <a href="#" data-bind="click: $parent.deleteHistoryEntry, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-delete-history-entry-' + _id }, click: $parent.deleteHistoryEntry, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
                         <div class="tt-content">
-                          <a data-bind="attr: { href: url() }" target="_blank">
+                          <a data-bind="attr: { 'id': 'history-entry-' + _id, 'href': url() }" target="_blank">
                             <div class="tt-thumbnail">
-                              <img data-bind="attr: { src: thumbnail() }, popover: {template: 'historyZoomView', trigger: 'hover', placement: 'bottom'}"  />
+                              <img data-bind="attr: { 'id': 'history-entry-screenshot' + _id, 'src': thumbnail() }, popover: {template: 'historyZoomView', trigger: 'hover', placement: 'bottom'}"  />
                             </div>
                             <div class="tt-description" data-bind="tooltip: {title: title(), placement: 'bottom'}">
                               <p class="tt-title"><span data-bind="text: title()"></span></p>
@@ -331,7 +335,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button id="btn-modal-bottom-close-history" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -342,10 +346,10 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button id="btn-modal-top-close-search_history" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="modal-title-search_history">Search history</h4>
               </div>
-              <div class="modal-body">
+              <div class="modal-body">              
                 <div class="tt-loader">
                   <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
                   <img src="img/ajax-loader.gif" width="42" height="42" />
@@ -366,11 +370,11 @@
                             <span data-bind="text: created() | smartdate"></span> | <span data-bind="text: provider()"></span>
                           </div>
                           <div class="tt-header-control">
-                            <a href="#" data-bind="click: $parent.deleteSearchHistoryEntry, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-delete-search_history-entry-' + _id }, click: $parent.deleteSearchHistoryEntry, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
                         <div class="tt-content">
-                          <a data-bind="attr: { href: url() }" target="_blank">
+                          <a data-bind="attr: { 'id': 'search_history-entry-' + _id, 'href': url() }" target="_blank">
                             <span data-bind="text: query()"></span>
                           </a>
                         </div>
@@ -380,7 +384,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button id="btn-modal-bottom-close-search_history" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -391,13 +395,13 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button id="btn-modal-top-close-tabs" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="taskTabsLabel">Tabs</h4>
               </div>
               <div class="modal-body">
                 <div class="modal-functions">
-                  <button type="button" data-bind="click: restoreTabs" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-repeat"></span> Restore all tabs</button>
-                  <button type="button" data-bind="click: storeTabs" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Store all open tabs</button>
+                  <button id="btn-restore-all-tabs" type="button" data-bind="click: restoreTabs" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-repeat"></span> Restore all tabs</button>
+                  <button id="btn-store-all-open-tabs" type="button" data-bind="click: storeTabs" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Store all open tabs</button>
                 </div>
                                 
                 <div class="tt-loader">
@@ -420,11 +424,11 @@
                             <span data-bind="text: created() | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
-                            <a href="#" data-bind="click: $parent.deleteTab, tooltip: {title: 'Delete tab', placement: 'left'}" class="fa fa-trash-o"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-delete-tab-' + _id }, click: $parent.deleteTab, tooltip: {title: 'Delete tab', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
                         <div class="tt-content">
-                          <a data-bind="attr: { href: url() }" target="_blank">
+                          <a id="btn-tab-screenshot" data-bind="attr: { 'id': 'tab-entry-' + _id, 'href': url() }" target="_blank">
                             <div class="tt-thumbnail">
                               <img data-bind="attr: { src: thumbnail() }, popover: {template: 'tabZoomView', trigger: 'hover', placement: 'bottom'}"  />
                             </div>
@@ -445,7 +449,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button id="btn-modal-bottom-close-tabs" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -456,7 +460,7 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button id="btn-modal-top-close-attachments" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="taskAttachmentsLabel">Attachments</h4>
               </div>
               <div class="modal-body">
@@ -495,11 +499,11 @@
                             <span data-bind="text: uploadDate | smartdate"></span>
                           </div>
                           <div class="tt-header-control">
-                            <a data-bind="click: $parent.deleteAttachment, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
+                            <a href="#" data-bind="attr: { 'id': 'btn-delete-attachment-' + _id }, click: $parent.deleteAttachment, tooltip: {title: 'Delete entry', placement: 'left'}" class="fa fa-trash-o"></a>
                           </div>
                         </div>
                         <div class="tt-content">
-                          <a data-bind="click: $parent.downloadAttachment"><p class="tt-filename"><span data-bind="text: filename"></span></p></a>
+                          <a data-bind="attr: { 'id': 'attachment-entry-' + _id }, click: $parent.downloadAttachment"><p class="tt-filename"><span data-bind="text: filename"></span></p></a>
                           <p class="tt-filedetails"><span data-bind="text: contentType | smarttype"></span> | <span data-bind="text: length | smartsize"></span></p>
                         </div>
                       </div>
@@ -508,7 +512,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button id="btn-modal-bottom-close-attachments" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
             </div>
           </div>

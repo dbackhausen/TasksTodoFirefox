@@ -47,17 +47,17 @@
           <fieldset id="login-form">
             <p>
               <label for="login-username"><span data-bind="i18n: 'login.lbl-username'"></span></label>
-              <input type="text" id="login-username" class="round" value="" placeholder="john.doe@mail.com" autofocus />
+              <input type="text" id="login-username" class="round" value="daniel.backhausen@gmail.com" placeholder="john.doe@mail.com" autofocus />
             </p>
             <p>
               <label for="login-password"><span data-bind="i18n: 'login.lbl-password'"></span></label>
-              <input type="password" id="login-password" class="round" value="" />
+              <input type="password" id="login-password" class="round" value="daniel" />
             </p>
-            <button type="button" class="btn btn-primary btn-sm" data-bind="click: $root.login"></button>
+            <button id="btn-login" type="button" class="btn btn-primary btn-sm" data-bind="click: $root.login"></button>
           </fieldset>
 
           <div class="login-options">
-            <p><a href="#" data-toggle="modal" data-target="#modal-panel-register"><span data-bind="i18n: 'login.txt-register'"></span></a> | <a href="#" data-toggle="modal" data-target="#modal-panel-forgot-password"><span data-bind="i18n: 'login.txt-forgot-password'"></span></a></p>
+            <p><a href="#" id="btn-register" data-toggle="modal" data-target="#modal-panel-register"><span data-bind="i18n: 'login.txt-register'"></span></a> | <a href="#" id="btn-forgot-password" data-toggle="modal" data-target="#modal-panel-forgot-password"><span data-bind="i18n: 'login.txt-forgot-password'"></span></a></p>
           <div>
         </div>
         <div id="error" />
@@ -68,7 +68,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+              <button id="btn-modal-top-close-register" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
               <h4 class="modal-title"><span data-bind="i18n: 'login.txt-register'"></span></h4>
             </div>
             <div class="modal-body">
@@ -81,12 +81,12 @@
                   <label for="register-password"><span data-bind="i18n: 'login.lbl-password'"></span></label>
                   <input type="password" id="register-password" class="round" value="" />
                 </p>
-                <button type="button" class="btn btn-primary btn-sm" data-bind="click: $root.register"></button>
+                <button id="btn-register" type="button" class="btn btn-primary btn-sm" data-bind="click: $root.register"></button>
               </div>
               <div class="dialog-alert"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal"></button>
+              <button id="btn-modal-bottom-close-register" type="button" class="btn btn-primary" data-dismiss="modal"></button>
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+              <button id="btn-modal-top-close-forgot_password" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
               <h4 class="modal-title"><span data-bind="i18n: 'login.txt-forgot-password'"></span></h4>
             </div>
             <div class="modal-body">
@@ -106,12 +106,12 @@
                   <label for="forgot-password-username"><span data-bind="i18n: 'login.lbl-username'"></span></label>
                   <input type="text" id="forgot-password-username" class="round" value="" autofocus />
                 </p>
-                <button type="button" class="btn btn-primary btn-sm" data-bind="click: $root.sendPassword"></button>
+                <button id="btn-send_password" type="button" class="btn btn-primary btn-sm" data-bind="click: $root.sendPassword"></button>
               </div>
               <div class="dialog-alert"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal"></button>
+              <button id="btn-modal-bottom-close-forgot_password" type="button" class="btn btn-primary" data-dismiss="modal"></button>
             </div>
           </div>
         </div>

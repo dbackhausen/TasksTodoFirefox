@@ -6,7 +6,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <button id="btn-modal-top-close-config" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h4 class="modal-title" id="modal-title-configuration">Configuration</h4>
       </div>
       <div class="modal-body">
@@ -22,10 +22,10 @@
           <label for="login-password">Password (confirmation)</label>
           <input type="password" id="password-confirm" class="round" data-bind="value: $data.password" />
         </p>
-        <input type="button" id="save" value="Save" class="btn btn-primary btn-sm" style="visibility: hidden" />
+        <input id="btn-save-config" type="button" value="Save" class="btn btn-primary btn-sm" style="visibility: hidden" />
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button id="btn-modal-bottom-close-config" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

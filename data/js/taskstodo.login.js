@@ -85,7 +85,7 @@ $(document).ready(function() {
   }
 
   addon.port.on("UserLoggedIn", function(user) {
-    if (user != null) {
+    if (user) {
       // Set the current user
       addon.port.emit("SetActiveUser", user);
 

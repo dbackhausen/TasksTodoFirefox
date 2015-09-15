@@ -36,7 +36,15 @@ showGoals = function() {
 };
 
 $(document).ready(function() { 
-
+  
+  /////////////////////////////////////////////////////////////////////////////
+  // TASKSTODO EVENT TRACKING                                                //
+  /////////////////////////////////////////////////////////////////////////////
+  
+  $(document).bind("click dblclick select submit", function(event) {
+    addon.port.emit("TrackEvent", event.type, event.target.id);
+  });  
+  
   /////////////////////////////////////////////////////////////////////////////
   // TOP MENU                                                                //
   /////////////////////////////////////////////////////////////////////////////
@@ -100,29 +108,29 @@ $(document).ready(function() {
 
   ko.filters.smarttype = function(str) {
     if (str == "application/pdf") {
-      return "PDF Document"
+      return "PDF Document";
     } else if (str == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || str == "application/msword") {
-      return "MS Word Document"
+      return "MS Word Document";
     } else if (str == "application/vnd.openxmlformats-officedocument.wordprocessingml.template") {
-      return "MS Word Template"
+      return "MS Word Template";
     } else if (str == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || str == "application/msexcel") {
-      return "MS Excel Spreadsheet"
+      return "MS Excel Spreadsheet";
     } else if (str == "application/vnd.openxmlformats-officedocument.spreadsheetml.template") {
-      return "MS Excel Template"
+      return "MS Excel Template";
     } else if (str == "application/vnd.ms-excel.addin.macroEnabled.12") {
-      return "Macro-enabled MS Excel"
+      return "Macro-enabled MS Excel";
     } else if (str == "application/vnd.ms-excel.sheet.binary.macroEnabled.12") {
-      return "Binary Macro-enabled MS Excel"
+      return "Binary Macro-enabled MS Excel";
     } else if (str == "application/vnd.openxmlformats-officedocument.presentationml.slideshow") {
-      return "MS PowerPoint Slideshow"
+      return "MS PowerPoint Slideshow";
     } else if (str == "application/vnd.openxmlformats-officedocument.presentationml.presentation" || str == "application/mspowerpoint") {
-      return "MS PowerPoint Presentation"
+      return "MS PowerPoint Presentation";
     } else if (str == "application/vnd.openxmlformats-officedocument.presentationml.template") {
-      return "MS PowerPoint Template"
+      return "MS PowerPoint Template";
     } else if (str == "application/vnd.openxmlformats-officedocument.presentationml.slide") {
-      return "MS PowerPoint Slide"
+      return "MS PowerPoint Slide";
     } else {
-      return "Unknown Binary Data File"
+      return str;
     }
   };
 

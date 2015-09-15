@@ -6,7 +6,8 @@ function ViewModel() {
   self.user = ko.observable();
   self.selectedGoal = ko.observable();
   self.goals = ko.observableArray();
-    
+  self.latestTask = ko.observable();
+  
   self.selectGoal = function(goal) {
     self.selectedGoal = goal;
     selectGoal(goal);
@@ -103,14 +104,6 @@ function ViewModel() {
     }
   };
 
-  self.showCompletedGoals = function() {
-//    $('#tt-completed-goals-list ol').fadeIn("fast");  
-  };
-
-  self.hideCompletedGoals = function() {
-//    $('#tt-completed-goals-list ol').fadeOut("fast");  
-  };
-
   self.moveGoal = function(arg, event, ui) {
     console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
 
@@ -158,7 +151,7 @@ function ViewModel() {
   };
   
   // -- LOG
-  
+  /*
   self.log = ko.observableArray();
   
   self.loadLog = function() {
@@ -166,11 +159,7 @@ function ViewModel() {
   };
   
   self.deleteLogEntry = function(entry) {
-  };
-    
-  // -- LATEST TASK
-  
-  self.latestTask = ko.observable();
+  };*/
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -178,15 +167,14 @@ function ViewModel() {
 /////////////////////////////////////////////////////////////////////////////
 
 /**
- * Saves changes to the user.
+ * Save changes to the user.
  */
 function updateUser(user) {
-  user.modified(new Date());
   addon.port.emit("UpdateUser", ko.toJSON(user));
 }
 
 addon.port.on("UserUpdated", function(user) {
-  console.log("User data has been updated");
+  // Nothing to do here
 });
 
 /////////////////////////////////////////////////////////////////////////////
@@ -194,16 +182,14 @@ addon.port.on("UserUpdated", function(user) {
 /////////////////////////////////////////////////////////////////////////////
 
 /**
- * Loads all goals.
+ * Load all goals.
  */
 function loadGoals(user) {
-  //console.log("load goals ... ");
   $('#content .tt-loader').show();
   addon.port.emit("LoadGoals", user);
 }
 
 addon.port.on("GoalsLoaded", function(goals) {
-  //console.log("... goals loaded ");
   $('#content .tt-loader').hide();
   viewModel.goals.removeAll();
 
@@ -217,7 +203,7 @@ addon.port.on("GoalsLoaded", function(goals) {
 });
   
 /**
- * Adds a new goal.
+ * Add a new goal.
  */
 function addGoal(goal) {
   addon.port.emit("AddGoal", ko.toJSON(goal));
@@ -228,10 +214,9 @@ addon.port.on("GoalAdded", function(goal) {
 });
 
 /**
- * Saves changes to an existing goal.
+ * Save changes to an existing goal.
  */
 function updateGoal(goal) {
-  //goal.modified(new Date());
   addon.port.emit("UpdateGoal", ko.toJSON(goal));
 }
 
@@ -240,63 +225,58 @@ addon.port.on("GoalUpdated", function(goal) {
 });
 
 /**
- * Deletes an existing goal.
+ * Delete an existing goal.
  */
 function deleteGoal(goal) {
-  // addon.port.emit("DeleteGoal", goal);
-  goal.deleted(new Date());
-  goal.position(-1);
-  goal.parentId(null);
-  goal.level(0);
-  
-  updateGoal(goal);
-
+  // Remove goal from view
   viewModel.goals.remove(goal);
+  
+  // Delete goal from database  
+  addon.port.emit("DeleteGoal", ko.toJS(goal));
 }
 
-addon.port.on("GoalDeleted", function(goal) {
+addon.port.on("GoalDeleted", function() {
+  console.log("Goal has been deleted");
 });
 
 /**
- * Selects a goal.
+ * Select a goal.
  */
 function selectGoal(goal) {
   if (goal != null) {
-    // trigger goal selection to addon script      
+    // Trigger goal selection to addon script      
     addon.port.emit("SetActiveGoal", ko.toJS(goal));
 
-    // Redirect to tasks page
+    // Redirect to the tasks overview
     addon.port.emit("Redirect", "tasks.html");
   }
 }
 
+// Store the latest task ID for task continuation
 var latestTaskId = null;
 
 /**
- * Get the latrst log entries to retrieve the last task.
+ * Get information about the last used task from data log.
  */
-addon.port.on("LatestLogEntriesLoaded", function(entries) {
-  if (entries && entries.length > 0) { 
-    ko.utils.arrayForEach(entries, function(entry) {
-      if (entry.action === "task_selected") {
-        for (i = 0; i < entry.parameters.length; i++) { 
-          var parameter = entry.parameters[i];
+addon.port.on("LatestActiveTaskLoaded", function(logEntry) {  
+  if (logEntry && logEntry.action === "task_selected") {
+    for (i = 0; i < logEntry.parameters.length; i++) { 
+      var parameter = logEntry.parameters[i];
 
-          if (latestTaskId == null && parameter.key == "taskId" && parameter.value != null && parameter.value.length > 0) {
-            latestTaskId = parameter.value;
-            addon.port.emit("LoadTask", parameter.value);
-          }
-        }
+      if (latestTaskId == null && parameter.key == "taskId" && parameter.value != null && parameter.value.length > 0) {
+        latestTaskId = parameter.value;
+        // Load task information about the last task
+        addon.port.emit("LoadTask", parameter.value);
       }
-    });
+    }
   }
 });
 
 /**
- * Port on last task
- */ 
+ * Set latest task as current task and go to task overview page.
+ */
 addon.port.on("TaskLoaded", function(task) {
-  if (task != null && latestTaskId != null && task._id == latestTaskId) {
+  if (task && latestTaskId && task._id == latestTaskId) {
     console.log("Latest active task was \"" + task.title + "\"");
     viewModel.latestTask(task);
     
@@ -305,11 +285,17 @@ addon.port.on("TaskLoaded", function(task) {
     $('#modal-panel-latest-task .btn-primary').on('click', function() {
       ko.utils.arrayForEach(viewModel.goals(), function(goal) {
         if (goal._id === viewModel.latestTask().goalId) {
+          // Set active goal in FF addon
           addon.port.emit("SetActiveGoal", ko.toJS(goal));
         }
       });
       
-      addon.port.emit("SetActiveTask", ko.toJS(viewModel.latestTask()));  
+      if (viewModel.latestTask()) {
+        // Set the active task in FF addon (latest if exists)
+        addon.port.emit("SetActiveTask", ko.toJS(viewModel.latestTask()));  
+      }
+      
+      // Redirect to the tasks overview
       addon.port.emit("Redirect", "tasks.html");    
     });
   }
@@ -344,6 +330,5 @@ $(document).ready(function() {
   });
 
   // Apply view model
-
   ko.applyBindings(viewModel);
 });
