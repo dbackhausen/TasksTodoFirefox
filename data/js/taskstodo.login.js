@@ -32,7 +32,7 @@ $(document).ready(function() {
       var password = $("#login-password").val();
 
       loginUser(new User({
-        "username" : username,
+        "username" : username.toLowerCase(),
         "password" : password
       }));
     };
@@ -44,12 +44,11 @@ $(document).ready(function() {
       var username = $("#register-username").val();
       var password = $("#register-password").val();
 
-      if (validateEmail(username)) {
+      if (validateEmail(username.toLowerCase())) {
         if (password != null && password.length > 0) {
           registerUser(new User({
-            "username" : username,
-            "password" : password,
-            "created" : new Date()
+            "username" : username.toLowerCase(),
+            "password" : password
           }));       
         } else {
           showErrorMessage(i18n.t("login.alert-valid-password"), '#modal-panel-register .dialog-alert');
@@ -65,7 +64,7 @@ $(document).ready(function() {
     self.sendPassword = function(data) {
       var username = $("#forgot-password-username").val();
       
-      if (validateEmail(username)) {
+      if (validateEmail(username.toLowerCase())) {
         sendPassword(username);
       } else {
         showErrorMessage(i18n.t("login.alert-invalid-username"), '#modal-panel-forgot-password .dialog-alert');
@@ -105,6 +104,12 @@ $(document).ready(function() {
     $("#register-username").val(null);
     $("#register-password").val(null);
     showSuccessMessage(i18n.t("login.success-register"), '#modal-panel-register .dialog-alert');
+  });
+  
+  addon.port.on("UserAlreadyExists", function(user) {
+    $("#register-username").val(null);
+    $("#register-password").val(null);
+    showErrorMessage(i18n.t("login.alert-user-exits"), '#modal-panel-register .dialog-alert');
   });
 
   /**

@@ -145,10 +145,11 @@ self.port.on("ShowBookmarksInSearchResult", function(history, bookmarks) {
           if (urlA.match(new RegExp("^" + urlB.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "$", "g")) 
             || urlA.match(new RegExp("(.*)yahoo(.*)/RU=" + encodeURIComponent(urlB) + "/RK(.*)", "ig"))) {
             
-            if ($(element).closest("div.g").find("div.tt-bookmark-image").length == 0) {
-              var x = findInHistory(url, history);
-              $(element).append('<div class="tt-bookmark-date"><p style="font-size:9px">Bookmarked page | Created on ' + bookmark.created + ' | Last visit on ' + x + '</p></div>');
-              $(element).closest("div.g").append('<div class="tt-bookmark-image" style="position:relative; float:left; padding-right: 10px"><img src="http://taskstodo.org/wordpress/wp-content/uploads/2015/07/thumbs_up.png"></div>');
+            if ($(element).closest("div.rc").find("div.tt-bookmark-image").length == 0) {
+              var lastVisit = findInHistory(url, history);
+              lastVisit = lastVisit === undefined ? bookmark.created : lastVisit;
+              $(element).append('<div class="tt-bookmark-date"><p style="font-size:9px">Bookmarked page | Created on ' + bookmark.created + ' | Last visit on ' + lastVisit + '</p></div>');
+              $(element).closest("div.rc").prepend('<div class="tt-bookmark-image" style="position:relative; float:left; padding-right: 10px"><img src="http://taskstodo.org/wordpress/wp-content/uploads/2015/07/thumbs_up.png"></div>');
             }
           }
         });

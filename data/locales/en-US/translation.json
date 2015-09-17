@@ -24,6 +24,7 @@
   	"alert-valid-password": "Please define a valid password",
   	"alert-invalid-username": "Please type in a valid username",
   	"success-register": "Successfully registered! You can now login an manage your tasks.",
+    "alert-user-exits": "A user with that e-mail address already exists",
   	"success-password-sent": "A new password has been sent to your e-mail address."
   },
   "goal": {
