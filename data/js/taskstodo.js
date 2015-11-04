@@ -242,61 +242,45 @@ function User(data) {
 function Goal(data) {
   this._id = data._id;
   this.title = ko.protectedObservable(data.title);
-  this.description = ko.observable(data.description);
-  this.userId = ko.observable(data.userId);
-  this.parentId = ko.observable(data.parentId);
   this.dueDate = ko.observable(data.dueDate);
-  this.completedDate = ko.observable(data.completedDate);
-  this.reminderDate = ko.observable(data.reminderDate);
-  this.urgency = ko.observable(data.urgency);
   this.priority = ko.observable(data.priority);
-  this.level = ko.observable(data.level);
   this.position = ko.observable(data.position);
+  this.level = ko.observable(data.level);
+  this.completed = ko.observable(data.completed);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
-  this.completed = ko.observable(data.completed);
-  this.deleted = ko.observable(data.deleted);
 }
 
 function Task(data) {
   this._id = data._id;
   this.title = ko.protectedObservable(data.title);
-  this.description = ko.observable(data.description);
-  this.goalId = ko.observable(data.goalId);
-  this.parentId = ko.observable(data.parentId);
-  this.dueDate = ko.observable(data.dueDate);
-  this.reminderDate = ko.observable(data.reminderDate);
-  this.urgency = ko.observable(data.urgency);
+  this.goal = ko.observable(data.goal);
   this.priority = ko.observable(data.priority);
-  this.level = ko.observable(data.level);
   this.position = ko.observable(data.position);
+  this.level = ko.observable(data.level);
+  this.completed = ko.observable(data.completed);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
-  this.completed = ko.observable(data.completed);
-  this.deleted = ko.observable(data.deleted);
 }
 
 function Note(data) {
   this._id = data._id;
-  this.taskId = ko.observable(data.taskId);
+  this.task = ko.observable(data.task);
   this.body = ko.protectedObservable(data.body);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
-  this.deleted = ko.observable(data.deleted);
 }
 
 function Bookmark(data) {
   this._id = data._id;
-  this.taskId = ko.observable(data.taskId);
+  this.task = ko.observable(data.task);
   this.title = ko.protectedObservable(data.title);
   this.url = ko.protectedObservable(data.url);
   this.description = ko.protectedObservable(data.description);
   this.thumbnail = ko.observable(data.thumbnail);
   this.content = ko.observable(data.content);
-  this.relevance = ko.observable(data.relevance);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
-  this.deleted = ko.observable(data.deleted);
 }
 
 function HistoryEntry(data) {

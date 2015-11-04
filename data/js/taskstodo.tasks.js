@@ -97,13 +97,13 @@ function ViewModel() {
       // Set a new task as selected task
       self.selectedTask = ko.observable();
     }
-
+    
     $('#btn-task-form-button-new').hide(); // Hide "New" button
     $('#new-task-form:visible').hide(); // Hide new task from
 
     $('#tt-task-list').find('.tt-inline-edit:visible').hide(); // Hide open inline editors
-    $('#'+task._id).find('.tt-entry').hide(); // Hide current entry
-    $('#'+task._id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
+    $('#tt-task-list #'+task._id).find('.tt-entry').hide(); // Hide current entry
+    $('#tt-task-list #'+task._id+' .tt-inline-edit').fadeIn('fast'); // Show inline editor
     
     $('#edit-task-form-input-title').height($('#edit-task-form-input-title').prop('scrollHeight'));
   };
@@ -112,8 +112,8 @@ function ViewModel() {
     task.title.reset();
 
     $('#btn-task-form-button-new').show(); // Show "New" button
-    $('#'+task._id).find('.tt-entry').show(); // Show list entry
-    $('#'+task._id+' .tt-inline-edit').hide(); // Hide inline editor
+    $('#tt-task-list #'+task._id).find('.tt-entry').show(); // Show list entry
+    $('#tt-task-list #'+task._id+' .tt-inline-edit').hide(); // Hide inline editor
   };
 
   self.addTask = function() {
@@ -121,15 +121,10 @@ function ViewModel() {
 
     if (title && title.length > 0) {
       addTask(new Task({
-        "goalId" : self.selectedGoal()._id,
+        "goal" : self.selectedGoal()._id,
         "title" : title,
-        "description" : "",
         "position" : self.tasks().length > 0 ? (self.tasks().length + 1) : 1,
-        "level" : 0,
-        "dueDate" : null,
-        "reminderDate" : null,
-        "created" : new Date(),
-        "modified" : null
+        "level" : 0
       }));
     }
 
@@ -139,7 +134,6 @@ function ViewModel() {
   self.updateTask = function(task) {
     if (task && task.title() && task.title().length > 0) {
       task.title.commit();
-      task.modified(new Date());
       updateTask(task);
     } else if (task) {
       task.title.reset();
@@ -308,7 +302,7 @@ function ViewModel() {
 
     if (body != null && body.length > 0) {
       addNote(new Note({
-        "taskId" : self.selectedTask._id,
+        "task" : self.selectedTask._id,
         "body" : body,
         "created" : new Date(),
         "modified" : null
@@ -323,8 +317,8 @@ function ViewModel() {
     $('#new-note-form:visible').hide(); // Hide new entity form
     $('#tt-note-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
 
-    $('#'+note._id+' .tt-entry').hide(); // Hide list entry
-    $('#'+note._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
+    $('#tt-note-list #'+note._id+' .tt-entry').hide(); // Hide list entry
+    $('#tt-note-list #'+note._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
 
     $('#edit-note-form-input-body'+note._id).focus();
   };
@@ -333,8 +327,8 @@ function ViewModel() {
     note.body.reset();
     
     $('#btn-note-form-button-new').show(); // Show "New" button
-    $('#'+note._id+' .tt-entry').fadeIn('fast'); // Show entry 
-    $('#'+note._id+' .tt-inline-edit').hide(); // Hide inline form
+    $('#tt-note-list #'+note._id+' .tt-entry').fadeIn('fast'); // Show entry 
+    $('#tt-note-list #'+note._id+' .tt-inline-edit').hide(); // Hide inline form
   };
   
   self.updateNote = function(note) {
@@ -389,7 +383,7 @@ function ViewModel() {
 
     if (false || title.length > 0 && url.length > 0) {
       addBookmark(new Bookmark({ 
-        "taskId" : self.selectedTask._id,
+        "task" : self.selectedTask._id,
         "title" : title, 
         "url" : url,
         "description" : description,
@@ -408,8 +402,8 @@ function ViewModel() {
     $('#new-bookmark-form:visible').hide();
     $('#tt-bookmarks-list').find('.tt-inline-edit:visible').hide(); // Hide all open inline forms
 
-    $('#'+bookmark._id+' .tt-entry').hide(); // Hide list entry
-    $('#'+bookmark._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
+    $('#tt-bookmarks-list #'+bookmark._id+' .tt-entry').hide(); // Hide list entry
+    $('#tt-bookmarks-list #'+bookmark._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
 
     $('#edit-bookmark-form-input-title-'+bookmark._id).focus();
   };
@@ -420,8 +414,8 @@ function ViewModel() {
     bookmark.description.reset();
     
     $('#btn-bookmark-form-button-new').show();
-    $('#'+bookmark._id+' .tt-inline-edit').hide(); // Hide inline form
-    $('#'+bookmark._id+' .tt-entry').fadeIn('fast'); // Show list entry
+    $('#tt-bookmarks-list #'+bookmark._id+' .tt-inline-edit').hide(); // Hide inline form
+    $('#tt-bookmarks-list #'+bookmark._id+' .tt-entry').fadeIn('fast'); // Show list entry
   };
   
   self.updateBookmark = function(bookmark) {
@@ -702,7 +696,7 @@ addon.port.on("TasksLoaded", function(tasks) {
  * Adds a new task to the project.
  */
 function addTask(task) {
-  addon.port.emit("AddTask", ko.toJSON(task));
+  addon.port.emit("AddTask", ko.toJS(task));
 }
 
 addon.port.on("TaskAdded", function(data) {
@@ -713,7 +707,7 @@ addon.port.on("TaskAdded", function(data) {
  * Saves changes to an existing task.
  */
 function updateTask(task) {
-  addon.port.emit("UpdateTask", ko.toJSON(task));
+  addon.port.emit("UpdateTask", ko.toJS(task));
 }
 
 addon.port.on("TaskUpdated", function(task) {
@@ -724,7 +718,7 @@ addon.port.on("TaskUpdated", function(task) {
  */
 function deleteTask(task) {
   // Delete task from database
-  addon.port.emit("DeleteTask", task);
+  addon.port.emit("DeleteTask", ko.toJS(task));
   
   // Remove task from view  
   viewModel.tasks.remove(task);
@@ -738,6 +732,7 @@ addon.port.on("TaskDeleted", function(data) {
  */
 addon.port.on("ActiveTaskLoaded", function(task) {
   if (task) {
+
     // Set task in view model
     viewModel.selectedTask = new Task(task);
     
@@ -836,7 +831,7 @@ addon.port.on("NotesLoaded", function(notes) {
  * Adds a new note to the selected task.
  */
 function addNote(note) {
-  addon.port.emit("AddNote", ko.toJSON(note));
+  addon.port.emit("AddNote", ko.toJS(note));
 }
 
 addon.port.on("NoteAdded", function(note) {
@@ -859,7 +854,7 @@ addon.port.on("NoteAdded", function(note) {
  * Saves changes to an existing note.
  */
 function updateNote(note) {
-  addon.port.emit("UpdateNote", ko.toJSON(note));
+  addon.port.emit("UpdateNote", ko.toJS(note));
 }
 
 addon.port.on("NoteUpdated", function(note) {
@@ -870,8 +865,8 @@ addon.port.on("NoteUpdated", function(note) {
  */
 function deleteNote(note) {
   // Delete note from database
-  addon.port.emit("DeleteNote", ko.toJSON(note));  
-  
+  addon.port.emit("DeleteNote", ko.toJS(note));
+    
   // Remove note from view
   viewModel.notes.remove(note);
 }
@@ -932,7 +927,7 @@ addon.port.on("BookmarksLoaded", function(bookmarks) {
  * Adds a new bookmark to the selected task.
  */
 function addBookmark(bookmark) {
-  addon.port.emit("AddBookmark", ko.toJSON(bookmark));
+  addon.port.emit("AddBookmark", ko.toJS(bookmark));
 }
 
 addon.port.on("BookmarkAdded", function(bookmark) {
@@ -955,7 +950,7 @@ addon.port.on("BookmarkAdded", function(bookmark) {
  * Saves changes to an existing bookmark.
  */
 function updateBookmark(bookmark) {
-  addon.port.emit("UpdateBookmark", ko.toJSON(bookmark));
+  addon.port.emit("UpdateBookmark", ko.toJS(bookmark));
 }
 
 addon.port.on("BookmarkUpdated", function(bookmark) {
@@ -968,7 +963,7 @@ addon.port.on("BookmarkUpdated", function(bookmark) {
  */
 function deleteBookmark(bookmark) {
   // Delete bookmark from database
-  addon.port.emit("DeleteBookmark", ko.toJSON(bookmark));  
+  addon.port.emit("DeleteBookmark", ko.toJS(bookmark));  
   
   // Remove bookmark from view
   viewModel.bookmarks.remove(bookmark);

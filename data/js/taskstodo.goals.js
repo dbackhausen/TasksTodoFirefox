@@ -96,7 +96,8 @@ function ViewModel() {
 
   self.completeGoal = function(goal) {
     if (goal.completed() == null) {
-      goal.completed(new Date());
+      var d = new Date();
+      goal.completed(d.toISOString());
       updateGoal(goal);
     } else {
       goal.completed(null);
@@ -206,7 +207,8 @@ addon.port.on("GoalsLoaded", function(goals) {
  * Add a new goal.
  */
 function addGoal(goal) {
-  addon.port.emit("AddGoal", ko.toJSON(goal));
+//  addon.port.emit("AddGoal", ko.toJSON(goal));
+    addon.port.emit("AddGoal", ko.toJS(goal));
 }
 
 addon.port.on("GoalAdded", function(goal) {
@@ -217,7 +219,8 @@ addon.port.on("GoalAdded", function(goal) {
  * Save changes to an existing goal.
  */
 function updateGoal(goal) {
-  addon.port.emit("UpdateGoal", ko.toJSON(goal));
+  //addon.port.emit("UpdateGoal", ko.toJSON(goal));
+  addon.port.emit("UpdateGoal", ko.toJS(goal));
 }
 
 addon.port.on("GoalUpdated", function(goal) {
