@@ -171,7 +171,7 @@ function ViewModel() {
         if ((task.level() + 1) - self.tasks()[i].level() == 0 
           || (task.level() + 1) - self.tasks()[i].level() == 1) { 
           // indent only if previous task is on same level or one lower
-          task.parentId(self.tasks()[i]._id);
+          //task.parentId(self.tasks()[i]._id);
           task.level(task.level() + 1);
           console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
           updateTask(task);
@@ -188,7 +188,7 @@ function ViewModel() {
       task.level(task.level() - 1);
 
       if (task.level() == 0) {
-        task.parentId(null);
+        //task.parentId(null);
       }
 
       console.log("Outdent " + task.title() + " to " + task.level());
@@ -209,10 +209,10 @@ function ViewModel() {
           // task level has to be set to 0
           arg.item.level(0);
           // and the parent has to be set to 0
-          arg.item.parentId(null);
+          //arg.item.parentId(null);
         } else {
           // Set the new parent
-          arg.item.parentId(self.tasks()[arg.targetIndex - 1]._id);
+          //arg.item.parentId(self.tasks()[arg.targetIndex - 1]._id);
           arg.item.level(self.tasks()[arg.targetIndex - 1].level() + 1);
         }
       }
@@ -250,10 +250,10 @@ function ViewModel() {
 
           if (task.position() > 1 && task.level() > 0) {
             for (var i = task.position() - 2; i >= 0; i--) {
-              if ((task.level() - self.tasks()[i].level() == 1) && task.parentId() != self.tasks()[i]._id) {
+              if ((task.level() - self.tasks()[i].level() == 1) /*&& task.parentId() != self.tasks()[i]._id*/) {
                 // if task level is higher than the previous task, 
                 // than set new parent
-                task.parentId(self.tasks()[i]._id);
+                //task.parentId(self.tasks()[i]._id);
                 updateTask(task);
                 // console.log("Setting parent of " + task.title() + " to " + self.tasks()[i].title());
                 break;
@@ -717,11 +717,22 @@ addon.port.on("TaskUpdated", function(task) {
  * Deletes an existing task.
  */
 function deleteTask(task) {
+  var position = task.position();
+  
   // Delete task from database
   addon.port.emit("DeleteTask", ko.toJS(task));
   
   // Remove task from view  
   viewModel.tasks.remove(task);
+  
+  // Update all other tasks
+  ko.utils.arrayForEach(viewModel.tasks(), function(t) {
+    if (t.position() > position) {
+      t.position(t.position() - 1);
+      
+      addon.port.emit("UpdateTask", ko.toJS(t));
+    }
+  });
 }
 
 addon.port.on("TaskDeleted", function(data) {
