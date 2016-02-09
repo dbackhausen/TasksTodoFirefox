@@ -1,0 +1,18 @@
+{
+  "title": "TasksTodo Firefox Addon",
+  "name": "taskstodofirefox",
+  "version": "0.0.1",
+  "description": "A firefox addon for TasksTodo",
+  "main": "lib/main.js",
+  "author": "Daniel Backhausen",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "none",
+  "keywords": [
+    "jetpack"
+  ],
+  "dependencies": {
+    "menuitem": "0.0.5"
+  }
+}

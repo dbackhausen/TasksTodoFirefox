@@ -1,0 +1,185 @@
+/*
+ * GOAL
+ */
+
+#new-goal-form {
+  display: none;
+  margin: 10px 0px 10px 0px;
+}
+
+#tt-goal-list {
+  height: 100%;
+  margin-top: 10px;
+}
+
+#tt-goal-list ol {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+#tt-goal-list ol li {
+  border-bottom: 1px solid #E3E3E3;
+}
+
+#tt-goal-list ol li:hover div.tt-entry {
+  color: #535F6D;
+  background-color: #E2E7ED;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
+#tt-goal-list ol li:hover div.tt-entry-content {
+  font-weight: 400;
+}
+
+#tt-goal-list ol li:hover .tt-goal-control a { 
+  visibility: visible;
+  color: #535F6D;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
+#tt-goal-list ol li:last-child {
+  border: none;
+}
+
+#tt-goal-list .tt-entry {
+  width: 100%;
+}
+
+#tt-goal-list .tt-entry a {
+  color: #000000;
+  text-decoration: none;
+}
+
+#tt-goal-list .tt-entry-content {
+  display: table;
+  width: 100%;
+  padding: 5px 0px 5px 0px;
+}
+
+#tt-goal-list .tt-entry-content.indent-0 {
+  padding-left: 0px;
+}
+
+#tt-goal-list .tt-entry-content.indent-1 {
+  padding-left: 10px;
+}
+
+#tt-goal-list .tt-entry-content.indent-2 {
+  padding-left: 20px;
+}
+
+#tt-goal-list .tt-entry-content.indent-3 {
+  padding-left: 30px;
+}
+
+#tt-goal-list .tt-entry-content.indent-4 {
+  padding-left: 40px;
+}
+
+#tt-goal-list .tt-entry-content.indent-5 {
+  padding-left: 50px;
+}
+
+#tt-goal-list .tt-goal-check {
+  display: table-cell;
+  width: 25px;
+}
+
+#tt-goal-list .tt-goal-check a {
+  padding-left: 5px;
+}
+
+#tt-goal-list .tt-goal-title {
+  display: table-cell;
+  cursor: pointer;
+  padding: 0px 5px 0px 5px;
+}
+
+#tt-goal-list .tt-goal-title.completed {
+  text-decoration: line-through;
+  font-style: italic;
+  color: #999999;
+}
+
+#tt-goal-list .tt-goal-control { 
+  display: table-cell;
+  width: 50px;
+  text-align: right;
+  padding-right: 5px;
+  text-transform: none;
+  cursor: pointer;
+}
+
+#tt-goal-list .tt-goal-control a { 
+  visibility: hidden;
+  padding-right: 5px;
+}
+
+#tt-goal-list .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+  background-color: white;
+}
+
+/* COMPLETED GOALS */
+
+#tt-completed-goals-list {
+  margin-top: 20px;
+}
+
+#tt-completed-goals-list section {
+  width: 100%;
+  height: 25px;
+}
+
+#tt-completed-goals-list .tt-header {
+  width: 275px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  font-style: italic;
+  color: #535F6D;
+  float: left;
+}
+
+#tt-completed-goals-list .tt-option {
+  margin-left: 275px;
+  font-size: 12px;
+  text-align: right;
+}
+
+#tt-completed-goals-list ol {
+  list-style: none;
+  display: none;
+}
+
+#tt-completed-goals-list ol li {
+  width: 100%;  
+  margin: 0px;
+  padding: 5px 0px 5px 0px;
+  color: #666666;
+}
+
+#tt-completed-goals-list ol li a {
+  color: #666666;
+  text-decoration: none;
+}
+
+#tt-completed-goals-list .tt-check {
+  width: 20px;
+  float: left;
+}
+
+#tt-completed-goals-list .tt-title {
+  margin-left: 20px;
+  font-style: italic;
+  text-decoration: line-through;
+}

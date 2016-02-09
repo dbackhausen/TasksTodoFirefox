@@ -1,0 +1,957 @@
+/*
+ * TASK
+ */
+
+#new-task-form {
+  display: none;
+  margin: 10px 0px 10px 0px;
+}
+
+#tt-task-list {
+  height: 100%;
+  margin-top: 10px;
+}
+
+#tt-task-list ol {
+  list-style: none;
+  margin-left: 0px;
+  padding-left: 0px;
+  border-top: 1px solid #E3E3E3;
+  border-bottom: 1px solid #E3E3E3;
+}
+
+#tt-task-list ol li {
+  border-bottom: 1px solid #E3E3E3;
+}
+
+#tt-task-list ol li:hover div.tt-entry {
+  color: #535F6D;
+  background-color: #E2E7ED;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
+#tt-task-list ol li:hover div.tt-entry-content {
+  font-weight: 400;
+}
+
+#tt-task-list ol li:hover .tt-task-control a { 
+  visibility: visible;
+  color: #535F6D;
+  transition: 1s;
+  -moz-transition: 1s;
+  -webkit-transition: 1s;
+}
+
+#tt-task-list ol li:last-child {
+  border: none;
+}
+
+#tt-task-list .tt-entry {
+  width: 100%;
+}
+
+#tt-task-list .tt-entry.selected {
+  margin: 0px;
+  background-color: #E2E7ED;
+  color: #535F6D;
+}
+
+#tt-task-list .tt-entry.selected .tt-task-title,
+#tt-task-list .tt-entry.selected .tt-task-title:hover {
+  font-weight: 400;
+  color: #535F6D;
+  background-color: #E2E7ED;
+}
+
+#tt-task-list .tt-entry a {
+  color: #000000;
+  text-decoration: none;
+}
+
+#tt-task-list .tt-entry-content {
+  display: table;
+  width: 100%;
+  padding: 5px 0px 5px 0px;
+}
+
+#tt-task-list .tt-entry-content.indent-0 {
+  padding-left: 0px;
+}
+
+#tt-task-list .tt-entry-content.indent-1 {
+  padding-left: 10px;
+}
+
+#tt-task-list .tt-entry-content.indent-2 {
+  padding-left: 20px;
+}
+
+#tt-task-list .tt-entry-content.indent-3 {
+  padding-left: 30px;
+}
+
+#tt-task-list .tt-entry-content.indent-4 {
+  padding-left: 40px;
+}
+
+#tt-task-list .tt-entry-content.indent-5 {
+  padding-left: 50px;
+}
+
+#tt-task-list .tt-task-check {
+  display: table-cell;
+  width: 25px;
+}
+
+#tt-task-list .tt-task-check a {
+  padding-left: 5px;
+}
+
+#tt-task-list .tt-task-title {
+  display: table-cell;
+  cursor: pointer;
+  padding: 0px 5px 0px 5px;
+}
+
+#tt-task-list .tt-task-title.completed {
+  text-decoration: line-through;
+  font-style: italic;
+  color: #999999;
+}
+
+#tt-task-list .tt-task-control { 
+  display: table-cell;
+  width: 50px;
+  text-align: right;
+  padding-right: 5px;
+  text-transform: none;
+}
+
+#tt-task-list .tt-task-control a { 
+  visibility: hidden;
+  padding-right: 5px;
+}
+
+#tt-task-list .tt-entry-options {
+  width: auto;
+  padding: 10px 0px 20px 25px;
+  background-color: white;
+  display: none;
+}
+
+#tt-task-list .tt-entry-options a {
+  cursor: pointer;
+  color: #999999;
+  text-decoration: none;
+}
+
+#tt-task-list .tt-entry-options a:hover {
+  color: #333333;
+}
+
+#tt-task-list .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+  background-color: white;
+}
+
+
+/*
+ * NOTE
+ */
+
+#new-note-form {
+  display: none;
+}
+
+#tt-note-list {
+}
+
+#tt-note-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-note-list ul li {
+}
+
+#tt-note-list a {
+  color: #636363;
+  text-decoration: none;
+}
+
+#tt-note-list .tt-entry {
+  width: 100%;
+}
+
+#tt-note-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-note-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-note-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 40px;
+}
+
+#tt-note-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-note-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-note-list ul li .tt-content {
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+  display: table;
+}
+
+#tt-note-list ul li .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+}
+
+/*
+ * BOOKMARK
+ */
+
+#btn-bookmark-form-button-new {
+  margin: 0px 0px 10px 0px;
+}
+
+#new-bookmark-form {
+  display: none;
+  margin: 0px 0px 10px 0px;
+  padding: 5px;
+}
+
+#tt-bookmarks-list {
+}
+
+#tt-bookmarks-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-bookmarks-list ul li {
+}
+
+#tt-bookmarks-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-bookmarks-list .tt-entry {
+  width: 100%;
+}
+
+#tt-bookmarks-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-bookmarks-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-bookmarks-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-bookmarks-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 40px;
+}
+
+#tt-bookmarks-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-bookmarks-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-bookmarks-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+}
+
+#tt-bookmarks-list ul li .tt-thumbnail {
+  display: table-cell;
+  width: 30%;
+}
+
+#tt-bookmarks-list ul li .tt-thumbnail > img {
+  border: 3px solid #FFFFFF;
+  width: 100%;
+}
+
+#tt-bookmarks-list ul li .tt-description {
+  display: table-cell;
+  font-family: 'Roboto', sans-serif;
+  width: 70%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
+
+#tt-bookmarks-list ul li .tt-title {
+  color: #333333;
+  font-weight: 500;
+  font-size: 13px;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-bookmarks-list ul li .tt-url {
+  font-size: 9px;
+  font-weight: normal;
+  font-style: italic;
+  color: #666666;
+  overflow: hidden;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-bookmarks-list ul li .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+}
+
+/*
+ * HISTORY
+ */
+
+#tt-history-list {
+}
+
+#tt-history-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-history-list ul li {
+}
+
+#tt-history-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-history-list .tt-entry {
+  width: 100%;
+}
+
+#tt-history-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-history-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-history-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-history-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-history-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-history-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-history-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+}
+
+#tt-history-list ul li .tt-thumbnail {
+  display: table-cell;
+  width: 30%;
+}
+
+#tt-history-list ul li .tt-thumbnail > img {
+  border: 3px solid #FFFFFF;
+  width: 100%;
+}
+
+#tt-history-list ul li .tt-description {
+  display: table-cell;
+  font-family: 'Roboto', sans-serif;
+  width: 70%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
+
+#tt-history-list ul li .tt-title {
+  color: #333333;
+  font-weight: 500;
+  font-size: 13px;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-history-list ul li .tt-url {
+  font-size: 9px;
+  font-weight: normal;
+  font-style: italic;
+  color: #666666;
+  overflow: hidden;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+
+/*
+ * SEARCH HISTORY
+ */
+
+#tt-search_history-list {
+}
+
+#tt-search_history-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-search_history-list ul li {
+}
+
+#tt-search_history-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-search_history-list .tt-entry {
+  width: 100%;
+}
+
+#tt-search_history-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-search_history-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-search_history-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-search_history-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-search_history-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-search_history-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-search_history-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+}
+
+/*
+ * TABS
+ */
+
+#tt-tabs-list {
+}
+
+#tt-tabs-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-tabs-list ul li {
+}
+
+#tt-tabs-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-tabs-list .tt-entry {
+  width: 100%;
+}
+
+#tt-tabs-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-tabs-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-tabs-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-tabs-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-tabs-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-tabs-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-tabs-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+}
+
+#tt-tabs-list ul li .tt-thumbnail {
+  display: table-cell;
+  width: 30%;
+}
+
+#tt-tabs-list ul li .tt-thumbnail > img {
+  border: 3px solid #FFFFFF;
+  width: 100%;
+}
+
+#tt-tabs-list ul li .tt-description {
+  display: table-cell;
+  font-family: 'Roboto', sans-serif;
+  width: 70%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
+
+#tt-tabs-list ul li .tt-title {
+  color: #333333;
+  font-weight: 500;
+  font-size: 13px;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-tabs-list ul li .tt-url {
+  font-size: 9px;
+  font-weight: normal;
+  font-style: italic;
+  color: #666666;
+  overflow: hidden;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+/*
+ * ATTACHMENTS
+ */
+
+#tt-attachments-list {
+}
+
+#tt-attachments-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-attachments-list ul li {
+}
+
+#tt-attachments-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-attachments-list .tt-entry {
+  width: 100%;
+  height: auto;
+}
+
+#tt-attachments-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-attachments-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-attachments-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-attachments-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-attachments-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-attachments-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-attachments-list ul li .tt-content {
+  width: 100%;
+  height: 50px;
+  padding: 5px;
+  background-color: #EFEFEF;
+  font-family: 'Roboto', sans-serif;
+  vertical-align: top;
+}
+
+#tt-attachments-list ul li .tt-filename {
+  color: #333333;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-attachments-list ul li .tt-filedetails {
+  font-size: 9px;
+  font-weight: normal;
+  color: #666666;
+  overflow: hidden;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-attachments-list .tt-droparea-text {
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+}
+
+#tt-attachments-list .tt-droparea-loader {
+  display: none;
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+}
+
+
+/*
+ * SCREENSHOTS
+ */
+
+#tt-screenshots-list {
+}
+
+#tt-screenshots-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-screenshots-list ul li {
+}
+
+#tt-screenshots-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-screenshots-list .tt-entry {
+  width: 100%;
+}
+
+#tt-screenshots-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-screenshots-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-screenshots-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-screenshots-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-screenshots-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-screenshots-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-screenshots-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+}
+
+#tt-screenshots-list ul li .tt-thumbnail {
+  display: table-cell;
+  width:100%;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  height: 200px;
+}
+
+#tt-screenshots-list ul li .tt-thumbnail a {
+}
+
+#tt-screenshots-list ul li .tt-thumbnail a > img {
+  border: 3px solid #FFFFFF;
+  left: 0%;
+  width: 100%;
+  position: absolute;
+}
+
+#tt-screenshots-list ul li .tt-description {
+  display: table-cell;
+  font-family: 'Roboto', sans-serif;
+  width: 70%;
+  padding: 0px 5px 0px 5px;
+  vertical-align: top;
+}
+
+#tt-screenshots-list ul li .tt-title {
+  color: #333333;
+  font-weight: 500;
+  font-size: 13px;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+#tt-screenshots-list ul li .tt-url {
+  font-size: 9px;
+  font-weight: normal;
+  font-style: italic;
+  color: #666666;
+  overflow: hidden;
+
+  -ms-word-break: break-all;
+  /* Be VERY careful with this, breaks normal words wh_erever */
+  word-break: break-all;
+  /* Non standard for webkit */
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}

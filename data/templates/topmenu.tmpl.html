@@ -1,0 +1,19 @@
+<div id="top-menu-help-button" class="button" data-bind="click: showHelp">
+  <i class="fa fa-question-circle padding-right-5"></i><span data-bind="attr: { 'id': 'top-nav-span-help' }, i18n: 'top-nav.btn-help'"></span>
+</div>
+<!--<div id="top-menu-config-button" class="button" data-toggle="modal" data-target="#modal-panel-configuration">
+  <i class="fa fa-cog padding-right-5"></i><span data-bind="attr: { 'id': 'top-nav-span-config' }, i18n: 'top-nav.btn-configuration'"></span>
+</div>-->
+<!--<div id="top-menu-log-button" class="button" data-toggle="modal" data-bind="click: $root.loadLog">
+  <i class="fa fa-cog padding-right-5"></i><span data-bind="attr: { 'id': 'top-nav-span-log' }, i18n: 'top-nav.btn-log'"></span>
+</div>-->
+<div id="top-menu-goals-button" class="button" data-bind="click: showGoals">
+  <i class="fa fa-bullseye padding-right-5"></i><span data-bind="attr: { 'id': 'top-nav-span-goals' }, i18n: 'top-nav.btn-your-goals'"></span>
+</div>
+<ol data-bind="sortable: { data: goals }">
+  <li data-bind="attr: { 'id': 'top-nav-goal-' + _id }">
+    <div class="goal-entry" data-bind="click: $root.selectGoal, css: { completed: completed() != null }">
+      <i class="fa fa-caret-right padding-right-5"></i><span data-bind="attr: { 'id': 'top-nav-span-goal-' + _id }, text: title"></span>
+    </div>
+  </li>
+</ol>
