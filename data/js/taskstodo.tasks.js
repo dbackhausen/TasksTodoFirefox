@@ -529,34 +529,46 @@ function ViewModel() {
   self.openScreenshot = function(screenshot) {
     openScreenshot(screenshot);
   };
+  
+  // -- I18N
+  
+  var language = ko.observable('en-US'); // default
 
-  // -- ATTACHMENTS
-  /*
-  self.attachments = ko.observableArray();
-  
-  self.loadAttachments = function(task) {
-    loadAttachments(task);
+  ko.i18n = function(key) {
+    return ko.computed(function() {
+      if (language() != null) {
+        return i18n.t(key, {
+          lng: language(),
+          debug: true
+        });
+      } else {
+        return "";
+      }
+    }, key);
   };
   
-  self.deleteAttachment = function(attachment) {
-    deleteAttachment(attachment);
-    $('#modal-panel-attachments').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
-  };
-
-  self.downloadAttachment = function(attachment) {
-    downloadAttachment(attachment);
-  };
-  */
-  // -- LOG
-  
-  self.log = ko.observableArray();
-  
-  self.loadLog = function() {
-    console.log("TODO Load log");
-  };
-  
-  self.deleteLogEntry = function(entry) {
-  };
+  // Set tooltips with default value (see below!)
+  self.tooltipTopmenu = ko.observable('Toogle menu');
+  self.tooltipEditTask = ko.observable('Edit task');
+  self.tooltipDeleteTask = ko.observable('Delete task');
+  self.tooltipMarkTaskAsCompleted = ko.observable('Mark task as completed');
+  self.tooltipMarkTaskAsNotCompleted = ko.observable('Mark task as not completed');
+  self.tooltipOutdent = ko.observable('Lease from previous task');
+  self.tooltipIndent = ko.observable('Add to previous task');
+  self.tooltipNotes = ko.observable('Notes');
+  self.tooltipBookmarks = ko.observable('Bookmarks');
+  self.tooltipBrowsingHistory = ko.observable('Browsing history');
+  self.tooltipSearchHistory = ko.observable('Search history');
+  self.tooltipTabs = ko.observable('Tabs');
+  self.tooltipScreenshots = ko.observable('Screenshots');
+  self.tooltipEditNote = ko.observable('Edit note');
+  self.tooltipDeleteNote = ko.observable('Delete note');
+  self.tooltipEditBookmark = ko.observable('Edit bookmark');
+  self.tooltipDeleteBookmark = ko.observable('Delete bookmark');
+  self.tooltipDeleteEntry = ko.observable('Delete entry');
+  self.tooltipDeleteTab = ko.observable('Delete tab');
+  self.tooltipDeleteScreenshot = ko.observable('Delete screenshot');
+  self.tooltipShowScreenshot = ko.observable('Show screenshot');  
 };
 
 /**
@@ -1426,4 +1438,27 @@ $(document).ready(function() {
 
   // Apply view model
   ko.applyBindings(viewModel);
+  
+  // Set i18n tooltips
+  viewModel.tooltipTopmenu(ko.i18n('top-nav.tooltip'));
+  viewModel.tooltipEditTask(ko.i18n('task.tt-edit'));
+  viewModel.tooltipDeleteTask(ko.i18n('task.tt-delete'));
+  viewModel.tooltipMarkTaskAsCompleted(ko.i18n('task.tt-mark-completed'));
+  viewModel.tooltipMarkTaskAsNotCompleted(ko.i18n('task.tt-mark-not-completed'));
+  viewModel.tooltipOutdent(ko.i18n('task.tt-outdent'));
+  viewModel.tooltipIndent(ko.i18n('task.tt-indent'));
+  viewModel.tooltipNotes(ko.i18n('task.tt-notes'));
+  viewModel.tooltipBookmarks(ko.i18n('task.tt-bookmarks'));
+  viewModel.tooltipBrowsingHistory(ko.i18n('task.tt-browsing-history'));
+  viewModel.tooltipSearchHistory(ko.i18n('task.tt-search-history'));
+  viewModel.tooltipTabs(ko.i18n('task.tt-tabs'));
+  viewModel.tooltipScreenshots(ko.i18n('task.tt-screenshots'));
+  viewModel.tooltipEditNote(ko.i18n('task.tt-edit-note'));
+  viewModel.tooltipDeleteNote(ko.i18n('task.tt-delete-note'));
+  viewModel.tooltipEditBookmark(ko.i18n('task.tt-edit-bookmark'));
+  viewModel.tooltipDeleteBookmark(ko.i18n('task.tt-delete-bookmark'));
+  viewModel.tooltipDeleteEntry(ko.i18n('task.tt-delete-entry'));
+  viewModel.tooltipDeleteTab(ko.i18n('task.tt-delete-tab'));
+  viewModel.tooltipDeleteScreenshot(ko.i18n('task.tt-delete-screenshot'));
+  viewModel.tooltipShowScreenshot(ko.i18n('task.tt-show-screenshot'));
 });

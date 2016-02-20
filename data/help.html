@@ -1,16 +1,17 @@
-  <!DOCTYPE html>
-  <html lang="en" manifest="/cache.manifest">
+<!DOCTYPE html>
+<html lang="en" manifest="/cache.manifest">
   <head>
     <title>TasksTodo // Help</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <link rel="stylesheet" href="../css/bootstrap-theme.min.css"/>
-    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="../css/taskstodo.help.css"/>
+    <link rel="stylesheet" href="css/bootstrap/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/taskstodo.help.css"/>
     <link href='http://fonts.googleapis.com/css?family=Roboto:300,500' rel='stylesheet' type='text/css'>
-    <script src="../js/bootstrap.min.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -20,7 +21,7 @@
       <h2>Overview</h2>
       <div class="row">
         <ul>
-          <li><a href="#abstract">Abstract</a></li>
+          <li><a href="#summary">Summary</a></li>
           <li><a href="#background">Background</a></li>
           <li><a href="#data-privacy">Data Privacy</a></li>
           <li><a href="#navigation">Navigation</a></li>
@@ -52,21 +53,21 @@
         </ul>
       </div> 
       
-      <h2><a name="abstract"></a>Abstract</h2>
-      <p>The TasksTodo addon is an academic prototype that allows you to manage your goals and tasks at hand and to support you at your task-related information search activities on the web.</p>
+      <h2><a name="summary"></a>Summary</h2>
+      <p>This addon is an academic prototype called TasksTodo. It allows you to manage your goals and tasks at hand and to save and restore relevant web pages during the different web sessions. It also offers different task-related functions like showing past web search queries or query suggestions. That way it will hopefully support you at your task-related information search activities on the web.</p>
       
       <h2><a name="background"></a>Background</h2>
-      <p>Projects with a complex goal like writing a funding proposal, making decisions, or restoring classic cars, can take hours, days, or even months to complete. In such cases, information gathering requires more than just a single search session. To achieve such a goal, it is necessary to specify, execute, and complete derived tasks, since they define concretely what has to be done. In addition, executing a task requires a particular knowledge. For routine tasks, this knowledge normally exists, but if the task has a certain degree of complexity, the required knowledge is not available and the person will be in a problem situation. This situation will lead to information seeking in several information sources. During the different task stages, the knowledge requirements vary and change from the more general to the more specific. Both, the stage and the complexity of a task influence how we seek and search for information.</p><br/>
-      <p>Our current research activities tackle this challenge by proposing new concepts that focus on multiple goals and simultaneously executed complex work tasks in which the information search is done using the web browser [2]. With the support of an integrated task tool, we enable users to structure their goals at hand into tasks and sub-tasks without leaving the browser or switching the application. Implicit (e.g. executed queries or visited web pages) and explicit (e.g. bookmarks) interactions are stored with reference to the current task in order to offer an organized task-based history that eases task resumption. Additionally, this data is used to build higher-level support features, like the adaption and personalization of the retrieved web content, or to provide modified support functionalities that match the task-related relevance.</p><br/>
+      <p>Projects with a complex goal like writing a funding proposal or learning a new and complex topic can take hours, days, or even months to complete. In such cases, information gathering requires more than just a single search session. To achieve such a goal, it is necessary to specify, execute, and complete derived tasks, since they define concretely what has to be done. During the different task stages, the knowledge requirements vary and change from the more general to the more specific. Both, the stage and the complexity of a task influence how we seek and search for information.</p>
+      <p>With the support of TasksTodo, we enable users to structure their goals at hand into tasks and sub-tasks without leaving the browser or switching the application. Implicit (e.g., executed queries or visited web pages) and explicit (e.g., bookmarks) interactions are stored with reference to the current task in order to offer an organized task-based history that eases task resumption. Additionally, this data is used to build higher-level support features, like the adaption and personalization of the retrieved web content, or to provide modified support functionalities that match the task-related relevance. To help users better recapture past activities, TasksTodo shows past web search queries. Moreover, it also shows suggestions regarding the current search query.</p>
       <p>TasksTodo allows users to easily create an arbitrary number of goals. Within each goal any number of tasks can be defined and structured on different levels (i.e., a task that contains sub-tasks). The integrated activity tracking, is implemented as an extensive logging mechanism that records all user operations and assigns this data to the current task. This log data contains the use of the prototype itself (i.e., how goals and tasks are managed), as well as the activities done in the browser (e.g., page visits or executed search queries). For instance, a page visit is logged in the form of a screenshot, the page title, the URL, and the content. Search activities are tracked, including the information about the search provider and the query. This way all behavioral data is stored implicitly in relation to the current goal and task, which allows us to present a task-based browsing history that provides an overview of past task-based activities in order to re-capture and continue interrupted tasks more easily.</p>
       
       <h2><a name="data-privacy"></a>Data Privacy</h2>
-      <p>Data privacy plays an import role to us. Therefore, all the collected data is stored locally in the profile directory of your browser. This means that no data is submitted to anyone else. Moreover, you also have full control about which data is stored. If you remove certain entries, these information is deleted permanently from the local database.</p>
+      <p>Data privacy is crucial. Therefore, data is stored in the local profile directory of your browser and is in control of the user. If the user delete entries from the task-related history, these data is physically deleted from the database. Form inputs like credentials are not stored. To offer support services like suggestions, data is used and anonymously sent to third party providers.</p>
 
       <h2><a name="navigation"></a>Navigation</h2>
       <div class="row">
         <div class="col-md-6">
-          <p>Navigation is mainly done by clicking on goals or tasks. Goals can contain an arbitary number of tasks. From the tasks you can navigate back to the goals using the top navigation menu.</p>
+          <p>Navigation is mainly done by clicking the defined goals and tasks. The top navigation allows you to easily switch between goals or to open this help page.</p>
         </div>
         <div class="col-md-6"><img src="../img/help/tt-screenshot_top_navigation.png" width="100%" height="100%"/></div>
       </div> 
@@ -74,8 +75,15 @@
       <h2><a name="goals"></a>Goals</h2>
       <div class="row">
         <div class="col-md-6">
-          <p>Goals are the first important concept of TasksTodo. They are an abstract definition of what has to be achived. Examples of a goal are writing a proposal, learning a new technology, but also building a house, or buying a hybrid car. Goals can group an arbitary number of tasks that define how this goal is achieved.</p>
+          <p>Goals are an important concept of TasksTodo, because they are the abstract definition of what has to be achieved. Examples of a goal are writing a proposal for a converence, learning a new and complex topic (e.g., learning a programming language), or the necessarity of making decisions like buying a new car. In TasksTodo the user can define an arbitary number of goals within each any number of different tasks can be added that define what has to be done to achieve that goal.</p>
+          <h3>Create a new goal</h3>
           <p>You can create a new goal by clicking on the button "New goal". This opens a small text editor which allows you to define the title of your new goal. Store it by clicking on "Save".</p>
+          <h3>Modify a goal</h3>
+          <p>To modify the name of the goal, click on the pencil symbol (<a href="#" class="fa fa-pencil"></a>), which appears on the right side after hovering over the goal title with the mouse pointer. This operation can not be undone.</p>
+          <h3>Delete a goal</h3>
+          <p>To modify the name of the goal, click on the trash symbol (<a href="#" class="fa fa-trash"></a>), which appears on the right side after hovering over the goal title with the mouse pointer. This operation can not be undone.</p>
+          <h3>Mark a goal as completed</h3>
+          <p>To mark a goal as completed, click on the checkbox symbol on the left. The goal title gets lined through and is written in italic letters. This operation can be undone.</p>
         </div>
         <div class="col-md-6"><img src="../img/help/tt-screenshot_add_goal.png" width="100%" height="100%"/></div>
       </div> 
@@ -83,10 +91,19 @@
       <h2><a name="tasks"></a>Tasks</h2>
       <div class="row">
         <div class="col-md-6">
-          <p>Tasks are the second important concept of TasksTodo. They concretly define what has to be done to achieve a goal.</p>
+          <p>Tasks are also an important concept of TasksTodo, because they concretly define what has to be done to achieve a goal. Users can add an arbitary number tasks within a certain goal.</p>
+          <h3>Create a new task</h3>
           <p>You can create a new task by clicking on the button "New task". This opens a small text editor which allows you to define the title of your new task. Store it by clicking on "Save".</p>
+          <h3>Modify a task</h3>
+          <p>To modify the name of the task, click on the pencil symbol (<a href="#" class="fa fa-pencil"></a>), which appears on the right side after hovering over the task title with the mouse pointer. This operation can not be undone.</p>
+          <h3>Delete a task</h3>
+          <p>To modify the name of the task, click on the trash symbol (<a href="#" class="fa fa-trash"></a>), which appears on the right side after hovering over the task title with the mouse pointer. This operation can not be undone.</p>
+          <h3>Select a task</h3>
+          <p>All browsing and searching activities are stored to the selected task. Therefore, it is necessary that the user selects a task by clicking on the task title. After task selection, the user will get a selection notification and the task options (<a href="#" class="fa fa-clipboard"></a><a href="#"  class="fa fa-link"></a><a href="#" class="fa fa-history"></a><a href="#" class="fa fa-search"></a><a href="#" class="fa fa-folder"></a><a href="#" class="fa fa-camera"></a>) are shown.</p>
+          <h3>Mark a task as completed</h3>
+          <p>To mark a task as completed, click on the checkbox symbol on the left. The task title gets lined through and is written in italic letters. This operation can be undone.</p>
         </div>
-        <div class="col-md-6"><img src="../img/help/tt-screenshot_tasks_overview.png" width="100%" height="100%"/></div>
+        <div class="col-md-6"><img src="../img/help/tt-screenshot_add_task.png" width="100%" height="100%"/></div>
       </div> 
       <div class="row">
         <div class="col-md-6">

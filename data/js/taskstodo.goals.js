@@ -2,7 +2,7 @@ var viewModel = new ViewModel();
 
 function ViewModel() {
   var self = this;
-  
+    
   self.selectedGoal = ko.observable();
   self.goals = ko.observableArray();
   
@@ -150,22 +150,38 @@ function ViewModel() {
       });
     }
   };
-  
-  // -- LOG
-  /*
-  self.log = ko.observableArray();
-  
-  self.loadLog = function() {
-    console.log("Loading log");
+
+  // -- I18N
+
+  var language = ko.observable('en-US'); // default
+
+  ko.i18n = function(key) {
+    return ko.computed(function() {
+      if (language() != null) {
+        return i18n.t(key, {
+          lng: language(),
+          debug: true
+        });
+      } else {
+        return "";
+      }
+    }, key);
   };
   
-  self.deleteLogEntry = function(entry) {
-  };*/
+  // Set tooltips with default value (see below!)
+  self.tooltipTopmenu = ko.observable('Toogle menu');
+  self.tooltipEditGoal = ko.observable('Edit goal');
+  self.tooltipDeleteGoal = ko.observable('Delete goal');
+  self.tooltipMarkGoalAsCompleted = ko.observable('Mark goal as completed');
+  self.tooltipMarkGoalAsNotCompleted = ko.observable('Mark goal as not completed');
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // GOAL                                                                    //
 /////////////////////////////////////////////////////////////////////////////
+
+
+
 
 /**
  * Load all goals.
@@ -290,7 +306,7 @@ addon.port.on("TaskLoaded", function(task) {
     sessionStorage.setItem('task_continued', 'false');
 
     $('#modal-panel-latest-task .btn-primary').on('click', function() {
-      if (viewModel.latestTask()) {
+      if (viewModel.latestGoal()) {
         // Set the active goal in FF addon
         addon.port.emit("SetActiveGoal", ko.toJS(viewModel.latestGoal()));
       }
@@ -307,7 +323,7 @@ addon.port.on("TaskLoaded", function(task) {
     });
   }
 });
-              
+
 /*
  * ON PAGE READY
  */
@@ -328,4 +344,11 @@ $(document).ready(function() {
 
   // Apply view model
   ko.applyBindings(viewModel);
+  
+  // Set i18n tooltips
+  viewModel.tooltipTopmenu(ko.i18n('top-nav.tooltip'));
+  viewModel.tooltipEditGoal(ko.i18n('goal.tt-edit'));
+  viewModel.tooltipDeleteGoal(ko.i18n('goal.tt-delete'));
+  viewModel.tooltipMarkAsCompleted(ko.i18n('goal.tt-mark-completed'));
+  viewModel.tooltipMarkAsNotCompleted(ko.i18n('goal.tt-mark-not-completed'));
 });

@@ -5,8 +5,6 @@
 
 i18n.init({ 
   lng: "en-US", 
-  /*useLocalStorage: true,
-  localStorageExpirationTime: 86400000, // in ms, default 1 week = 86400000*/
   debug: true 
 }, function () {
   ko.bindingHandlers.i18n = {
@@ -14,7 +12,6 @@ i18n.init({
       var key = ko.unwrap(valueAccessor());
       var options = ko.toJS(allBindings.get('i18n-options') || {});
       var translation = i18n.t(key);
-      //element.innerText = translation;
       element.innerHTML = translation;
     }
   };
@@ -93,7 +90,7 @@ $(document).ready(function() {
   /////////////////////////////////////////////////////////////////////////////
   // FILTERS                                                                 //
   /////////////////////////////////////////////////////////////////////////////
-  
+    
   ko.filters.smartdate = function(date) {
     return moment(date).format("YYYY-MM-DD HH:mm");
   };

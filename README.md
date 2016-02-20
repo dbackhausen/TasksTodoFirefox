@@ -37,7 +37,7 @@ For developing and enhancing TasksTodo the following will be interesting for you
 
 Firefox Profile Manager: /Applications/Firefox.app/Contents/MacOS/firefox-bin -ProfileManager 
 
-1) Navigate to the Firefox Add-on SDK folder "/Applications/Entwicklung/Mozilla/addon-sdk-1.1x"
-2) Run "source bin/activate" and launch the virtual environment
-3) Navigate to the extension work directory (e.g. cd ~/Workspace/TasksTodoFirefox/) and run "cfx run"
-4) To build the extension run "cfx xpi"
+1) Navigate to the extension work directory (e.g. cd ~/Workspace/FernUni/TasksTodo/TasksTodoFirefox/)
+2) Run "jpm run -v" to start a Firefox window with the installed app (in verbose mode) or "jpm run --debug -v" (in debug mode)
+3) Run "jpm xpi" to greate a XPI file
+4) Sign the application using "jpm sign --api-key ${AMO_API_KEY} --api-secret ${AMO_API_SECRET}". This submits an XPI it to the addons.mozilla.org signing API, then downloads a signed XPI to the working directory if it passes validation.
