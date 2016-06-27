@@ -16,12 +16,21 @@
   "goal": {
     "hdr-goals": "Your goals",
     "btn-new-goal": "New goal",
+    "btn-new-note": "New note",
     "txt-no-goals": "You have not defined any goals yet.",
+    "txt-no-notes": "Your task has no notes yet.",
     "modal-continue-task": "Do you want continue working on your latest task",
+    "dialog-title-notes": "Notes",
+    "dialog-title-summary": "Goal Summary",
+    "dialog-summary-text": "Your last goal activities",
     "tt-edit": "Edit goal",
     "tt-delete": "Delete goal",
     "tt-mark-completed": "Mark goal as completed",
-    "tt-mark-not-completed": "Mark goal as not completed"
+    "tt-mark-not-completed": "Mark goal as not completed",
+    "tt-notes": "Notes",
+    "tt-edit-note": "Edit note",
+    "tt-delete-note": "Delete note",
+    "tt-summary": "Summary"
   },
   "task": {
     "btn-new-task": "New task",

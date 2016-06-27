@@ -1,7 +1,7 @@
 /**
  * Shows the page notification bar.
  */ 
-self.port.on("ShowBookmarkNotification", function(message) {
+self.port.on("ShowBookmarkNotifications", function(message) {
   if ($('#tt-bookmarkedpage-notification').length != 0) {
     $('#tt-bookmarkedpage-notification').remove();
   }
@@ -26,113 +26,173 @@ self.port.on("ShowBookmarkNotification", function(message) {
 /**
 * Hides the page notification bar.
 */ 
-self.port.on("HideBookmarkNotification", function() {
+self.port.on("HideBookmarkNotifications", function() {
   if ($('#tt-bookmarkedpage-notification').length != 0) {
     $('#tt-bookmarkedpage-notification').remove();
   }
 });
 
+
 /**
- * Shows the bookmark notifications in the search result.
+ * Highlight the bookmarked pages in search result.
  */
-self.port.on("ShowBookmarksInSearchResult", function(provider, history, bookmarks) {  
-  if (provider.toUpperCase() === "MS ACADEMIC SEARCH") {
-    return;
-  }
-    
-  if ($('.tt-bookmark-date').length != 0) {
-    $('.tt-bookmark-date').remove();
+self.port.on("ShowBookmarksInSearchResult", function(provider, bookmarks) {  
+  if ($('.tt-highlight-bookmark').length != 0) {
+    $('div.tt-highlight-bookmark').children('div.tt-highlight-bookmark-date').remove();
+    $('div.tt-highlight-bookmark').removeClass('tt-highlight-bookmark');
   }
   
   if (bookmarks && bookmarks.length > 0) {
-    $(document.body).find('a').each(function(index, element) {
-      var url = $(element).attr('href');
+    if($("style:contains('#tt-highlight-history')").length == 0) {
+      $("<style>")
+        .prop("type", "text/css")
+        .html(
+          '.tt-highlight-bookmark{padding:10px;background-color:rgb(235, 255, 228);border: 2px solid rgb(43, 125, 20)} ' + 
+          '.tt-highlight-bookmark-date{padding-top:10px} '
+        )
+        .appendTo("head");
+    }
+    
+    var linkContainer = new Array();
+
+    bookmarks.forEach(function(bookmark) {
+      if (bookmark.url && linkContainer.indexOf(bookmark.url) === -1) {
+        linkContainer.push(bookmark.url);
+        var bookmarkedDate = formatDate(bookmark.created.toString());
+        var link = $("a[href*='" + bookmark.url + "']");
       
-      if (url && url.length > 0) {
-        bookmarks.forEach(function(bookmark) {
-          var urlA = url.replace("https", "http"); // normalize protocoll
-          var urlB = bookmark.url.replace("https", "http"); // normalize protocoll
-          var relativeUrlA = urlA.replace(/^(?:\/\/|[^\/]+)*\//, "");
-          var relativeUrlB = urlB.replace(/^(?:\/\/|[^\/]+)*\//, "");
- 
-          // Check when the page was last visited
-          var lastVisit = findInHistory(url, history);
-          var bookmarked = formatDate(bookmark.created.toString());
-          
-          if (lastVisit && lastVisit !== undefined) {
-            lastVisit = formatDate(lastVisit);
-          } else {
-            lastVisit = bookmark.created.toString();
+        if (provider.toUpperCase() === "GOOGLE") {
+          if (link.closest("div.rc").hasClass('tt-highlight-history')) {
+            link.closest("div.rc").children('div.tt-highlight-history-date').remove();
+            link.closest("div.rc").removeClass('tt-highlight-history');
           }
           
-          if (urlA.match(new RegExp("^" + urlB.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "$", "g")) 
-              || urlA.match(new RegExp("(.*)yahoo(.*)/RU=" + encodeURIComponent(urlB) + "/RK(.*)", "ig"))
-              || relativeUrlA === relativeUrlB) {
+          link.closest("div.rc").addClass('tt-highlight-bookmark');
+          link.closest("div.rc").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+        } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
+          if (link.closest("div.gs_ri").hasClass('tt-highlight-history')) {
+            link.closest("div.gs_ri").children('div.tt-highlight-history-date').remove();
+            link.closest("div.gs_ri").removeClass('tt-highlight-history');
+          }
           
-            var bookmarkColor = "#EAFCE3";
-            var bookmarkedText = '<div class="tt-bookmark-date" style="width:100%;padding:2px"><p style="font-size:10px; color:#3F9E46">BOOKMARKED PAGE&nbsp;&nbsp;|&nbsp;&nbsp;Created on ' + bookmarked + '&nbsp;&nbsp;|&nbsp;&nbsp;Last visit on ' + lastVisit + '</p></div>'; 
-            
-            if (provider.toUpperCase() === "GOOGLE") {
-              $(element).closest("div.rc").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
-              $(element).closest("div.gs_ri").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            } else if (provider.toUpperCase() === "BING") {
-              $(element).closest("li").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            } else if (provider.toUpperCase() === "YAHOO") {
-              $(element).closest("li").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            } else if (provider.toUpperCase() === "WIKIPEDIA") {
-              $(element).closest("li").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            } else if (provider.toUpperCase() === "SOWIPORT") {
-              if ($(element).closest("div.kurztitel").find("div.tt-bookmark-image").length == 0) {
-                $(element).closest("table.littabkurz").css("background-color", bookmarkColor);
-                $(element).append(bookmarkedText);
-              }
-            } else if (provider.toUpperCase() === "YOUTUBE") {
-              $(element).closest("div.rc").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            } else if (provider.toUpperCase() === "MS ACADEMIC SEARCH") { // Currently script doesn't work!
-              $(element).closest("li").css("background-color", bookmarkColor);
-              $(element).parent().append(bookmarkedText);
-            }
-          }          
-        });
+          link.closest("div.gs_ri").addClass('tt-highlight-bookmark');
+          link.closest("div.gs_ri").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+        } else if (provider.toUpperCase() === "SOWIPORT") {
+          // TODO
+        } else if (provider.toUpperCase() === "YOUTUBE") {
+          if (link.closest("div.yt-lockup-video").hasClass('tt-highlight-history')) {
+            link.closest("div.yt-lockup-video").children('div.tt-highlight-history-date').remove();
+            link.closest("div.yt-lockup-video").removeClass('tt-highlight-history');
+          }
+          
+          link.closest("div.yt-lockup-video").addClass('tt-highlight-bookmark');
+          link.closest("div.yt-lockup-video").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+        }
       }
-    }); 
+    });    
   }
 });
 
 /**
- * Hides the bookmark notifications in the search result.
+ * @Deprecated
+ * Hides the highlighted bookmarked pages in search result.
  */ 
 self.port.on("HideBookmarksInSearchResult", function() {
-  if ($('.tt-bookmark-date').length != 0) {
-    $('.tt-bookmark-date').remove();
+  if ($('.tt-highlight-bookmark').length != 0) {
+    $('div.tt-highlight-bookmark').children('div.tt-highlight-bookmark-date').remove();
+    $('div.tt-highlight-bookmark').removeClass('tt-highlight-bookmark');
+  }
+});
+
+
+/**
+ * Highlight the visited pages in search result.
+ */
+self.port.on("ShowVisitedPagesInSearchResult", function(provider, history) {  
+  if ($('.tt-highlight-history').length != 0) {
+    $('div.tt-highlight-history').children('div.tt-highlight-history-date').remove();
+    $('div.tt-highlight-history').removeClass('tt-highlight-history');
   }
   
-  $($(document.body)).find('a').each(function(index, element) {
-    $(element).closest("div.rc").css("background-color", "transparent"); // Google
-    $(element).closest("li").css("background-color", "transparent"); // Yahoo
-    $(element).closest("table.littabkurz").css("background-color", "transparent"); // Sowiport
-  });
+  if (history && history.length > 0) {
+    if($("style:contains('#tt-highlight-history')").length == 0) {
+      $("<style>")
+        .prop("type", "text/css")
+        .html(
+          '.tt-highlight-history{padding:10px;background-color:rgb(255, 251, 161);border: 2px solid rgb(203, 214, 0)} ' + 
+          '.tt-highlight-history-date{padding-top:10px} '
+        )
+        .appendTo("head");
+    }
+    
+    var linkContainer = new Array();
+    
+    history.forEach(function(entry) {
+      var lastVisitDate = formatDate(entry.created);
+      var entryUrl = null;
+      
+      if (entry.parameters) {
+        entry.parameters.forEach(function(parameter) {
+          if (parameter.key === "url") {
+            entryUrl = parameter.value;
+          }
+        });
+      }
+
+      if (entryUrl && linkContainer.indexOf(entryUrl) === -1) {
+        linkContainer.push(entryUrl);
+        var link = $("a[href*='" + entryUrl + "']");
+        
+        if (provider.toUpperCase() === "GOOGLE") {
+          if (!link.closest("div.rc").hasClass('tt-highlight-history') // check if result item is not already highlighted
+              && !link.closest("div.rc").hasClass('tt-highlight-bookmark')) { // check if result item is not already bookmarked
+            link.closest("div.rc").addClass('tt-highlight-history');
+            link.closest("div.rc").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+          }
+        } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
+          if (!link.closest("div.gs_ri").hasClass('tt-highlight-history') // check if result item is not already highlighted
+              && !link.closest("div.gs_ri").hasClass('tt-highlight-bookmark')) { // check if result item is not already bookmarked
+            link.closest("div.gs_ri").addClass('tt-highlight-history');
+            link.closest("div.gs_ri").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+          }
+        } else if (provider.toUpperCase() === "SOWIPORT") {
+          // TODO
+        } else if (provider.toUpperCase() === "YOUTUBE") {
+          if (!link.closest("div.yt-lockup-video").hasClass('tt-highlight-history') // check if result item is not already highlighted
+              && !link.closest("div.yt-lockup-video").hasClass('tt-highlight-bookmark')) { // check if result item is not already bookmarked
+            link.closest("div.yt-lockup-video").addClass('tt-highlight-history');
+            link.closest("div.yt-lockup-video").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+          }
+        }
+      }
+    });
+  }
 });
+
+/**
+ * @Deprecated
+ * Hides the highlighted visited pages in search result.
+ */ 
+self.port.on("HideVisitedPagesInSearchResult", function() {
+  if ($('.tt-highlight-history').length != 0) {
+    $('div.tt-highlight-history').children('div.tt-highlight-history-date').remove();
+    $('div.tt-highlight-history').removeClass('tt-highlight-history');
+  }
+});
+
 
 /**
  * Shows the latest search queries of a certain webpage
  */ 
 self.port.on("ShowLatestQueries", function(queries) {
-  $element = $('body');
+  if ($('#tt-latest-queries-container').length != 0) {
+    $('#tt-latest-queries-container').remove();
+  }
+  
+  let $element = $('body');
   
   if ($('#tt-container').length == 0) {
     $element.append('<div id="tt-container" style="width:auto;position:fixed;bottom:15px;right:15px;z-index:99999;margin:0px !important;padding:0px !important"><div>')
-  }
-  
-  if ($('#tt-latest-queries-container').length != 0) {
-    $('#tt-latest-queries-container').remove();
   }
   
   if (queries.length > 0) {
@@ -145,7 +205,7 @@ self.port.on("ShowLatestQueries", function(queries) {
     
     var html = '<div id="tt-latest-queries-container">';
     html += '<div id="tt-latest-queries-top">';
-    html += '<div class="text"><h1>Your latest task-related queries on this page:</h1></div>';
+    html += '<div class="text"><h1>Your latest task-related queries:</h1></div>';
     html += '<div class="button"><button>Hide</button></div>';
     html += '</div>';
     html += '<div id="tt-latest-queries">';
@@ -162,6 +222,7 @@ self.port.on("ShowLatestQueries", function(queries) {
         query.parameters.forEach(function(parameter) {
           if (parameter.key == "url") {
             u = parameter.value;
+            u = u.indexOf("&ref=tt-query-history") == -1 ? u + "&ref=tt-query-history" : u;
           } else if (parameter.key == "query") {
             q = parameter.value;
             c = new Date(parameter.created);
@@ -217,19 +278,20 @@ self.port.on("HideLatestQueries", function() {
   }
 });
 
+
 /**
  * Shows task-related query suggestions.
  */
 self.port.on("ShowQuerySuggestions", function(suggestions) {
-  $element = $('body');
+  if ($('#tt-query-suggestions-container').length != 0) {
+    $('#tt-query-suggestions-container').remove();
+  }
+  
+  let $element = $('body');
   
   if ($('#tt-container').length == 0) {
     $element.append('<div id="tt-container" style="width:auto;position:fixed;bottom:15px;right:15px;z-index:99999;margin:0px !important;padding:0px !important"><div>')
   }
-  
-  if ($('#tt-query-suggestions-container').length != 0) {
-    $('#tt-query-suggestions-container').remove();
-  }  
   
   if ($element) {    
     if (suggestions && suggestions.length > 0) {
@@ -248,8 +310,11 @@ self.port.on("ShowQuerySuggestions", function(suggestions) {
       html += '<div id="tt-query-suggestions">';
       
       suggestions.forEach(function(suggestion) {
+        var u = suggestion.url;
+        u = u.indexOf("&ref=tt-suggestions") == -1 ? u + "&ref=tt-suggestions" : u;
+        
         html += '<div class="entry">';
-        html += '<a href="' + suggestion.url + '">';
+        html += '<a href="' + u + '">';
         html += '<div class="left"></div>';
         html += '<div class="querystring">';
         html += '<span>' + suggestion.title + '</span>';
@@ -285,33 +350,37 @@ self.port.on("ShowQuerySuggestions", function(suggestions) {
  * Hides task-related query suggestions.
  */
 self.port.on("HideQuerySuggestions", function(provider) {
-  if ($('#tt-query-suggestions').length != 0) {
-    $('#tt-query-suggestions').remove();
+  if ($('#tt-query-suggestions-container').length != 0) {
+    $('#tt-query-suggestions-container').remove();
   }
 });
 
+
 // --- HELPER ---
+
 
 /**
  * Helper method to search the browse history for any given URL.
  */
 function findInHistory(url, history) {
-  var x = undefined;
-  
   history.reverse().forEach(function(entry) {
     for (i = 0; i < entry.parameters.length; i++) { 
       let parameter = entry.parameters[i];
 
-      if (parameter.key == "url") {
-        if (url.replace(parameter.value, "").length == 0) {
-          x = entry.created;
-          return x;
+      if (parameter.key === "url") {
+        var urlA = url.replace("https", "http"); // normalize protocoll
+        var urlB = parameter.value.replace("https", "http"); // normalize protocoll
+        var relativeUrlA = urlA.replace(/^(?:\/\/|[^\/]+)*\//, "");
+        var relativeUrlB = urlB.replace(/^(?:\/\/|[^\/]+)*\//, "");
+        
+        if (urlA.replace(urlB, "").length == 0) {
+          return entry;
         }
       }
     }    
   });
   
-  return x;
+  return null;
 }
 
 /**

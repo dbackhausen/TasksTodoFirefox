@@ -148,7 +148,7 @@
 }
 
 #tt-task-list .tt-entry-options a:hover {
-  color: #333333;
+  color: #428BCA;
 }
 
 #tt-task-list .tt-inline-edit {
@@ -954,4 +954,180 @@
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
   hyphens: auto;
+}
+
+
+/*
+ * GOAL NOTES
+ */
+
+#new-goal-note-form {
+  display: none;
+}
+
+#tt-goal-note-list {
+}
+
+#tt-goal-note-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-goal-note-list ul li {
+}
+
+#tt-goal-note-list a {
+  color: #636363;
+  text-decoration: none;
+}
+
+#tt-goal-note-list .tt-entry {
+  width: 100%;
+}
+
+#tt-goal-note-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-goal-note-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-goal-note-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 40px;
+}
+
+#tt-goal-note-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-goal-note-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-goal-note-list ul li .tt-content {
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
+  display: table;
+}
+
+#tt-goal-note-list ul li .tt-inline-edit {
+  display: none;
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+}
+
+
+/*
+ * GOAL SUMMARY
+ */
+
+.task-goal {
+  padding: 0px 0px 20px 0px;
+}
+
+.task-goal h1 {
+  margin: 0px;
+}
+
+.task-goal a,
+.task-goal a:link,
+.task-goal a:visited {
+  cursor: pointer;
+  color: #939393;
+  text-decoration: none;
+  padding-left: 10px;
+}
+
+.task-goal a:hover {
+  cursor: pointer;
+  color: #428BCA;
+  text-decoration: none;
+  padding-left: 10px;
+}
+
+#tt-goal-summary-list {
+}
+
+#tt-goal-summary-list ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#tt-goal-summary-list ul li {
+}
+
+#tt-goal-summary-list a {
+  color: #363636;
+  text-decoration: none;
+}
+
+#tt-goal-summary-list .tt-entry {
+  width: 100%;
+}
+
+#tt-goal-summary-list .tt-entry:hover {
+  background-color: #535F6D;
+}
+
+#tt-goal-summary-list ul li .tt-header {
+  width: 100%;
+  margin-top: 5px;
+  color: #666666;
+  background-color: #DFDFDF;
+  display: table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+#tt-goal-summary-list ul li .tt-header-text {
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: table-cell;
+  padding-left: 2px;
+}
+
+#tt-goal-summary-list ul li .tt-header-control {
+  white-space: nowrap;
+  display: table-cell;
+  right: 0px;
+  width: 20px;
+}
+
+#tt-goal-summary-list ul li .tt-header-control a {
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+#tt-goal-summary-list ul li .tt-header-control a:hover {
+  color: #000000;
+}
+
+#tt-goal-summary-list ul li .tt-content {
+  display: table;
+  width: 100%;
+  padding: 5px;
+  background-color: #EFEFEF;
 }
