@@ -55,7 +55,7 @@
         <div class="container-fluid">
           <div class="row task-goal">
             <div class="col-xs-9 no-padding">
-              <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam </span></h1>
+              <h1><span data-bind="text: selectedGoal() != null ? selectedGoal().title : 'none'"></span></h1>
             </div>
             <div class="col-xs-3 no-padding right">
               <a href="#" class="fa fa-clipboard fa-lg" data-bind="attr: { 'id': 'btn-goal-notes' }, click: $root.loadGoalNotes, tooltip: {title: $root.tooltipNotes, placement: 'left'}" data-toggle="modal" data-target="#modal-panel-goal-notes"></a>
@@ -109,8 +109,8 @@
                 <div class="tt-entry-options">
                   <a href="#" class="fa fa-outdent icon-grey" data-bind="attr: { 'id': 'btn-outdent-task-' + _id }, click: $parent.outdentTask, tooltip: {title: $parent.tooltipOutdent, placement: 'bottom'}"></a>
                   <a href="#" class="fa fa-indent icon-grey" data-bind="attr: { 'id': 'btn-indent-task-' + _id }, click: $parent.indentTask, tooltip: {title: $parent.tooltipIndent, placement: 'bottom'}"></a>
-                  <a href="#" class="fa fa-clipboard icon-grey cntbadge" data-bind="attr: { 'id': 'btn-show-notes-' + _id }, click: $parent.loadNotes, tooltip: {title: $parent.tooltipNotes, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
-                  <a href="#" class="fa fa-link icon-grey cntbadge" data-bind="attr: { 'id': 'btn-show-bookmarks-' + _id }, click: $parent.loadBookmarks, tooltip: {title: $parent.tooltipBookmarks, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
+                  <a href="#" class="fa fa-clipboard icon-grey" data-bind="attr: { 'id': 'btn-show-notes-' + _id }, click: $parent.loadNotes, tooltip: {title: $parent.tooltipNotes, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-notes" badge-count=""></a>
+                  <a href="#" class="fa fa-link icon-grey" data-bind="attr: { 'id': 'btn-show-bookmarks-' + _id }, click: $parent.loadBookmarks, tooltip: {title: $parent.tooltipBookmarks, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-bookmarks" badge-count=""></a>
                   <a href="#" class="fa fa-history icon-grey" data-bind="attr: { 'id': 'btn-show-history-' + _id }, click: $parent.loadHistory, tooltip: {title: $parent.tooltipBrowsingHistory, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-history" badge-count=""></a>
                   <a href="#" class="fa fa-search icon-grey" data-bind="attr: { 'id': 'btn-show-search_history-' + _id }, click: $parent.loadSearchHistory, tooltip: {title: $parent.tooltipSearchHistory, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-search_history" badge-count=""></a>
                   <a href="#" class="fa fa-folder-o icon-grey" data-bind="attr: { 'id': 'btn-show-tabs-' + _id }, click: $parent.loadTabs, tooltip: {title: $parent.tooltipTabs, placement: 'bottom'}" data-toggle="modal" data-target="#modal-panel-tabs" badge-count=""></a>

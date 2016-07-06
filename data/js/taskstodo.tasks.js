@@ -172,9 +172,10 @@ function ViewModel() {
   self.indentTask = function(task) {
     if (task != null && task.position() > 1) { // only allow indents where index > 1
       let preTask = self.tasks()[task.position() - 2];
+      
       if ((task.level() + 1) - preTask.level() <= 1) {
         task.level(task.level() + 1);
-        console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
+        console.log("Indent task \"" + task.title() + "\" to level " + task.level());
         updateTask(task);
       }
     }
@@ -183,52 +184,52 @@ function ViewModel() {
   self.outdentTask = function(task) {
     if (task != null && task.level() > 0 && task.position() > 1) {       
       task.level(task.level() - 1);
-
-      console.log("Outdent " + task.title() + " to " + task.level());
+      console.log("Outdent task \"" + task.title() + "\" to level " + task.level());
       updateTask(task);
     }
   };
 
   self.moveTask = function(arg, event, ui) {
-    console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
-
     if (arg.sourceIndex != arg.targetIndex) {
+      var oldPosition = arg.item.position();
+      var oldLevel = arg.item.level();
+      
       arg.item.position(arg.targetIndex + 1);
 
       if (arg.item.level() > 0) {
         // If task is a subtask
         if (arg.targetIndex == 0) {
-          // If task is moved to the top, the
-          // task level has to be set to 0
+          // If task is moved to top, the level has to be "0"
           arg.item.level(0);
-          // and the parent has to be set to 0
-          //arg.item.parentId(null);
         } else {
-          // Set the new parent
-          //arg.item.parentId(self.tasks()[arg.targetIndex - 1]._id);
+          // Set task level to previous task + 1
           arg.item.level(self.tasks()[arg.targetIndex - 1].level() + 1);
+          console.log("> " + self.tasks()[arg.targetIndex - 1].level() + 1)
         }
       }
-
+      
+      // Update moved task position and level
       updateTask(arg.item);
 
-      // If task position has been modified
       ko.utils.arrayForEach(self.tasks(), function(task) {
-        if (task._id != arg.item._id) {
+        if (task._id != arg.item._id) { // skip moved task
+          
           if (arg.sourceIndex < arg.targetIndex) {
-            // Task has been moved to a lower position
+            // Task has been moved to a LOWER position
             if (task.position() > (arg.sourceIndex + 1) && task.position() <= (arg.targetIndex + 1)) {
               task.position(task.position() - 1);
 
               if (task.position == 0 && task.level() > 0) {
+                // If new top task has a higher level,
+                // than "0" it has to be set to "0"
                 task.level(0);
               }
 
+              // Update all tasks BEFORE new position
               updateTask(task);
-              // console.log("Setting " + task.title() + " to position " + task.position());
             }
           } else {
-            // Task has been moved to a higher position
+            // Task has been moved to a HIGHER position
             if (task.position() < (arg.sourceIndex + 1) && task.position() >= (arg.targetIndex + 1)) {
               task.position(task.position() + 1);
 
@@ -236,19 +237,13 @@ function ViewModel() {
                 task.level(0);
               }
 
+              // Update all tasks AFTER new position
               updateTask(task);
-              // console.log("Setting " + task.title() + " to position " + task.position());
-            }
-          }
-
-          if (task.position() > 1 && task.level() > 0) {
-            for (var i = task.position() - 2; i >= 0; i--) {
-              if ((task.level() - self.tasks()[i].level() == 1) /*&& task.parentId() != self.tasks()[i]._id*/) {
-                // if task level is higher than the previous task, 
-                // than set new parent
+            } else if (task.position() > (arg.sourceIndex + 1)) {
+              if (task.level() > oldLevel) {
+                task.level(task.level() - 1);
+                // Update all tasks AFTER old position
                 updateTask(task);
-                // console.log("Setting parent of " + task.title() + " to " + self.tasks()[i].title());
-                break;
               }
             }
           }
@@ -644,8 +639,8 @@ function ViewModel() {
   self.tooltipGoalSummary = ko.observable('Goal summary');
   self.tooltipEditTask = ko.observable('Edit task');
   self.tooltipDeleteTask = ko.observable('Delete task');
-  self.tooltipMarkTaskAsCompleted = ko.observable('Mark task as completed');
-  self.tooltipMarkTaskAsNotCompleted = ko.observable('Mark task as not completed');
+  self.tooltipMarkTaskAsCompleted = ko.observable('Mark as completed');
+  self.tooltipMarkTaskAsNotCompleted = ko.observable('Mark as not completed');
   self.tooltipOutdent = ko.observable('Lease from previous task');
   self.tooltipIndent = ko.observable('Add to previous task');
   self.tooltipNotes = ko.observable('Notes');
@@ -1063,7 +1058,7 @@ function showTaskSelection(task) {
     $(ttListEntry).find('.tt-entry-options').fadeIn();
 
     // Show options for selected task
-    $(ttListEntry).find('.tt-task-control a').fadeIn();  
+    $(ttListEntry).find('.tt-task-control a').fadeIn();    
   }
 }
 

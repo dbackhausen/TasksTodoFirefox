@@ -37,10 +37,10 @@ self.port.on("HideBookmarkNotifications", function() {
  * Highlight the bookmarked pages in search result.
  */
 self.port.on("ShowBookmarksInSearchResult", function(provider, bookmarks) {  
-  if ($('.tt-highlight-bookmark').length != 0) {
+  /*if ($('.tt-highlight-bookmark').length != 0) {
     $('div.tt-highlight-bookmark').children('div.tt-highlight-bookmark-date').remove();
     $('div.tt-highlight-bookmark').removeClass('tt-highlight-bookmark');
-  }
+  }*/
   
   if (bookmarks && bookmarks.length > 0) {
     if($("style:contains('#tt-highlight-history')").length == 0) {
@@ -59,34 +59,73 @@ self.port.on("ShowBookmarksInSearchResult", function(provider, bookmarks) {
       if (bookmark.url && linkContainer.indexOf(bookmark.url) === -1) {
         linkContainer.push(bookmark.url);
         var bookmarkedDate = formatDate(bookmark.created.toString());
-        var link = $("a[href*='" + bookmark.url + "']");
-      
-        if (provider.toUpperCase() === "GOOGLE") {
-          if (link.closest("div.rc").hasClass('tt-highlight-history')) {
-            link.closest("div.rc").children('div.tt-highlight-history-date').remove();
-            link.closest("div.rc").removeClass('tt-highlight-history');
-          }
+        var link = $("a[href='" + bookmark.url + "']");
+    
+        if (!link || link.text().indexOf(bookmark.url) == -1) {
+          // https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=5&amp;ved=0ahUKEwjn_6-dt9fNAhXEAsAKHePsA7QQFghTMAQ&amp;url=http%3A%2F%2Fwww.seeberger-motorsport.de%2F&amp;usg=AFQjCNEUjbndkED8yUGZVr5-cuIIfvKs2A&amp;cad=rja
           
-          link.closest("div.rc").addClass('tt-highlight-bookmark');
-          link.closest("div.rc").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
-        } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
-          if (link.closest("div.gs_ri").hasClass('tt-highlight-history')) {
-            link.closest("div.gs_ri").children('div.tt-highlight-history-date').remove();
-            link.closest("div.gs_ri").removeClass('tt-highlight-history');
-          }
-          
-          link.closest("div.gs_ri").addClass('tt-highlight-bookmark');
-          link.closest("div.gs_ri").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
-        } else if (provider.toUpperCase() === "SOWIPORT") {
-          // TODO
-        } else if (provider.toUpperCase() === "YOUTUBE") {
-          if (link.closest("div.yt-lockup-video").hasClass('tt-highlight-history')) {
-            link.closest("div.yt-lockup-video").children('div.tt-highlight-history-date').remove();
-            link.closest("div.yt-lockup-video").removeClass('tt-highlight-history');
-          }
-          
-          link.closest("div.yt-lockup-video").addClass('tt-highlight-bookmark');
-          link.closest("div.yt-lockup-video").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+          $('a').filter(function() { 
+            if (this.href.startsWith("http") && this.href.match(encodeURIComponent(bookmark.url))) {
+              link = $("a[href='" + this.href + "']");
+            }
+          });
+        }
+        
+        if (link && link != null && link.html() != null) {
+          if (provider.toUpperCase() === "GOOGLE") {
+            if (link.closest("div.rc").hasClass('tt-highlight-history')) {
+              link.closest("div.rc").children('div.tt-highlight-history-date').remove();
+              link.closest("div.rc").removeClass('tt-highlight-history');
+            }
+
+            if (link.closest("div.rc").hasClass('tt-highlight-bookmark')) {
+              link.closest("div.rc").children('div.tt-highlight-bookmark-date').remove();
+              if (bookmarkedDate) {
+                link.closest("div.rc").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+              }
+            } else {
+              link.closest("div.rc").addClass('tt-highlight-bookmark');
+              if (bookmarkedDate) {
+                link.closest("div.rc").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+              }
+            }
+          } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
+            if (link.closest("div.gs_ri").hasClass('tt-highlight-history')) {
+              link.closest("div.gs_ri").children('div.tt-highlight-history-date').remove();
+              link.closest("div.gs_ri").removeClass('tt-highlight-history');
+            }
+
+            if (link.closest("div.gs_ri").hasClass('tt-highlight-bookmark')) {
+              link.closest("div.gs_ri").children('div.tt-highlight-bookmark-date').remove();
+              if (bookmarkedDate) {
+                link.closest("div.gs_ri").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+              }
+            } else {
+              link.closest("div.gs_ri").addClass('tt-highlight-bookmark');
+              if (bookmarkedDate) {
+                link.closest("div.gs_ri").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+              }
+            }
+          } else if (provider.toUpperCase() === "SOWIPORT") {
+            // TODO
+          } else if (provider.toUpperCase() === "YOUTUBE") {
+            if (link.closest("div.yt-lockup-video").hasClass('tt-highlight-history')) {
+              link.closest("div.yt-lockup-video").children('div.tt-highlight-history-date').remove();
+              link.closest("div.yt-lockup-video").removeClass('tt-highlight-history');
+            }
+
+            if (link.closest("div.yt-lockup-video").hasClass('tt-highlight-bookmark')) {
+              link.closest("div.yt-lockup-video").children('div.tt-highlight-bookmark-date').remove();
+              if (bookmarkedDate) {
+                link.closest("div.yt-lockup-video").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+              }
+            } else {
+              link.closest("div.yt-lockup-video").addClass('tt-highlight-bookmark');
+              if (bookmarkedDate) {
+                link.closest("div.yt-lockup-video").append('<div class="tt-highlight-bookmark-date"><i>Bookmarked on ' + bookmarkedDate + '</i></div>');
+              }
+            }
+          } 
         }
       }
     });    
@@ -109,11 +148,6 @@ self.port.on("HideBookmarksInSearchResult", function() {
  * Highlight the visited pages in search result.
  */
 self.port.on("ShowVisitedPagesInSearchResult", function(provider, history) {  
-  if ($('.tt-highlight-history').length != 0) {
-    $('div.tt-highlight-history').children('div.tt-highlight-history-date').remove();
-    $('div.tt-highlight-history').removeClass('tt-highlight-history');
-  }
-  
   if (history && history.length > 0) {
     if($("style:contains('#tt-highlight-history')").length == 0) {
       $("<style>")
@@ -141,29 +175,65 @@ self.port.on("ShowVisitedPagesInSearchResult", function(provider, history) {
 
       if (entryUrl && linkContainer.indexOf(entryUrl) === -1) {
         linkContainer.push(entryUrl);
-        var link = $("a[href*='" + entryUrl + "']");
+        var link = $("a[href='" + entryUrl + "']");
         
-        if (provider.toUpperCase() === "GOOGLE") {
-          if (!link.closest("div.rc").hasClass('tt-highlight-history') // check if result item is not already highlighted
-              && !link.closest("div.rc").hasClass('tt-highlight-bookmark')) { // check if result item is not already bookmarked
-            link.closest("div.rc").addClass('tt-highlight-history');
-            link.closest("div.rc").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
-          }
-        } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
-          if (!link.closest("div.gs_ri").hasClass('tt-highlight-history') // check if result item is not already highlighted
-              && !link.closest("div.gs_ri").hasClass('tt-highlight-bookmark')) { // check if result item is not already bookmarked
-            link.closest("div.gs_ri").addClass('tt-highlight-history');
-            link.closest("div.gs_ri").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
-          }
-        } else if (provider.toUpperCase() === "SOWIPORT") {
-          // TODO
-        } else if (provider.toUpperCase() === "YOUTUBE") {
-          if (!link.closest("div.yt-lockup-video").hasClass('tt-highlight-history') // check if result item is not already highlighted
-              && !link.closest("div.yt-lockup-video").hasClass('tt-highlight-bookmark')) { // check if result item is not already bookmarked
-            link.closest("div.yt-lockup-video").addClass('tt-highlight-history');
-            link.closest("div.yt-lockup-video").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
-          }
+        if (!link || link.text().indexOf(entryUrl) == -1) {
+          // https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=5&amp;ved=0ahUKEwjn_6-dt9fNAhXEAsAKHePsA7QQFghTMAQ&amp;url=http%3A%2F%2Fwww.seeberger-motorsport.de%2F&amp;usg=AFQjCNEUjbndkED8yUGZVr5-cuIIfvKs2A&amp;cad=rja
+          
+          $('a').filter(function() { 
+            if (this.href.startsWith("http") && this.href.match(encodeURIComponent(entryUrl))) {
+              link = $("a[href='" + this.href + "']");
+            } 
+          });
         }
+        
+        if (link && link != null && link.html() != null) {
+          if (provider.toUpperCase() === "GOOGLE") {
+            if (!link.closest("div.rc").hasClass('tt-highlight-bookmark')) { // only highlight entry if not already bookmarked
+              if (link.closest("div.rc").hasClass('tt-highlight-history')) {
+                link.closest("div.rc").children('div.tt-highlight-history-date').remove();
+                if (lastVisitDate) {
+                  link.closest("div.rc").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+                }
+              } else {
+                link.closest("div.rc").addClass('tt-highlight-history');
+                if (lastVisitDate) {
+                  link.closest("div.rc").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+                }
+              }
+            }
+          } else if (provider.toUpperCase() === "GOOGLE SCHOLAR") {
+            if (!link.closest("div.gs_ri").hasClass('tt-highlight-bookmark')) { // only highlight entry if not already bookmarked
+              if (link.closest("div.gs_ri").hasClass('tt-highlight-history')) {
+                link.closest("div.gs_ri").children('div.tt-highlight-history-date').remove();
+                if (lastVisitDate) {
+                  link.closest("div.gs_ri").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+                }
+              } else {
+                link.closest("div.gs_ri").addClass('tt-highlight-history');
+                if (lastVisitDate) {
+                  link.closest("div.gs_ri").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+                }
+              }
+            }
+          } else if (provider.toUpperCase() === "SOWIPORT") {
+            // TODO
+          } else if (provider.toUpperCase() === "YOUTUBE") {
+            if (!link.closest("div.yt-lockup-video").hasClass('tt-highlight-bookmark')) { // only highlight entry if not already bookmarked
+              if (link.closest("div.yt-lockup-video").hasClass('tt-highlight-history')) {
+                link.closest("div.yt-lockup-video").children('div.tt-highlight-history-date').remove();
+                if (lastVisitDate) {
+                  link.closest("div.yt-lockup-video").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+                }
+              } else {
+                link.closest("div.yt-lockup-video").addClass('tt-highlight-history');
+                if (lastVisitDate) {
+                  link.closest("div.yt-lockup-video").append('<div class="tt-highlight-history-date"><i>Last visit on ' + lastVisitDate + '</i></div>');
+                }
+              }
+            }
+          }
+        }            
       }
     });
   }

@@ -78,10 +78,10 @@
                 <div class="tt-entry-content" data-bind="css: 'indent-'+$data.level()">
                   <div class="tt-goal-check">
                     <!-- ko if: completed() == null -->
-                    <a href="#" data-bind="attr: { 'id': 'btn-goal-completed-' + _id }, click: $parent.completeGoal, tooltip: {title: $parent.tooltipMarkGoalAsCompleted}" class="fa fa-square-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-goal-completed-' + _id }, click: $parent.completeGoal, tooltip: {title: $parent.tooltipMarkAsCompleted}" class="fa fa-square-o"></a>
                     <!-- /ko -->
                     <!-- ko if: completed() != null -->
-                    <a href="#" data-bind="attr: { 'id': 'btn-goal-not-completed-' + _id }, click: $parent.completeGoal, tooltip: {title: $parent.tooltipMarkGoalAsNotCompleted}" class="fa fa-check-square-o"></a>
+                    <a href="#" data-bind="attr: { 'id': 'btn-goal-not-completed-' + _id }, click: $parent.completeGoal, tooltip: {title: $parent.tooltipMarkAsNotCompleted}" class="fa fa-check-square-o"></a>
                     <!-- /ko -->
                   </div>
                   <div class="tt-goal-title" data-bind="attr: { 'id': 'div-goal-title-' + _id }, click: $parent.selectGoal, css: { completed: completed() != null }">
