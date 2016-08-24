@@ -171,9 +171,9 @@ function ViewModel() {
 
   self.indentTask = function(task) {
     if (task != null && task.position() > 1) { // only allow indents where index > 1
-      let preTask = self.tasks()[task.position() - 2];
+      var pretask = self.tasks()[task.position() - 2];
       
-      if ((task.level() + 1) - preTask.level() <= 1) {
+      if (pretask && ((task.level() + 1) - pretask.level() <= 1)) {
         task.level(task.level() + 1);
         console.log("Indent task \"" + task.title() + "\" to level " + task.level());
         updateTask(task);
