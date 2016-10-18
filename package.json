@@ -1,8 +1,8 @@
 {
   "title": "TasksTodo Firefox Addon",
   "name": "taskstodofirefox",
-  "version": "0.0.1",
-  "description": "A firefox addon for TasksTodo",
+  "version": "1.0.0",
+  "description": "A firefox addon to manage your explorative and information intensive tasks.",
   "main": "lib/main.js",
   "author": "Daniel Backhausen",
   "engines": {

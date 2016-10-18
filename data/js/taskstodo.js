@@ -296,7 +296,8 @@ function Task(data) {
 
 function Note(data) {
   this._id = data._id;
-  this.task = ko.observable(data.task);
+  this.goal = data.goal ? ko.observable(data.goal) : null;
+  this.task = data.task ? ko.observable(data.task) : null;
   this.body = ko.protectedObservable(data.body);
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
@@ -397,4 +398,11 @@ function Tab(data) {
   this.created = ko.observable(data.created);
   this.modified = ko.observable(data.modified);
   this.deleted = ko.observable(data.deleted);
+}
+
+function LogEntry(data) {
+  this._id = data._id;
+  this.action = data.action;
+  this.parameters = data.parameters;
+  this.created = data.created;
 }

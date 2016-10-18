@@ -13,6 +13,11 @@ function ViewModel() {
       selectGoal(goal);
     });    
   };
+    
+  self.summary = ko.observableArray();
+  self.loadGoalSummary = function() {
+    loadGoalSummary(self.selectedGoal);
+  }
 
   self.selectTask = function(task) {
     if (self.selectedTask == null || self.selectedTask._id == undefined || self.selectedTask._id !== task._id) {
@@ -28,11 +33,11 @@ function ViewModel() {
       // Load notes   
       loadNotes(self.selectedTask);
 
-      // Load bookmarks (preload is necessary for page annotation)    
-      loadBookmarks(self.selectedTask);
-
       // Load browse history (preload is necessary for query overview)     
       loadHistory(self.selectedTask);
+
+      // Load bookmarks (preload is necessary for page annotation)    
+      loadBookmarks(self.selectedTask);
             
       // Load search history (preload is necessary for query overview)     
       loadSearchHistory(self.selectedTask);
@@ -166,75 +171,65 @@ function ViewModel() {
 
   self.indentTask = function(task) {
     if (task != null && task.position() > 1) { // only allow indents where index > 1
-      for (var i = task.position() - 2; i >= 0; i--) {  
-        if ((task.level() + 1) - self.tasks()[i].level() == 0 
-          || (task.level() + 1) - self.tasks()[i].level() == 1) { 
-          // indent only if previous task is on same level or one lower
-          //task.parentId(self.tasks()[i]._id);
-          task.level(task.level() + 1);
-          console.log("Indent " + task.title() + " to " + task.level() + " with parent " + self.tasks()[i].title());
-          updateTask(task);
-          break;
-        } else {
-          return;
-        }
-      };
+      var pretask = self.tasks()[task.position() - 2];
+      
+      if (pretask && ((task.level() + 1) - pretask.level() <= 1)) {
+        task.level(task.level() + 1);
+        console.log("Indent task \"" + task.title() + "\" to level " + task.level());
+        updateTask(task);
+      }
     }
   };
 
   self.outdentTask = function(task) {
     if (task != null && task.level() > 0 && task.position() > 1) {       
       task.level(task.level() - 1);
-
-      if (task.level() == 0) {
-        //task.parentId(null);
-      }
-
-      console.log("Outdent " + task.title() + " to " + task.level());
+      console.log("Outdent task \"" + task.title() + "\" to level " + task.level());
       updateTask(task);
     }
   };
 
   self.moveTask = function(arg, event, ui) {
-    console.log(arg.item.title() + " dragged from " + arg.sourceIndex + " to " + arg.targetIndex);
-
     if (arg.sourceIndex != arg.targetIndex) {
+      var oldPosition = arg.item.position();
+      var oldLevel = arg.item.level();
+      
       arg.item.position(arg.targetIndex + 1);
 
       if (arg.item.level() > 0) {
         // If task is a subtask
         if (arg.targetIndex == 0) {
-          // If task is moved to the top, the
-          // task level has to be set to 0
+          // If task is moved to top, the level has to be "0"
           arg.item.level(0);
-          // and the parent has to be set to 0
-          //arg.item.parentId(null);
         } else {
-          // Set the new parent
-          //arg.item.parentId(self.tasks()[arg.targetIndex - 1]._id);
+          // Set task level to previous task + 1
           arg.item.level(self.tasks()[arg.targetIndex - 1].level() + 1);
+          console.log("> " + self.tasks()[arg.targetIndex - 1].level() + 1)
         }
       }
-
+      
+      // Update moved task position and level
       updateTask(arg.item);
 
-      // If task position has been modified
       ko.utils.arrayForEach(self.tasks(), function(task) {
-        if (task._id != arg.item._id) {
+        if (task._id != arg.item._id) { // skip moved task
+          
           if (arg.sourceIndex < arg.targetIndex) {
-            // Task has been moved to a lower position
+            // Task has been moved to a LOWER position
             if (task.position() > (arg.sourceIndex + 1) && task.position() <= (arg.targetIndex + 1)) {
               task.position(task.position() - 1);
 
               if (task.position == 0 && task.level() > 0) {
+                // If new top task has a higher level,
+                // than "0" it has to be set to "0"
                 task.level(0);
               }
 
+              // Update all tasks BEFORE new position
               updateTask(task);
-              // console.log("Setting " + task.title() + " to position " + task.position());
             }
           } else {
-            // Task has been moved to a higher position
+            // Task has been moved to a HIGHER position
             if (task.position() < (arg.sourceIndex + 1) && task.position() >= (arg.targetIndex + 1)) {
               task.position(task.position() + 1);
 
@@ -242,20 +237,13 @@ function ViewModel() {
                 task.level(0);
               }
 
+              // Update all tasks AFTER new position
               updateTask(task);
-              // console.log("Setting " + task.title() + " to position " + task.position());
-            }
-          }
-
-          if (task.position() > 1 && task.level() > 0) {
-            for (var i = task.position() - 2; i >= 0; i--) {
-              if ((task.level() - self.tasks()[i].level() == 1) /*&& task.parentId() != self.tasks()[i]._id*/) {
-                // if task level is higher than the previous task, 
-                // than set new parent
-                //task.parentId(self.tasks()[i]._id);
+            } else if (task.position() > (arg.sourceIndex + 1)) {
+              if (task.level() > oldLevel) {
+                task.level(task.level() - 1);
+                // Update all tasks AFTER old position
                 updateTask(task);
-                // console.log("Setting parent of " + task.title() + " to " + self.tasks()[i].title());
-                break;
               }
             }
           }
@@ -268,7 +256,105 @@ function ViewModel() {
     }
   }
 
-  // -- NOTES
+  // -- GOAL NOTES
+  
+  self.goalNotes = ko.observableArray();
+  
+  self.loadGoalNotes = function() {
+    loadGoalNotes(self.selectedGoal);
+  }
+
+  self.newGoalNote = function() {
+    $('#btn-goal-note-form-button-new').hide(); // Hide "New" button
+    $('#modal-panel-notes').find('.tt-empty-list').hide(); // Hide empty-list div
+    $('#tt-goal-note-list').find('.tt-inline-edit:visible').hide(); // Hide all inline forms
+    
+    $('#new-goal-note-form').fadeIn("fast");
+
+    $('#new-goal-note-form-input-body').css({"width":"", "height":"", "top": "", "left" : ""}); // Reset width and height
+    
+    // Set wysiwyg editor
+    $('#new-goal-note-form-input-body').trumbowyg({
+      fullscreenable: false,
+      closable: false,
+      btns: ['bold', 'italic', 'underline', 'strikethrough', 'foreColor', 'backColor', 'btnGrp-lists'],
+      removeformatPasted: true,
+      autogrow: true
+    });
+  };
+  
+  self.cancelNewGoalNote = function() {
+    $('#new-goal-note-form').hide(); // Hide new entity form
+
+    $('#new-goal-note-form-input-body').html(null); // Reset value
+
+    $('#btn-goal-note-form-button-new').fadeIn("fast"); // Show "New" button
+    $('#modal-panel-goal-notes').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
+  };
+  
+  self.addGoalNote = function() {
+    var body = $('#new-goal-note-form-input-body').html();
+
+    if (body != null && body.length > 0) {
+      addGoalNote(new Note({
+        "goal" : self.selectedGoal()._id,
+        "body" : body,
+        "created" : new Date(),
+        "modified" : null
+      }));        
+    }
+
+    self.cancelNewGoalNote();
+  };
+    
+  self.editGoalNote = function(note) {
+    $('#btn-goal-note-form-button-new').hide(); // Hide "New" button
+    $('#new-goal-note-form:visible').hide(); // Hide new entity form
+    $('#tt-goal-note-list .tt-entry').fadeIn('fast'); // Show entry 
+    $('#tt-goal-note-list').find('.tt-inline-edit:visible').hide(); // Hide inline form
+
+    $('#tt-goal-note-list #'+note._id+' .tt-entry').hide(); // Hide list entry
+    $('#tt-goal-note-list #'+note._id+' .tt-inline-edit').fadeIn('fast'); // Show inline form
+
+    $('#edit-goal-note-form-input-body-'+note._id).css("height", "100%");
+    
+    // Set wysiwyg editor
+    $('#edit-goal-note-form-input-body-'+note._id).trumbowyg({
+      fullscreenable: false,
+      closable: false,
+      btns: ['bold', 'italic', 'underline', 'strikethrough', 'foreColor', 'backColor', 'btnGrp-lists'],
+      removeformatPasted: true,
+      autogrow: true
+    });
+  };
+
+  self.cancelEditGoalNote = function(note) {
+    note.body.reset();
+    
+    $('#btn-goal-note-form-button-new').show(); // Show "New" button
+    $('#tt-goal-note-list .tt-entry').fadeIn('fast'); // Show entry 
+    $('#tt-goal-note-list').find('.tt-inline-edit:visible').hide(); // Hide inline form
+  };
+  
+  self.updateGoalNote = function(note) {
+    if (note) {
+      note.body($('#edit-goal-note-form-input-body-'+note._id).html());
+      note.body.commit();
+      note.modified(new Date());
+      updateGoalNote(note);
+    } else if (note) {
+      note.body.reset();
+    }
+
+    self.cancelEditGoalNote(note);
+  };
+  
+  self.deleteGoalNote = function(note) {
+    deleteGoalNote(note);
+    $('#modal-panel-goal-notes').find('.tt-empty-list').fadeIn("fast"); // Show empty-list div
+  };   
+  
+  // -- TASK NOTES
   
   self.notes = ko.observableArray();
 
@@ -309,6 +395,7 @@ function ViewModel() {
 
     if (body != null && body.length > 0) {
       addNote(new Note({
+        "goal" : null, // add task note
         "task" : self.selectedTask._id,
         "body" : body,
         "created" : new Date(),
@@ -549,10 +636,11 @@ function ViewModel() {
   
   // Set tooltips with default value (see below!)
   self.tooltipTopmenu = ko.observable('Toogle menu');
+  self.tooltipGoalSummary = ko.observable('Goal summary');
   self.tooltipEditTask = ko.observable('Edit task');
   self.tooltipDeleteTask = ko.observable('Delete task');
-  self.tooltipMarkTaskAsCompleted = ko.observable('Mark task as completed');
-  self.tooltipMarkTaskAsNotCompleted = ko.observable('Mark task as not completed');
+  self.tooltipMarkTaskAsCompleted = ko.observable('Mark as completed');
+  self.tooltipMarkTaskAsNotCompleted = ko.observable('Mark as not completed');
   self.tooltipOutdent = ko.observable('Lease from previous task');
   self.tooltipIndent = ko.observable('Add to previous task');
   self.tooltipNotes = ko.observable('Notes');
@@ -692,6 +780,135 @@ addon.port.on("ActiveGoalLoaded", function(goal) {
   viewModel.selectedTask = ko.observable();
 });
 
+/**
+ * Loads the goal notes.
+ */
+function loadGoalNotes(goal) {
+  $('#content .tt-loader').show();
+  addon.port.emit("LoadGoalNotes", ko.toJS(goal));
+}
+
+/**
+ * Callback when notes have been loaded.
+ */
+addon.port.on("GoalNotesLoaded", function(notes) { 
+  $('#content .tt-loader').hide();
+  
+  // Clear view
+  viewModel.goalNotes.removeAll();
+
+  if (notes && notes.length > 0) {  
+    ko.utils.arrayForEach(notes, function(note) {
+      viewModel.goalNotes.push(new Note(note));
+    });
+  } else {
+    $('#content .tt-empty-list').show();
+  }
+});
+
+/////////////////////////////////////////////////////////////////////////////
+// GOAL: NOTES                                                             //
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Loads all notes regarding to the selected task.
+ */
+function loadGoalNotes(goal) {
+  $('#modal-panel-goal-notes .tt-loader').show();
+  addon.port.emit("LoadGoalNotes", ko.toJS(goal));
+}
+
+/**
+ * Callback when notes have been loaded.
+ */
+addon.port.on("GoalNotesLoaded", function(notes) {
+  $('#modal-panel-goal-notes .tt-loader').hide();
+  
+  viewModel.goalNotes.removeAll();
+
+  if (notes && notes.length > 0) {
+    ko.utils.arrayForEach(notes, function(note){
+      viewModel.goalNotes.push(new Note(note));
+    });
+  } else {
+    $('#modal-panel-goal-notes .tt-empty-list').show();
+  }
+});
+
+/**
+ * Adds a new note to the selected task.
+ */
+function addGoalNote(note) {
+  addon.port.emit("AddGoalNote", ko.toJS(note));
+}
+
+/**
+ * Callback when note has been added.
+ */
+addon.port.on("GoalNoteAdded", function(note) {
+  viewModel.goalNotes.unshift(new Note(note));
+});
+
+/**
+ * Saves changes to an existing note.
+ */
+function updateGoalNote(note) {
+  addon.port.emit("UpdateGoalNote", ko.toJS(note));
+}
+
+/**
+ * Callback when note has been updated.
+ */
+addon.port.on("GoalNoteUpdated", function(note) {
+});
+
+/**
+ * Deletes an existing note.
+ */
+function deleteGoalNote(note) {
+  // Delete note from database
+  addon.port.emit("DeleteGoalNote", ko.toJS(note));
+    
+  // Remove note from view
+  viewModel.goalNotes.remove(note);
+}
+
+/**
+ * Callback when note has been deleted.
+ */
+addon.port.on("GoalNoteDeleted", function(data) {
+});
+
+/////////////////////////////////////////////////////////////////////////////
+// GOAL: SUMMARY                                                           //
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Loads the goal summary.
+ */
+function loadGoalSummary(goal) {
+  $('#modal-panel-goal-summary .tt-loader').show();
+  addon.port.emit("LoadGoalSummary", ko.toJS(goal));
+}
+
+/**
+ * Callback when summary has been loaded.
+ */
+addon.port.on("GoalSummaryLoaded", function(summary) { 
+  $('#modal-panel-goal-summary .tt-loader').hide();
+  
+  // Clear view
+  viewModel.summary.removeAll();
+
+  if (summary && summary.length > 0) {  
+    ko.utils.arrayForEach(summary, function(entry) {
+      viewModel.summary.push(new LogEntry(entry));
+    });
+  } else {
+    $('#modal-panel-goal-summary .tt-empty-list').show();
+  }
+});
+
 /////////////////////////////////////////////////////////////////////////////
 // TASKS                                                                   //
 /////////////////////////////////////////////////////////////////////////////
@@ -793,11 +1010,11 @@ addon.port.on("ActiveTaskLoaded", function(task) {
     // Load notes   
     loadNotes(viewModel.selectedTask);
 
-    // Load bookmarks (preload is necessary for page annotation)    
-    loadBookmarks(viewModel.selectedTask);
-
     // Load browse history (preload is necessary for query overview)     
     loadHistory(viewModel.selectedTask);
+
+    // Load bookmarks (preload is necessary for page annotation)    
+    loadBookmarks(viewModel.selectedTask);
 
     // Load search history (preload is necessary for query overview)     
     loadSearchHistory(viewModel.selectedTask);
@@ -841,7 +1058,7 @@ function showTaskSelection(task) {
     $(ttListEntry).find('.tt-entry-options').fadeIn();
 
     // Show options for selected task
-    $(ttListEntry).find('.tt-task-control a').fadeIn();  
+    $(ttListEntry).find('.tt-task-control a').fadeIn();    
   }
 }
 
@@ -1441,6 +1658,7 @@ $(document).ready(function() {
   
   // Set i18n tooltips
   viewModel.tooltipTopmenu(ko.i18n('top-nav.tooltip'));
+  viewModel.tooltipGoalSummary(ko.i18n('goal.tt-summary'));
   viewModel.tooltipEditTask(ko.i18n('task.tt-edit'));
   viewModel.tooltipDeleteTask(ko.i18n('task.tt-delete'));
   viewModel.tooltipMarkTaskAsCompleted(ko.i18n('task.tt-mark-completed'));

@@ -172,8 +172,8 @@ function ViewModel() {
   self.tooltipTopmenu = ko.observable('Toogle menu');
   self.tooltipEditGoal = ko.observable('Edit goal');
   self.tooltipDeleteGoal = ko.observable('Delete goal');
-  self.tooltipMarkGoalAsCompleted = ko.observable('Mark goal as completed');
-  self.tooltipMarkGoalAsNotCompleted = ko.observable('Mark goal as not completed');
+  self.tooltipMarkAsCompleted = ko.observable('Mark goal as completed');
+  self.tooltipMarkAsNotCompleted = ko.observable('Mark goal as not completed');
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -328,7 +328,6 @@ addon.port.on("TaskLoaded", function(task) {
  * ON PAGE READY
  */
 $(document).ready(function() {
-
   ko.punches.enableAll();
 
   // Load all goals
@@ -341,9 +340,6 @@ $(document).ready(function() {
     // Get lastest active task
     addon.port.emit("GetLatestActiveTask");
   }
-
-  // Apply view model
-  ko.applyBindings(viewModel);
   
   // Set i18n tooltips
   viewModel.tooltipTopmenu(ko.i18n('top-nav.tooltip'));
@@ -351,4 +347,7 @@ $(document).ready(function() {
   viewModel.tooltipDeleteGoal(ko.i18n('goal.tt-delete'));
   viewModel.tooltipMarkAsCompleted(ko.i18n('goal.tt-mark-completed'));
   viewModel.tooltipMarkAsNotCompleted(ko.i18n('goal.tt-mark-not-completed'));
+
+  // Apply view model
+  ko.applyBindings(viewModel);
 });

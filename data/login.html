@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" manifest="/cache.manifest">
+  <head>
+    <title>TasksTodo</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/taskstodo.css"/>
+    <link rel="stylesheet" href="css/taskstodo.login.css"/>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="js/jquery.ui.widget.js"></script>
+    <script src="js/jquery.iframe-transport.js"></script>
+    <script src="js/jquery.fileupload.js"></script>
+    <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="js/jquery.autosize.min.js"></script>
+    <script src="js/jquery.treetable.js"></script>
+    <script src="js/respond.min.js"></script>
+    <script src="js/modernizr-2.6.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-paginator.js"></script>
+    <script src="js/bootstrap-tagsinput.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/typeahead.min.js"></script>
+    <script src="js/knockout-3.2.0.js"></script>
+    <script src="js/knockout.punches.min.js"></script>
+    <script src="js/knockout-sortable.js"></script>
+    <script src="js/knockout-bootstrap.min.js"></script>
+    <script src="js/koExternalTemplateEngine_all.min.js"></script>
+    <script src="js/i18next-1.7.4.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/taskstodo.js"></script>    
+    <script src="js/taskstodo.login.js"></script>
+  </head>
+  <body>
+    <div id="header">
+    </div>
+    <div id="content">
+      <div class="inline-content">
+        <h1><span data-bind="i18n: 'login.hdr-login'"></span></h1>
+        <div>
+          <fieldset id="login-form">
+            <p>
+              <label for="login-username"><span data-bind="i18n: 'login.lbl-username'"></span></label>
+              <input type="text" id="login-username" class="round" value="daniel.backhausen@gmail.com" placeholder="john.doe@mail.com" autofocus />
+            </p>
+            <p>
+              <label for="login-password"><span data-bind="i18n: 'login.lbl-password'"></span></label>
+              <input type="password" id="login-password" class="round" value="daniel" />
+            </p>
+            <button id="btn-login" type="button" class="btn btn-primary btn-sm" data-bind="click: $root.login"></button>
+          </fieldset>
+
+          <div class="login-options">
+            <p><a href="#" id="btn-register" data-toggle="modal" data-target="#modal-panel-register"><span data-bind="i18n: 'login.txt-register'"></span></a> | <a href="#" id="btn-forgot-password" data-toggle="modal" data-target="#modal-panel-forgot-password"><span data-bind="i18n: 'login.txt-forgot-password'"></span></a></p>
+          </div>
+        </div>
+        <div id="error" />
+      </div>
+
+      <!-- Modal panel: REGISTER -->
+      <div class="modal fade" id="modal-panel-register" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button id="btn-modal-top-close-register" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+              <h4 class="modal-title"><span data-bind="i18n: 'login.txt-register'"></span></h4>
+            </div>
+            <div class="modal-body">
+              <div id="register-form">
+                <p>
+                  <label for="register-username"><span data-bind="i18n: 'login.lbl-username'"></span></label>
+                  <input type="text" id="register-username" class="round" value="" autofocus />
+                </p>
+                <p>
+                  <label for="register-password"><span data-bind="i18n: 'login.lbl-password'"></span></label>
+                  <input type="password" id="register-password" class="round" value="" />
+                </p>
+                <button id="btn-register" type="button" class="btn btn-primary btn-sm" data-bind="click: $root.register"></button>
+              </div>
+              <div class="dialog-alert"></div>
+            </div>
+            <div class="modal-footer">
+              <button id="btn-modal-bottom-close-register" type="button" class="btn btn-primary" data-dismiss="modal"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal panel: FORGOT PASSWORD -->
+      <div class="modal fade" id="modal-panel-forgot-password" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button id="btn-modal-top-close-forgot_password" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+              <h4 class="modal-title"><span data-bind="i18n: 'login.txt-forgot-password'"></span></h4>
+            </div>
+            <div class="modal-body">
+              <div id="forgot-password-form">
+                <p>
+                  <label for="forgot-password-username"><span data-bind="i18n: 'login.lbl-username'"></span></label>
+                  <input type="text" id="forgot-password-username" class="round" value="" autofocus />
+                </p>
+                <button id="btn-send_password" type="button" class="btn btn-primary btn-sm" data-bind="click: $root.sendPassword"></button>
+              </div>
+              <div class="dialog-alert"></div>
+            </div>
+            <div class="modal-footer">
+              <button id="btn-modal-bottom-close-forgot_password" type="button" class="btn btn-primary" data-dismiss="modal"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
