@@ -8,35 +8,36 @@
     <meta name="description" content="">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/bootstrap/bootstrap-theme.min.css"/>
-    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/trumbowyg/trumbowyg.taskstodo.css"/>
     <link rel="stylesheet" href="css/trumbowyg/trumbowyg.colors.css"/>
-    <link rel="stylesheet" href="css/taskstodo.css"/>
-    <link rel="stylesheet" href="css/taskstodo.tasks.css"/>
+    <link rel="stylesheet" href="css/taskstodo/taskstodo.css"/>
+    <link rel="stylesheet" href="css/taskstodo/taskstodo.tasks.css"/>
     <link href='http://fonts.googleapis.com/css?family=Roboto:300,500' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
-    <script src="js/jquery/jquery-1.11.3.min.js"></script>
-    <script src="js/jquery/jquery-ui-1.10.4.custom.min.js"></script>
-    <script src="js/jquery/jquery.ui.widget.js"></script>
-    <script src="js/jquery/jquery.iframe-transport.js"></script>
-    <script src="js/jquery/jquery.fileupload.js"></script>
-    <script src="js/jquery/jquery.autosize.min.js"></script>
-    <script src="js/jquery/jquery.treetable.js"></script>
-    <script src="js/modernizr-2.6.2.min.js"></script>
-    <script src="js/respond.min.js"></script>
-    <script src="js/bootstrap/bootstrap.min.js"></script>
-    <script src="js/knockout/knockout-3.4.0.js"></script>
-    <script src="js/knockout/knockstrap.min.js"></script>
-    <script src="js/knockout/knockout-sortable.js"></script>
-    <script src="js/knockout/knockout.mapping-latest.js"></script>
-    <script src="js/knockout/knockout.punches.min.js"></script>
-    <script src="js/knockout/koExternalTemplateEngine_all.min.js"></script>
-    <script src="js/i18next-1.7.4.min.js"></script>
-    <script src="js/moment.min.js"></script>
-    <script src="js/trumbowyg/trumbowyg.min.js"></script>
-    <script src="js/trumbowyg/trumbowyg.colors.min.js"></script>
-    <script src="js/taskstodo.js"></script>    
-    <script src="js/taskstodo.tasks.js"></script>
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
+    <script src="lib/i18next/i18next-1.7.4.min.js"></script>
+    <script src="lib/jquery/jquery-1.11.3.min.js"></script>
+    <script src="lib/jquery/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="lib/jquery/jquery.ui.widget.js"></script>
+    <script src="lib/jquery/jquery.iframe-transport.js"></script>
+    <script src="lib/jquery/jquery.fileupload.js"></script>
+    <script src="lib/jquery/jquery.autosize.min.js"></script>
+    <script src="lib/jquery/jquery.treetable.js"></script>
+    <script src="lib/knockout/knockout-3.4.0.js"></script>
+    <script src="lib/knockout/knockstrap.min.js"></script>
+    <script src="lib/knockout/knockout-sortable.js"></script>
+    <script src="lib/knockout/knockout.mapping-latest.js"></script>
+    <script src="lib/knockout/knockout.punches.min.js"></script>
+    <script src="lib/knockout/koExternalTemplateEngine_all.min.js"></script>
+    <script src="lib/modernizr/modernizr-2.6.2.min.js"></script>
+    <script src="lib/moment/moment.min.js"></script>
+    <script src="lib/respond/respond.min.js"></script>
+    <script src="lib/trumbowyg/trumbowyg.min.js"></script>
+    <script src="lib/trumbowyg/trumbowyg.colors.min.js"></script>
+    <script src="vm/taskstodo.utils.js"></script>
+    <script src="vm/taskstodo.model.js"></script>
+    <script src="vm/taskstodo.tasks.js"></script>
   </head>
   <body>
     <div id="header">
@@ -130,7 +131,7 @@
         <!-- /ko -->
       </div>
     </div>
-    
+
     <!-- Modal panel: Goal Notes -->
     <div class="modal fade" id="modal-panel-goal-notes" tabindex="-1" role="dialog" aria-labelledby="modal-title-goal-notes" aria-hidden="true">
       <div class="modal-dialog">
@@ -142,7 +143,7 @@
           <div class="modal-body">
             <button id="btn-goal-note-form-button-new" data-bind="click: newGoalNote" class="btn btn-primary btn-sm"><span data-bind="i18n: 'goal.btn-new-note'"></span></button>
             <form id="new-goal-note-form" data-bind="submit: addGoalNote">
-              <div id="new-goal-note-form-input-body" class="wysiwyg-editor"></div>         
+              <div id="new-goal-note-form-input-body" class="wysiwyg-editor"></div>
               <button id="btn-save-new-goal-note" type="submit" class="btn btn-primary btn-sm"><span data-bind="i18n: 'general.btn-save'"></span></button>
               <button id="btn-cancel-new-goal-note" data-bind="click: cancelNewGoalNote" class="btn btn-default btn-sm"><span data-bind="i18n: 'general.btn-cancel'"></span></button>
             </form>
@@ -160,7 +161,7 @@
 
             <div id="tt-goal-note-list">
               <ul class="sortable" data-bind="foreach: goalNotes">
-                <li data-bind="attr: { 'id': _id }">                      
+                <li data-bind="attr: { 'id': _id }">
                   <div class="tt-entry">
                     <div class="tt-header">
                       <div class="tt-header-text">
@@ -190,7 +191,7 @@
         </div>
       </div>
     </div>
-      
+
     <!-- Modal panel: Goal Summary -->
     <div class="modal fade" id="modal-panel-goal-summary" tabindex="-1" role="dialog" aria-labelledby="modal-title-goal-summary" aria-hidden="true">
       <div class="modal-dialog">
@@ -200,23 +201,23 @@
             <h4 class="modal-title" id="modal-title-goal-summary"><span data-bind="i18n: 'goal.dialog-title-summary'"></span></h4>
           </div>
           <div class="modal-body">
-            
+
             <h4><span data-bind="i18n: 'goal.dialog-summary-text'"></span></h4>
-            
+
             <div class="tt-loader">
               <p><span data-bind="i18n: 'general.txt-loading-data'"></span></p>
               <img src="img/ajax-loader.gif" width="42" height="42" />
             </div>
-            
+
             <!-- ko if: summary() == null || summary().length == 0 -->
             <div class="tt-empty-list">
               <span data-bind="i18n: 'goal.txt-no-summary'"></span>
             </div>
             <!-- /ko -->
-            
+
             <div id="tt-goal-summary-list">
               <ul class="sortable" data-bind="foreach: summary">
-                <li data-bind="attr: { 'id': _id }">                      
+                <li data-bind="attr: { 'id': _id }">
                   <div class="tt-entry">
 
                     <!-- ko if: action == "location_change" -->
@@ -231,13 +232,13 @@
                       </a>
                     </div>
                     <!-- /ko -->
-                    
+
                     <!-- ko if: action == "!search_executed" -->
-                    <p>Search</p>                       
+                    <p>Search</p>
                     <span data-bind="text: parameters[5].value"></span>
                     <a data-bind="href: parameters[6].value"><span data-bind="text: parameters[4].value"></span></a>
                     <!-- /ko -->
-                                        
+
                     <!-- ko if: action == "goal_selected" -->
                     <div class="tt-header">
                       <div class="tt-header-text">
@@ -248,7 +249,7 @@
                       <span data-bind="text: parameters[1].value"></span>
                     </div>
                     <!-- /ko -->
-                    
+
                     <!-- ko if: action == "task_selected" -->
                     <div class="tt-header">
                       <div class="tt-header-text">
@@ -259,12 +260,12 @@
                       <span data-bind="text: parameters[1].value"></span>
                     </div>
                     <!-- /ko -->
-   
+
                   </div>
                 </li>
               </ul>
             </div>
-            
+
           </div>
           <div class="modal-footer">
             <button id="btn-modal-bottom-close-goal-summary" type="button" class="btn btn-primary" data-dismiss="modal"><span data-bind="i18n: 'general.btn-close'"></button>
@@ -272,7 +273,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Modal panel: Task Notes -->
     <div class="modal fade" id="modal-panel-notes" tabindex="-1" role="dialog" aria-labelledby="modal-title-notes" aria-hidden="true">
       <div class="modal-dialog">
@@ -284,7 +285,7 @@
           <div class="modal-body">
             <button id="btn-note-form-button-new" data-bind="click: newNote" class="btn btn-primary btn-sm"><span data-bind="i18n: 'task.btn-new-note'"></span></button>
             <form id="new-note-form" data-bind="submit: addNote">
-              <div id="new-note-form-input-body" class="wysiwyg-editor"></div>         
+              <div id="new-note-form-input-body" class="wysiwyg-editor"></div>
               <button id="btn-save-new-note" type="submit" class="btn btn-primary btn-sm"><span data-bind="i18n: 'general.btn-save'"></span></button>
               <button id="btn-cancel-new-note" data-bind="click: cancelNewNote" class="btn btn-default btn-sm"><span data-bind="i18n: 'general.btn-cancel'"></span></button>
             </form>
@@ -302,7 +303,7 @@
 
             <div id="tt-note-list">
               <ul class="sortable" data-bind="foreach: notes">
-                <li data-bind="attr: { 'id': _id }">                      
+                <li data-bind="attr: { 'id': _id }">
                   <div class="tt-entry">
                     <div class="tt-header">
                       <div class="tt-header-text">

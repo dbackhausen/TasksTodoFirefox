@@ -3,9 +3,9 @@
 // I18N                                                                    //
 /////////////////////////////////////////////////////////////////////////////
 
-i18n.init({ 
-  lng: "en-US", 
-  debug: true 
+i18n.init({
+  lng: "en-US",
+  debug: true
 }, function () {
   ko.bindingHandlers.i18n = {
     update: function(element, valueAccessor, allBindings){
@@ -32,26 +32,26 @@ showGoals = function() {
   });
 };
 
-$(document).ready(function() { 
-  
+$(document).ready(function() {
+
   /////////////////////////////////////////////////////////////////////////////
   // TASKSTODO EVENT TRACKING                                                //
   /////////////////////////////////////////////////////////////////////////////
-  
+
   $(document).bind("click dblclick select submit", function(event) {
     addon.port.emit("TrackEvent", event.type, event.target.id);
-  });  
-    
+  });
+
   /////////////////////////////////////////////////////////////////////////////
   // TOP MENU                                                                //
   /////////////////////////////////////////////////////////////////////////////
 
-  $('#top-menu-toggle-button').click(function() { 
-    if ($('#content').css('left') == '350px') { 
-      $('#content').animate({ left: 0 }, 'slow', function() { }); 
+  $('#top-menu-toggle-button').click(function() {
+    if ($('#content').css('left') == '350px') {
+      $('#content').animate({ left: 0 }, 'slow', function() { });
     } else {
-      $('#content').animate({ left: 350 }, 'slow', function() { }); 
-    }  
+      $('#content').animate({ left: 350 }, 'slow', function() { });
+    }
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -60,11 +60,11 @@ $(document).ready(function() {
 
   infuser.defaults.templateSuffix = ".tmpl.html";
   infuser.defaults.templateUrl = "templates";
-  
+
   /////////////////////////////////////////////////////////////////////////////
   // FUNCTIONS                                                               //
   /////////////////////////////////////////////////////////////////////////////
-  
+
   ko.filters.redirect = function(page) {
     // Redirect to tasks page
     addon.port.emit("Redirect", page);
@@ -90,7 +90,7 @@ $(document).ready(function() {
   /////////////////////////////////////////////////////////////////////////////
   // FILTERS                                                                 //
   /////////////////////////////////////////////////////////////////////////////
-    
+
   ko.filters.smartdate = function(date) {
     return moment(date).format("YYYY-MM-DD HH:mm");
   };
@@ -102,20 +102,20 @@ $(document).ready(function() {
     var i = Math.floor(Math.log(bytes) / Math.log(k));
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
   };
-  
+
   ko.filters.limit100 = function(string) {
     var maxSize = 100;
-    
+
     if (string && string.length > maxSize) {
       return string.substring(0, maxSize-4) +  " ..."
     }
-    
+
     return string;
   };
-  
+
   ko.filters.filterTopLevelDomain = function(url) {
     var maxSize = 30;
-    
+
     if (url) {
       if (url.indexOf("://") > -1) {
         url = url.split('/')[2];
@@ -126,16 +126,16 @@ $(document).ready(function() {
       // find & remove port number
       url = url.split(':')[0];
       url = url.replace("www.", "");
-      
+
       if (url.length > maxSize) {
         url = url.substring(0, maxSize-4) +  " ..."
       }
-      
+
       return url;
     }
-    
+
     return "";
-  };  
+  };
 
   ko.filters.smarttype = function(str) {
     if (str == "application/pdf") {
@@ -205,7 +205,7 @@ $(document).ready(function() {
   /////////////////////////////////////////////////////////////////////////////
   // ERROR HANDLING                                                          //
   /////////////////////////////////////////////////////////////////////////////
-  
+
   addon.port.on("Error", function(error) {
     console.error("[ERROR] " + error);
   });
@@ -215,7 +215,7 @@ $(document).ready(function() {
 // INPUT VALIDATION                                                        //
 /////////////////////////////////////////////////////////////////////////////
 
-function validateEmail(email) { 
+function validateEmail(email) {
   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
 }
@@ -245,164 +245,15 @@ function showErrorMessage(message, location) {
 /////////////////////////////////////////////////////////////////////////////
 
 function loadLogEntries(user) {
-  addon.port.emit("LoadLogEntries", user._id);  
+  addon.port.emit("LoadLogEntries", user._id);
 }
 
 function addLogEntry(userId, action, paramters) {
-  addon.port.emit("AddLogEntry", 
+  addon.port.emit("AddLogEntry",
     {
       "userId": userId,
       "action": action,
       "paramters": paramters
     }
   );
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// MODEL CLASSES                                                           //
-/////////////////////////////////////////////////////////////////////////////  
-
-function User(data) {
-  this._id = data._id;
-  this.username = ko.protectedObservable(data.username);
-  this.password = ko.protectedObservable(data.password);
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-}
-
-function Goal(data) {
-  this._id = data._id;
-  this.title = ko.protectedObservable(data.title);
-  this.dueDate = ko.observable(data.dueDate);
-  this.priority = ko.observable(data.priority);
-  this.position = ko.observable(data.position);
-  this.level = ko.observable(data.level);
-  this.completed = ko.observable(data.completed);
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-}
-
-function Task(data) {
-  this._id = data._id;
-  this.title = ko.protectedObservable(data.title);
-  this.goal = ko.observable(data.goal);
-  this.priority = ko.observable(data.priority);
-  this.position = ko.observable(data.position);
-  this.level = ko.observable(data.level);
-  this.completed = ko.observable(data.completed);
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-}
-
-function Note(data) {
-  this._id = data._id;
-  this.goal = data.goal ? ko.observable(data.goal) : null;
-  this.task = data.task ? ko.observable(data.task) : null;
-  this.body = ko.protectedObservable(data.body);
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-}
-
-function Bookmark(data) {
-  this._id = data._id;
-  this.task = ko.observable(data.task);
-  this.title = ko.protectedObservable(data.title);
-  this.url = ko.protectedObservable(data.url);
-  this.description = ko.protectedObservable(data.description);
-  this.thumbnail = ko.observable(data.thumbnail);
-  this.content = ko.observable(data.content);
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-}
-
-function HistoryEntry(data) {
-  this._id = data._id;
-
-  for (i = 0; i < data.parameters.length; i++) { 
-    var parameter = data.parameters[i];
-
-    if (parameter.key == "taskId") {
-      this.taskId = ko.observable(parameter.value);
-    } else if (parameter.key == "url") {
-      this.url = ko.observable(parameter.value);
-    } else if (parameter.key == "title") {
-      this.title = ko.observable(parameter.value);
-    } else if (parameter.key == "thumbnail") {
-      this.thumbnail = ko.observable(parameter.value);
-    } else if (parameter.key == "body") {
-      this.body = ko.observable(parameter.value);
-    }
-  }
-  
-  this.created = ko.observable(data.created);
-}
-
-function Query(data) {
-  this._id = data._id;
-
-  for (i = 0; i < data.parameters.length; i++) { 
-    var parameter = data.parameters[i];
-
-    if (parameter.key == "taskId") {
-      this.taskId = ko.observable(parameter.value);
-    } else if (parameter.key == "provider") {
-      this.provider = ko.observable(parameter.value);
-    } else if (parameter.key == "query") {
-      this.query = ko.observable(parameter.value);
-    } else if (parameter.key == "url") {
-      this.url = ko.observable(parameter.value);
-    }
-  }
-  
-  this.created = ko.observable(data.created);
-}
-
-function Screenshot(data) {
-  this._id = data._id;
-  this.taskId = ko.observable(data.taskId);
-  this.image = ko.observable(data.image);
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-} 
-
-function Attachment(data) {
-  this._id = data._id;
-  this.taskId = data.metadata.taskId;
-  this.filename = data.filename;
-  this.length = data.length;
-  this.contentType = data.contentType;
-  this.uploadDate = data.uploadDate;
-}
-
-function Tab(data) {
-  this._id = data._id;
-
-  for (i = 0; i < data.parameters.length; i++) { 
-    var parameter = data.parameters[i];
-
-    if (parameter.key == "taskId") {
-      this.taskId = ko.observable(parameter.value);
-    } else if (parameter.key == "tabUrl") {
-      this.url = ko.observable(parameter.value);
-    } else if (parameter.key == "tabTitle") {
-      this.title = ko.observable(parameter.value);
-    } else if (parameter.key == "tabThumbnail") {
-      this.thumbnail = ko.observable(parameter.value);
-    } else if (parameter.key == "tabIndex") {
-      this.index = ko.observable(parameter.value);
-    } else if (parameter.key == "tabPinned") {
-      this.pinned = ko.observable(parameter.value);
-    }
-  }
-  
-  this.created = ko.observable(data.created);
-  this.modified = ko.observable(data.modified);
-  this.deleted = ko.observable(data.deleted);
-}
-
-function LogEntry(data) {
-  this._id = data._id;
-  this.action = data.action;
-  this.parameters = data.parameters;
-  this.created = data.created;
 }
